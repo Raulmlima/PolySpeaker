@@ -64,6 +64,7 @@ jobs:
             -authenticationKeyIssuerID $ASC_ISSUER_ID \
             -allowProvisioningUpdates \
             CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             DEVELOPMENT_TEAM=HB63CY9N67 \
             archive 2>&1 | tee /tmp/xcodebuild.log
           if [ ${PIPESTATUS[0]} -ne 0 ]; then
