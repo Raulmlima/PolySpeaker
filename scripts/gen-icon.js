@@ -31,7 +31,7 @@ async function run() {
   const fgSvg = `
 <svg width="1024" height="1024" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
   <rect width="108" height="108" fill="#000000"/>
-  ${polyArt(0.72, 22, 18)}
+  ${polyArt(0.72, 20, 18)}
 </svg>
 `;
   await sharp(Buffer.from(fgSvg)).resize(1024, 1024).png().toFile(path.join(assetsDir, 'android-icon-foreground.png'));
