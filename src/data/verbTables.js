@@ -1,0 +1,88 @@
+export const PRONOUNS = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
+
+export const verbTables = [
+  {
+    tense: 'Presente do Indicativo',
+    description: 'Ação habitual ou que ocorre agora',
+    verbs: [
+      { infinitive: 'ser', meaning: 'ser', forms: ['soy', 'eres', 'es', 'somos', 'sois', 'son'] },
+      { infinitive: 'estar', meaning: 'estar', forms: ['estoy', 'estás', 'está', 'estamos', 'estáis', 'están'] },
+      { infinitive: 'tener', meaning: 'ter', forms: ['tengo', 'tienes', 'tiene', 'tenemos', 'tenéis', 'tienen'] },
+      { infinitive: 'ir', meaning: 'ir', forms: ['voy', 'vas', 'va', 'vamos', 'vais', 'van'] },
+      { infinitive: 'hacer', meaning: 'fazer', forms: ['hago', 'haces', 'hace', 'hacemos', 'hacéis', 'hacen'] },
+      { infinitive: 'poder', meaning: 'poder', forms: ['puedo', 'puedes', 'puede', 'podemos', 'podéis', 'pueden'] },
+      { infinitive: 'querer', meaning: 'querer', forms: ['quiero', 'quieres', 'quiere', 'queremos', 'queréis', 'quieren'] },
+      { infinitive: 'venir', meaning: 'vir', forms: ['vengo', 'vienes', 'viene', 'venimos', 'venís', 'vienen'] },
+      { infinitive: 'decir', meaning: 'dizer', forms: ['digo', 'dices', 'dice', 'decimos', 'decís', 'dicen'] },
+      { infinitive: 'saber', meaning: 'saber', forms: ['sé', 'sabes', 'sabe', 'sabemos', 'sabéis', 'saben'] },
+      { infinitive: 'salir', meaning: 'sair', forms: ['salgo', 'sales', 'sale', 'salimos', 'salís', 'salen'] },
+      { infinitive: 'hablar', meaning: 'falar', forms: ['hablo', 'hablas', 'habla', 'hablamos', 'habláis', 'hablan'] },
+      { infinitive: 'comer', meaning: 'comer', forms: ['como', 'comes', 'come', 'comemos', 'coméis', 'comen'] },
+      { infinitive: 'vivir', meaning: 'viver', forms: ['vivo', 'vives', 'vive', 'vivimos', 'vivís', 'viven'] },
+      { infinitive: 'ver', meaning: 'ver', forms: ['veo', 'ves', 've', 'vemos', 'veis', 'ven'] },
+      { infinitive: 'dar', meaning: 'dar', forms: ['doy', 'das', 'da', 'damos', 'dais', 'dan'] },
+      { infinitive: 'poner', meaning: 'pôr/colocar', forms: ['pongo', 'pones', 'pone', 'ponemos', 'ponéis', 'ponen'] },
+      { infinitive: 'traer', meaning: 'trazer', forms: ['traigo', 'traes', 'trae', 'traemos', 'traéis', 'traen'] },
+    ],
+  },
+  {
+    tense: 'Pretérito Indefinido',
+    description: 'Ação concluída no passado (ponto específico)',
+    verbs: [
+      { infinitive: 'ser / ir', meaning: 'ser / ir (mesmas formas!)', forms: ['fui', 'fuiste', 'fue', 'fuimos', 'fuisteis', 'fueron'] },
+      { infinitive: 'tener', meaning: 'ter', forms: ['tuve', 'tuviste', 'tuvo', 'tuvimos', 'tuvisteis', 'tuvieron'] },
+      { infinitive: 'hacer', meaning: 'fazer', forms: ['hice', 'hiciste', 'hizo', 'hicimos', 'hicisteis', 'hicieron'] },
+      { infinitive: 'estar', meaning: 'estar', forms: ['estuve', 'estuviste', 'estuvo', 'estuvimos', 'estuvisteis', 'estuvieron'] },
+      { infinitive: 'decir', meaning: 'dizer', forms: ['dije', 'dijiste', 'dijo', 'dijimos', 'dijisteis', 'dijeron'] },
+      { infinitive: 'poder', meaning: 'poder', forms: ['pude', 'pudiste', 'pudo', 'pudimos', 'pudisteis', 'pudieron'] },
+      { infinitive: 'hablar', meaning: 'falar (regular -ar)', forms: ['hablé', 'hablaste', 'habló', 'hablamos', 'hablasteis', 'hablaron'] },
+      { infinitive: 'comer', meaning: 'comer (regular -er)', forms: ['comí', 'comiste', 'comió', 'comimos', 'comisteis', 'comieron'] },
+      { infinitive: 'vivir', meaning: 'viver (regular -ir)', forms: ['viví', 'viviste', 'vivió', 'vivimos', 'vivisteis', 'vivieron'] },
+    ],
+  },
+  {
+    tense: 'Pretérito Imperfecto',
+    description: 'Ação habitual ou contínua no passado',
+    verbs: [
+      { infinitive: 'ser', meaning: 'ser', forms: ['era', 'eras', 'era', 'éramos', 'erais', 'eran'] },
+      { infinitive: 'ir', meaning: 'ir', forms: ['iba', 'ibas', 'iba', 'íbamos', 'ibais', 'iban'] },
+      { infinitive: 'ver', meaning: 'ver', forms: ['veía', 'veías', 'veía', 'veíamos', 'veíais', 'veían'] },
+      { infinitive: 'hablar', meaning: 'falar (regular -ar)', forms: ['hablaba', 'hablabas', 'hablaba', 'hablábamos', 'hablabais', 'hablaban'] },
+      { infinitive: 'comer', meaning: 'comer (regular -er/-ir)', forms: ['comía', 'comías', 'comía', 'comíamos', 'comíais', 'comían'] },
+    ],
+  },
+  {
+    tense: 'Futuro Simples',
+    description: 'Ação futura ou suposição',
+    verbs: [
+      { infinitive: 'hablar', meaning: 'falar (regular)', forms: ['hablaré', 'hablarás', 'hablará', 'hablaremos', 'hablaréis', 'hablarán'] },
+      { infinitive: 'ser', meaning: 'ser', forms: ['seré', 'serás', 'será', 'seremos', 'seréis', 'serán'] },
+      { infinitive: 'tener', meaning: 'ter', forms: ['tendré', 'tendrás', 'tendrá', 'tendremos', 'tendréis', 'tendrán'] },
+      { infinitive: 'hacer', meaning: 'fazer', forms: ['haré', 'harás', 'hará', 'haremos', 'haréis', 'harán'] },
+      { infinitive: 'poder', meaning: 'poder', forms: ['podré', 'podrás', 'podrá', 'podremos', 'podréis', 'podrán'] },
+      { infinitive: 'ir', meaning: 'ir', forms: ['iré', 'irás', 'irá', 'iremos', 'iréis', 'irán'] },
+    ],
+  },
+  {
+    tense: 'Condicional Simples',
+    description: 'Ação hipotética ("eu faria")',
+    verbs: [
+      { infinitive: 'hablar', meaning: 'falar (regular)', forms: ['hablaría', 'hablarías', 'hablaría', 'hablaríamos', 'hablaríais', 'hablarían'] },
+      { infinitive: 'ser', meaning: 'ser', forms: ['sería', 'serías', 'sería', 'seríamos', 'seríais', 'serían'] },
+      { infinitive: 'tener', meaning: 'ter', forms: ['tendría', 'tendrías', 'tendría', 'tendríamos', 'tendríais', 'tendrían'] },
+      { infinitive: 'hacer', meaning: 'fazer', forms: ['haría', 'harías', 'haría', 'haríamos', 'haríais', 'harían'] },
+    ],
+  },
+  {
+    tense: 'Presente do Subjuntivo',
+    description: 'Dúvida, desejo, emoção, hipótese',
+    verbs: [
+      { infinitive: 'ser', meaning: 'ser', forms: ['sea', 'seas', 'sea', 'seamos', 'seáis', 'sean'] },
+      { infinitive: 'estar', meaning: 'estar', forms: ['esté', 'estés', 'esté', 'estemos', 'estéis', 'estén'] },
+      { infinitive: 'tener', meaning: 'ter', forms: ['tenga', 'tengas', 'tenga', 'tengamos', 'tengáis', 'tengan'] },
+      { infinitive: 'ir', meaning: 'ir', forms: ['vaya', 'vayas', 'vaya', 'vayamos', 'vayáis', 'vayan'] },
+      { infinitive: 'hablar', meaning: 'falar (regular -ar)', forms: ['hable', 'hables', 'hable', 'hablemos', 'habléis', 'hablen'] },
+      { infinitive: 'comer', meaning: 'comer (regular -er)', forms: ['coma', 'comas', 'coma', 'comamos', 'comáis', 'coman'] },
+    ],
+  },
+];
