@@ -26,6 +26,9 @@ jobs:
         env:
           EXPO_NO_DOTENV: 1
 
+      - name: Install xcpretty
+        run: gem install xcpretty --no-document
+
       - name: Install CocoaPods
         run: cd ios && pod install --repo-update
 
@@ -51,6 +54,7 @@ jobs:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: |
+          set -o pipefail
           cd ios
           xcodebuild \
             -workspace PolySpeaker.xcworkspace \
