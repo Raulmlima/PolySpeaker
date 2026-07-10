@@ -31,8 +31,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.polyspeaker.app",
       "infoPlist": {
-        "NSSpeechRecognitionUsageDescription": "Allow $(PRODUCT_NAME) to use speech recognition.",
-        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
+        "NSSpeechRecognitionUsageDescription": "PolySpeaker uses speech recognition to analyze your pronunciation and provide instant feedback on words and phrases in the language you are learning.",
+        "NSMicrophoneUsageDescription": "PolySpeaker uses the microphone to record your voice and evaluate your pronunciation of words and phrases in the language you are learning.",
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photo library.",
         "ITSAppUsesNonExemptEncryption": false
       }
