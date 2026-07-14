@@ -31,8 +31,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.polyspeaker.app",
       "infoPlist": {
-        "NSSpeechRecognitionUsageDescription": "PolySpeaker uses speech recognition to analyze your pronunciation and provide instant feedback on words and phrases in the language you are learning.",
-        "NSMicrophoneUsageDescription": "PolySpeaker uses the microphone to record your voice and evaluate your pronunciation of words and phrases in the language you are learning.",
+        "NSSpeechRecognitionUsageDescription": "PolySpeaker uses speech recognition to transcribe what you say during pronunciation exercises and compare it to the expected phrase, so the app can score your pronunciation accuracy and show you where to improve.",
+        "NSMicrophoneUsageDescription": "PolySpeaker uses the microphone to record your spoken responses during pronunciation exercises. For example, when practicing French, you will be prompted to say a word aloud and the app will analyze your pronunciation and provide instant feedback.",
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photo library.",
         "ITSAppUsesNonExemptEncryption": false
       }
