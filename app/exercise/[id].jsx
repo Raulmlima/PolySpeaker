@@ -27,6 +27,8 @@ import { getAllLanguageModules } from '../../src/data/modules';
 import { LANGUAGES, getProfile, saveProfile } from '../../src/storage';
 import { checkAnswer } from '../../src/utils/compare';
 import { aiCheckAnswer, AI_CHECK_URL } from '../../src/utils/aiCheck';
+import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
+import AiConsentModal from '../../src/components/AiConsentModal';
 import { markSentenceComplete, addWrongSentence, logEvent, getCompletedSentences } from '../../src/db/database';
 import { markPracticedToday } from '../../src/notifications';
 import { C } from '../../src/theme';
@@ -68,6 +70,9 @@ export default function ExerciseScreen() {
   const [listeningDone, setListeningDone] = useState(false);
   const [optionOrder, setOptionOrder] = useState(null);
   const [resumeReady, setResumeReady] = useState(false);
+  const [aiConsentVisible, setAiConsentVisible] = useState(false);
+  const [aiConsentGranted, setAiConsentGranted] = useState(null); // null=unknown, true/false
+  const pendingAiCallRef = useRef(null);
   const inputRef = useRef(null);
   const dictInputRef = useRef(null);
   const routerRef = useRef(router);
@@ -200,6 +205,17 @@ export default function ExerciseScreen() {
   const isLastEx = exIdx >= totalEx - 1;
   const isModuleDone = isLastSen && isLastEx;
 
+  async function getConsent() {
+    if (aiConsentGranted === true) return true;
+    if (aiConsentGranted === false) return false;
+    const stored = await hasAiConsent();
+    if (stored) { setAiConsentGranted(true); return true; }
+    return new Promise(resolve => {
+      pendingAiCallRef.current = resolve;
+      setAiConsentVisible(true);
+    });
+  }
+
   async function handleSubmit() {
     if (!input.trim() || feedback || !sentence) return;
     setAiAccepted(null);
@@ -207,6 +223,11 @@ export default function ExerciseScreen() {
     let correct = checkAnswer(input, sentence?.answers ?? []);
 
     if (!correct) {
+      const consent = await getConsent();
+      if (!consent) {
+        setFeedback('incorrect');
+        return;
+      }
       // Fallback: ask the AI checker if this is a valid alternate translation
       // (e.g. a correct synonym not in the fixed answers list). If it's genuinely
       // wrong, reuse the same call to get a short explanation of the mistake.
@@ -303,6 +324,8 @@ export default function ExerciseScreen() {
       setDictError('Use apenas uma palavra ou expressão curta — não frases inteiras.');
       return;
     }
+    const consent = await getConsent();
+    if (!consent) return;
     setDictLoading(true);
     setDictError(null);
     setDictResult(null);
@@ -488,6 +511,21 @@ export default function ExerciseScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+
+      <AiConsentModal
+        visible={aiConsentVisible}
+        onAccept={async () => {
+          await setAiConsent();
+          setAiConsentGranted(true);
+          setAiConsentVisible(false);
+          if (pendingAiCallRef.current) { pendingAiCallRef.current(true); pendingAiCallRef.current = null; }
+        }}
+        onDecline={() => {
+          setAiConsentGranted(false);
+          setAiConsentVisible(false);
+          if (pendingAiCallRef.current) { pendingAiCallRef.current(false); pendingAiCallRef.current = null; }
+        }}
+      />
 
       {/* Aviso de teclado alemão — aparece uma vez ao entrar numa aula DE */}
       <Modal visible={showDeWarning} transparent animationType="fade" onRequestClose={() => setShowDeWarning(false)}>
