@@ -13,6 +13,8 @@ import { scheduleDailyReminder, computeDayStreak } from '../src/notifications';
 import { getProfile, saveProfile, updateWeekStreak, LANGUAGES, getOrderedLanguageGroups, getLevels, getStageLabel, getStageDesc } from '../src/storage';
 import { C } from '../src/theme';
 import Poly from '../src/components/Poly';
+import AdBanner from '../src/components/AdBanner';
+import { initAds, prepareInterstitial } from '../src/utils/ads';
 
 const LEVEL_ORDER = ['iniciante', 'basico', 'intermediario', 'avancado'];
 const STAGE_LEVEL_MAP = [
@@ -50,6 +52,7 @@ export default function HomeScreen() {
   const floatAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    initAds().then(() => prepareInterstitial()).catch(() => {});
     Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
@@ -338,6 +341,7 @@ export default function HomeScreen() {
         })}
         <View style={{ height: 48 }} />
       </ScrollView>
+      <AdBanner />
 
       {/* First-time placement offer */}
       <Modal visible={placementOffer} transparent animationType="fade" onRequestClose={() => setPlacementOffer(false)}>

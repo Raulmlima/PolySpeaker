@@ -302,7 +302,10 @@ Para indicar **quanto** mais, acrescenta-se uma quantidade depois do adjetivo:
   },
 
   {
-    id: 'int-zh-4', language: 'zh', stage: 'Intermediário', order: 4,
+    // Movido de Intermediário → Básico: palavras interrogativas são HSK1 e o
+    // aluno precisa delas antes de "Compras e transporte". id mantido para
+    // preservar o progresso de quem já concluiu.
+    id: 'int-zh-4', language: 'zh', stage: 'Básico', order: 6,
     title: 'Perguntas — quem, onde, quando, por quê',
     subtitle: 'shéi, nǎr, shénme shíhòu, wèishénme, zěnme',
     theory: `## Palavras interrogativas em mandarim
@@ -497,7 +500,7 @@ Quando uma ação **começou no passado e continua até o presente**, usa-se **�
   {
     id: 'rev-int-zh', language: 'zh', stage: 'Intermediário', order: 99, isReview: true,
     title: 'Revisão — Intermediário',
-    subtitle: '了, modais, comparações, perguntas e duração',
+    subtitle: '了, modais, comparações e duração',
     theory: null,
     exercises: [
       {

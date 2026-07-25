@@ -28,6 +28,7 @@ import { LANGUAGES, getProfile, saveProfile } from '../../src/storage';
 import { checkAnswer } from '../../src/utils/compare';
 import { aiCheckAnswer, AI_CHECK_URL } from '../../src/utils/aiCheck';
 import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
+import { showInterstitialIfReady } from '../../src/utils/ads';
 import AiConsentModal from '../../src/components/AiConsentModal';
 import { markSentenceComplete, addWrongSentence, logEvent, getCompletedSentences } from '../../src/db/database';
 import { markPracticedToday } from '../../src/notifications';
@@ -499,7 +500,7 @@ export default function ExerciseScreen() {
               <Poly size={100} mood="happy" />
               <Text style={styles.completeTitle}>Módulo concluído!</Text>
               <Text style={styles.completeBody}>Poly tá orgulhoso de você. Bora pro próximo?</Text>
-              <TouchableOpacity style={styles.completeBtn} onPress={() => router.back()}>
+              <TouchableOpacity style={styles.completeBtn} onPress={() => { router.back(); setTimeout(() => showInterstitialIfReady(), 400); }}>
                 <Text style={styles.completeBtnText}>Continuar →</Text>
               </TouchableOpacity>
             </View>
@@ -893,7 +894,7 @@ export default function ExerciseScreen() {
             <Poly size={100} mood="happy" />
             <Text style={styles.completeTitle}>Módulo concluído!</Text>
             <Text style={styles.completeBody}>Poly tá orgulhoso de você. Bora pro próximo?</Text>
-            <TouchableOpacity style={styles.completeBtn} onPress={() => router.back()}>
+            <TouchableOpacity style={styles.completeBtn} onPress={() => { router.back(); setTimeout(() => showInterstitialIfReady(), 400); }}>
               <Text style={styles.completeBtnText}>Continuar →</Text>
             </TouchableOpacity>
           </View>

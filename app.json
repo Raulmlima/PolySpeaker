@@ -25,7 +25,8 @@
           "color": "#1B8FE0"
         }
       ],
-      "./plugins/withReleaseSigning"
+      "./plugins/withReleaseSigning",
+      "expo-sharing"
     ],
     "ios": {
       "supportsTablet": true,
@@ -65,5 +66,10 @@
       }
     },
     "owner": "raullimaos-organization"
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-3940256099942544~3347511713",
+    "ios_app_id": "ca-app-pub-3940256099942544~1458002511",
+    "user_tracking_usage_description": "This identifier will be used to deliver personalized ads to you."
   }
 }

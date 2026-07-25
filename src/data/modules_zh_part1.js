@@ -994,7 +994,7 @@ A estrutura completa de "ir a algum lugar de algum transporte" é: **Sujeito + z
   {
     id: 'rev-bas-zh', language: 'zh', stage: 'Básico', order: 99, isReview: true,
     title: 'Revisão — Básico',
-    subtitle: 'Ações, localização, tempo, gostos e compras',
+    subtitle: 'Ações, localização, tempo, gostos, compras e perguntas',
     theory: null,
     exercises: [
       {

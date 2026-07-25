@@ -11,6 +11,7 @@ import { STAGES, getTotalSentences } from '../src/data/modules';
 import { getAllProgress, resetModuleProgress } from '../src/db/database';
 import { getProfile, saveProfile, getLevels, getStageLabel, LANGUAGES, LANGUAGE_GROUPS } from '../src/storage';
 import { getModulesForLang } from '../src/data/modules';
+import { exportBackup, importBackup } from '../src/utils/backup';
 import { C } from '../src/theme';
 
 const STAGE_THRESHOLDS = ['Fundamentos', 'Básico', 'Intermediário', 'Avançado', 'Variados'];
@@ -289,6 +290,37 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Nivelamento</Text>
         <PlacementCard profile={profile} activeLangId={activeLangId} langLabel={activeLangLabel} router={router} />
 
+        <Text style={styles.sectionTitle}>Backup</Text>
+        <View style={styles.backupCard}>
+          <Text style={styles.backupDesc}>
+            Salve seu progresso num arquivo (iCloud, Google Drive, etc.) e restaure ao trocar de celular.
+          </Text>
+          <View style={styles.backupBtnRow}>
+            <TouchableOpacity style={styles.backupBtn} onPress={async () => {
+              try {
+                await exportBackup(db);
+              } catch (e) {
+                Alert.alert('Erro', 'Não foi possível exportar o backup.');
+              }
+            }}>
+              <Text style={styles.backupBtnText}>Exportar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.backupBtnOutline} onPress={async () => {
+              try {
+                const res = await importBackup(db);
+                if (res.imported) {
+                  Alert.alert('Backup restaurado ✓', 'Seu progresso foi importado com sucesso.');
+                  await load();
+                }
+              } catch (e) {
+                Alert.alert('Erro', e.message ?? 'Arquivo inválido.');
+              }
+            }}>
+              <Text style={styles.backupBtnOutlineText}>Importar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <Text style={styles.sectionTitle}>Configurações</Text>
         <TouchableOpacity style={styles.dangerBtn} onPress={confirmReset}>
           <Text style={styles.dangerBtnText}>Reiniciar progresso da trilha</Text>
@@ -363,6 +395,22 @@ const styles = StyleSheet.create({
   stageFill: { height: 4, borderRadius: 2 },
   stageRowPct: { fontFamily: 'serif', fontSize: 12, color: C.accent, minWidth: 26, textAlign: 'right' },
 
+  backupCard: {
+    backgroundColor: C.bgAlt, borderRadius: 10, padding: 16,
+    borderWidth: 1, borderColor: C.border, marginBottom: 24,
+  },
+  backupDesc: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, lineHeight: 18, marginBottom: 12 },
+  backupBtnRow: { flexDirection: 'row', gap: 10 },
+  backupBtn: {
+    flex: 1, backgroundColor: C.accent, borderRadius: 8,
+    paddingVertical: 12, alignItems: 'center',
+  },
+  backupBtnText: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: '#fff' },
+  backupBtnOutline: {
+    flex: 1, borderWidth: 1, borderColor: C.accent, borderRadius: 8,
+    paddingVertical: 12, alignItems: 'center',
+  },
+  backupBtnOutlineText: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: C.accent },
   dangerBtn: {
     marginTop: 8, borderWidth: 1, borderColor: C.incorrect, borderRadius: 8,
     paddingVertical: 14, alignItems: 'center',

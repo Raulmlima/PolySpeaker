@@ -108,12 +108,16 @@ export async function markReviewCorrect(db, id, reviewCount) {
   }
 }
 
-// Analytics — fire-and-forget, never throws
+// Analytics — fire-and-forget, never throws. Local SQLite log + anonymous
+// remote funnel event (only whitelisted event names leave the device).
+import { sendTelemetry } from '../utils/telemetry';
+
 export function logEvent(db, event, moduleId, language) {
   db.runAsync(
     'INSERT INTO analytics (event, module_id, language, ts) VALUES (?, ?, ?, ?)',
     [event, moduleId ?? null, language ?? null, Date.now()]
   ).catch(() => {});
+  sendTelemetry(event, moduleId, language);
 }
 
 export async function getAnalyticsSummary(db) {

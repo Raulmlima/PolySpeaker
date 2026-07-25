@@ -2451,7 +2451,11 @@ const _allExtra = [...(MODULES_EN ?? []), ...(MODULES_DE ?? []), ...(MODULES_FR 
 
 export function getModulesForLang(lang) {
   if (!lang || lang === 'es') return MODULES_ES;
-  return _allExtra.filter(m => m.language === lang);
+  // Stable sort by `order` within each stage (modules without order keep their
+  // array position at priority 50; reviews use 99 so they always come last).
+  return _allExtra
+    .filter(m => m.language === lang)
+    .sort((a, b) => (a.order ?? 50) - (b.order ?? 50));
 }
 
 export function getAllLanguageModules() {

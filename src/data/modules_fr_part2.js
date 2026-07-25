@@ -1,4 +1,91 @@
 export const MODULES_FR_PART2 = [
+  // ─── BÁSICO ──────────────────────────────────────────────────────────────────
+
+  {
+    id: 'bas-fr-pc',
+    language: 'fr',
+    stage: 'Básico',
+    title: 'Passé composé — o passado do dia a dia',
+    subtitle: 'avoir/être + particípio: j’ai mangé, je suis allé',
+    theory: `## O passé composé
+
+É o tempo verbal mais usado para falar do **passado** no francês falado — equivale ao nosso pretérito perfeito ("comi", "fui", "vi").
+
+Estrutura: **sujeito + avoir/être (presente) + particípio passado**
+
+| Português | Francês |
+|-----------|---------|
+| eu comi | j'ai mangé |
+| você falou | tu as parlé |
+| ele terminou | il a fini |
+| nós vimos | nous avons vu |
+
+## Particípios regulares
+
+| Verbos | Terminação | Exemplo |
+|--------|-----------|---------|
+| -er | **-é** | manger → mangé |
+| -ir | **-i** | finir → fini |
+| -re | **-u** | vendre → vendu |
+
+## Particípios irregulares essenciais
+
+• être → **été** (j'ai été) • avoir → **eu** (j'ai eu)
+• faire → **fait** • voir → **vu** • prendre → **pris**
+• boire → **bu** • lire → **lu** • dire → **dit** • écrire → **écrit**
+
+## Verbos com être
+
+Verbos de **movimento e mudança de estado** usam **être** como auxiliar — e o particípio **concorda em gênero e número** com o sujeito:
+
+| Verbo | Exemplo |
+|-------|---------|
+| aller (ir) | je suis allé / elle est allé**e** |
+| venir (vir) | il est venu |
+| arriver (chegar) | nous sommes arrivé**s** |
+| partir (partir) | elle est partie |
+| rester (ficar) | ils sont restés |
+| naître (nascer) | elle est née |
+
+💡 Memorize: os verbos de "ir e vir, subir e descer, nascer e morrer" usam être. Todos os outros usam avoir.
+
+### Negação
+O **ne … pas** envolve só o auxiliar: Je **n'**ai **pas** mangé. (Eu não comi.)
+
+### Erros comuns
+⚠️ "Je suis mangé" está errado — manger usa **avoir**: "j'ai mangé".
+⚠️ Com être, não esqueça a concordância: "elle est allée" (com -e).`,
+    exercises: [
+      {
+        sentences: [
+          { prompt: 'Eu comi pão.', answers: ["j'ai mangé du pain", 'jai mangé du pain', 'j ai mangé du pain', "j'ai mange du pain"] },
+          { prompt: 'Você falou com ela.', answers: ['tu as parlé avec elle', 'tu as parle avec elle'] },
+          { prompt: 'Ele terminou o trabalho.', answers: ['il a fini le travail', 'il a terminé le travail', 'il a termine le travail'] },
+          { prompt: 'Nós vimos o filme.', answers: ['nous avons vu le film', 'on a vu le film'] },
+          { prompt: 'Eles venderam a casa.', answers: ['ils ont vendu la maison'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Eu fui ao mercado.', answers: ['je suis allé au marché', 'je suis allée au marché', 'je suis alle au marche', 'je suis allé au marche'] },
+          { prompt: 'Ela chegou ontem.', answers: ['elle est arrivée hier', 'elle est arrivee hier'] },
+          { prompt: 'Nós partimos de manhã.', answers: ['nous sommes partis le matin', 'on est partis le matin', 'nous sommes parties le matin'] },
+          { prompt: 'Ele veio de ônibus.', answers: ['il est venu en bus', 'il est venu en autobus'] },
+          { prompt: 'Ela nasceu em Paris.', answers: ['elle est née à Paris', 'elle est nee a Paris', 'elle est née a Paris'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Eu não comi nada.', answers: ["je n'ai rien mangé", 'je nai rien mangé', 'je n ai rien mange', "je n'ai rien mange"] },
+          { prompt: 'Você não viu o meu livro?', answers: ["tu n'as pas vu mon livre", 'tu nas pas vu mon livre', 'tu n as pas vu mon livre'] },
+          { prompt: 'Eu fiz um bolo.', answers: ["j'ai fait un gâteau", 'jai fait un gateau', "j'ai fait un gateau", 'j ai fait un gâteau'] },
+          { prompt: 'Nós tomamos um café.', answers: ['nous avons pris un café', 'on a pris un café', 'nous avons bu un café', 'nous avons pris un cafe'] },
+          { prompt: 'Ela leu o jornal.', answers: ['elle a lu le journal'] },
+        ],
+      },
+    ],
+  },
+
   // ─── INTERMEDIÁRIO ───────────────────────────────────────────────────────────
 
   {
@@ -90,7 +177,8 @@ Raiz: **nous** do presente, removendo o **-ons** final. Único verbo irregular n
   {
     id: 'int-fr-2',
     language: 'fr',
-    stage: 'Intermediário',
+    // Movido para Básico: futur simple é conteúdo A2 e a etapa Básico estava vazia
+    stage: 'Básico',
     title: 'Futur simple — promessas e previsões',
     subtitle: 'Fale sobre o futuro com o futur simple.',
     theory: `## Formação
@@ -351,7 +439,8 @@ Quando o **COD** vem antes do verbo (sempre o caso com pronomes), o particípio 
   {
     id: 'int-fr-5',
     language: 'fr',
-    stage: 'Intermediário',
+    // Movido para Básico: fazer perguntas é habilidade A1/A2, não intermediária
+    stage: 'Básico',
     title: 'Perguntas — formação e palavras interrogativas',
     subtitle: 'Faça perguntas com inversão, est-ce que e palavras interrogativas.',
     theory: `## Três formas de perguntar
