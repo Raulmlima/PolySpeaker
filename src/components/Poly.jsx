@@ -6,7 +6,7 @@ import Svg, { Ellipse, Rect, Path, G, Defs, LinearGradient, Stop } from 'react-n
 // friendly. The visor shape changes with mood instead of drawing eyes/mouth.
 //
 // mood: 'happy' (default, completion/success), 'neutral' (general UI),
-//       'oops' (errors, empty states)
+//       'oops' (errors, empty states), 'sad' (broken streak, missing user)
 export default function Poly({ size = 96, mood = 'happy' }) {
   const bodyFill = '#F8F9FB';
   const bodyStroke = '#D7DCE3';
@@ -47,6 +47,14 @@ export default function Poly({ size = 96, mood = 'happy' }) {
       )}
       {mood === 'neutral' && (
         <Rect x="28" y="54" width="44" height="7" rx="3.5" fill="url(#polyGlow)" />
+      )}
+      {mood === 'sad' && (
+        <G>
+          {/* Drooping visor arc — inverted smile */}
+          <Path d="M 28 60 Q 50 50 72 60 Q 50 55 28 60 Z" fill="url(#polyGlow)" />
+          {/* Little tear drop */}
+          <Path d="M 70 63 Q 72 67 70 69 Q 68 67 70 63 Z" fill={glow} opacity="0.85" />
+        </G>
       )}
       {mood === 'oops' && (
         <G>

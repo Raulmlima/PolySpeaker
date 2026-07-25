@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, Pressable,
-  StyleSheet, Modal, StatusBar,
+  StyleSheet, Modal, StatusBar, Animated, Easing,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -9,7 +9,7 @@ import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { getModulesForLang, STAGES, getTotalSentences } from '../src/data/modules';
 import { getAllProgress, getReviewCount } from '../src/db/database';
-import { refreshStreakReminder } from '../src/notifications';
+import { scheduleDailyReminder, computeDayStreak } from '../src/notifications';
 import { getProfile, saveProfile, updateWeekStreak, LANGUAGES, getOrderedLanguageGroups, getLevels, getStageLabel, getStageDesc } from '../src/storage';
 import { C } from '../src/theme';
 import Poly from '../src/components/Poly';
@@ -47,6 +47,16 @@ export default function HomeScreen() {
   const [reviewDismissed, setReviewDismissed] = useState(false);
   const scrollRef = useRef(null);
   const variadosY = useRef(0);
+  const floatAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(floatAnim, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ])
+    ).start();
+  }, []);
 
   const LEVEL_TO_STAGE = { iniciante: 'Fundamentos', basico: 'Básico', intermediario: 'Intermediário', avancado: 'Avançado' };
 
@@ -79,7 +89,13 @@ export default function HomeScreen() {
       const cnt = await getReviewCount(db).catch(() => 0);
       setReviewCount(cnt);
       setReviewDismissed(false);
-      refreshStreakReminder(withStreak.lastPracticeDate).catch(() => {});
+      const todayLocal = new Date();
+      const todayKey = `${todayLocal.getFullYear()}-${String(todayLocal.getMonth() + 1).padStart(2, '0')}-${String(todayLocal.getDate()).padStart(2, '0')}`;
+      scheduleDailyReminder({
+        reviewCount: cnt,
+        dayStreak: computeDayStreak(withStreak),
+        practicedToday: withStreak.lastPracticeDate === todayKey,
+      }).catch(() => {});
       const allLangMods = getModulesForLang(withStreak.language ?? 'es');
       const firstStage = STAGES.find(s => allLangMods.some(m => m.stage === s));
       setOpenStage(prev => prev ?? (LEVEL_TO_STAGE[withStreak.level] ?? firstStage ?? 'Fundamentos'));
@@ -110,6 +126,18 @@ export default function HomeScreen() {
   const uiGroup = activeLangInfo?.group ?? 'pt';
   const levelLabel = getLevels(uiGroup).find(l => l.id === profile?.level)?.label ?? '';
 
+  // Daily streak drives Poly's mood on the hero card
+  const dayStreak = computeDayStreak(profile);
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const practicedToday = profile?.lastPracticeDate === todayKey;
+  const polyMood = practicedToday ? 'happy' : dayStreak > 0 ? 'neutral' : 'sad';
+  const heroMsg = practicedToday
+    ? (dayStreak >= 3 ? `${dayStreak} dias seguidos — imparável!` : 'Prática de hoje feita. Orgulho!')
+    : dayStreak > 0
+      ? `Pratique hoje pra manter ${dayStreak} dia${dayStreak > 1 ? 's' : ''} de sequência`
+      : 'Comece uma sequência hoje!';
+
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
@@ -121,8 +149,8 @@ export default function HomeScreen() {
             <Text style={styles.appTitle}>PolySpeaker</Text>
           </View>
           <TouchableOpacity style={styles.profilePill} onPress={() => router.push('/profile')} activeOpacity={0.75}>
-            {(profile?.weekStreak ?? 0) > 0 && (
-              <Text style={styles.streakPillText}>{profile.weekStreak}🔥</Text>
+            {dayStreak > 0 && (
+              <Text style={styles.streakPillText}>{dayStreak}🔥</Text>
             )}
             {levelLabel ? <Text style={styles.levelPillText}>{levelLabel}</Text> : null}
             <Text style={styles.pillChevron}>›</Text>
@@ -147,6 +175,21 @@ export default function HomeScreen() {
       </View>
 
       <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll}>
+        {/* Hero: Poly emocional + streak diário */}
+        <View style={styles.heroCard}>
+          <Animated.View style={{ transform: [{ translateY: floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -6] }) }] }}>
+            <Poly size={72} mood={polyMood} />
+          </Animated.View>
+          <View style={styles.heroRight}>
+            <View style={styles.heroStreakRow}>
+              <Text style={styles.heroStreakNum}>{dayStreak}</Text>
+              <Text style={styles.heroStreakFlame}>🔥</Text>
+              <Text style={styles.heroStreakLabel}>dia{dayStreak === 1 ? '' : 's'}</Text>
+            </View>
+            <Text style={styles.heroMsg}>{heroMsg}</Text>
+          </View>
+        </View>
+
         {/* SRS review banner */}
         {reviewCount > 0 && !reviewDismissed && (
           <View style={styles.reviewBanner}>
@@ -365,6 +408,18 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
+  heroCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 16,
+    backgroundColor: C.brandLight, borderWidth: 1, borderColor: '#BBDDF5',
+    borderRadius: 14, paddingVertical: 16, paddingHorizontal: 18,
+    marginHorizontal: 20, marginTop: 14,
+  },
+  heroRight: { flex: 1 },
+  heroStreakRow: { flexDirection: 'row', alignItems: 'baseline', gap: 4 },
+  heroStreakNum: { fontFamily: 'serif', fontSize: 32, fontWeight: '800', color: C.brandDark },
+  heroStreakFlame: { fontSize: 20 },
+  heroStreakLabel: { fontFamily: 'serif', fontSize: 14, color: C.brandDark, fontWeight: '600' },
+  heroMsg: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, marginTop: 3, fontStyle: 'italic' },
   reviewBanner: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     backgroundColor: '#FFF8EC', borderWidth: 1, borderColor: '#E6C97A',

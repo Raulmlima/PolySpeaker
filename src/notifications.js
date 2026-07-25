@@ -11,8 +11,15 @@ export function initNotificationHandler() {
   });
 }
 
+function dateStr(d = new Date()) {
+  // Local date, not UTC — streaks and reminders follow the phone's day
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 function todayStr() {
-  return new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  return dateStr();
+}
+function yesterdayStr() {
+  return dateStr(new Date(Date.now() - 24 * 60 * 60 * 1000));
 }
 
 export async function requestNotificationPermission() {
@@ -23,99 +30,59 @@ export async function requestNotificationPermission() {
   return status === 'granted';
 }
 
-// Call this whenever a sentence is completed — marks today as practiced
+// Call this whenever a sentence is completed — marks today as practiced and
+// advances the daily streak (+1 if yesterday was practiced, restart at 1 otherwise).
 export async function markPracticedToday(getProfileFn, saveProfileFn) {
   try {
     const p = await getProfileFn();
     if (!p) return;
     const today = todayStr();
     if (p.lastPracticeDate === today) return; // already marked
-    await saveProfileFn({ ...p, lastPracticeDate: today });
-    // Cancel streak reminder for today — user already practiced
-    await cancelStreakReminderIfPracticed(today);
+    const dayStreak = p.lastPracticeDate === yesterdayStr() ? (p.dayStreak ?? 0) + 1 : 1;
+    await saveProfileFn({ ...p, lastPracticeDate: today, dayStreak });
   } catch (_) {}
 }
 
-// Cancels and reschedules streak reminder only if user hasn't practiced today
-async function cancelStreakReminderIfPracticed(today) {
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  for (const n of scheduled) {
-    if (n.content?.data?.screen === 'index') {
-      await Notifications.cancelScheduledNotificationAsync(n.identifier);
-    }
-  }
-  // Reschedule for tomorrow — user is done today
-  await Notifications.scheduleNotificationAsync({
-    identifier: 'streak-reminder',
-    content: {
-      title: 'Não perca sua sequência! 🔥',
-      body: 'Ainda dá tempo de praticar hoje. Só alguns minutos mantêm o ritmo.',
-      data: { screen: 'index' },
-    },
-    trigger: { type: 'daily', hour: 21, minute: 0 },
-  });
+// Returns the current daily streak, treating a missed day as broken (0).
+export function computeDayStreak(profile) {
+  if (!profile?.lastPracticeDate) return 0;
+  const d = profile.lastPracticeDate;
+  if (d === todayStr() || d === yesterdayStr()) return profile.dayStreak ?? 0;
+  return 0;
 }
 
-// Call on app open — if user already practiced today, silence the streak reminder
-export async function refreshStreakReminder(lastPracticeDate) {
+// THE single daily reminder — fires at 18:00 local time, one per day.
+// Body is picked from local data (reviews due > streak protection > generic),
+// and it's rescheduled on every app open / practice so the copy stays fresh.
+export async function scheduleDailyReminder({ reviewCount = 0, dayStreak = 0, practicedToday = false } = {}) {
   if (!Device.isDevice) return;
   const granted = await requestNotificationPermission().catch(() => false);
   if (!granted) return;
-  const today = todayStr();
-  if (lastPracticeDate === today) {
-    // Already practiced — make sure streak reminder won't fire today
-    // Re-schedule to tomorrow (repeats daily, so it's already set — no action needed)
-    return;
-  }
-  // Not practiced yet — ensure streak reminder is scheduled
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  const hasStreak = scheduled.some(n => n.identifier === 'streak-reminder');
-  if (!hasStreak) {
-    await Notifications.scheduleNotificationAsync({
-      identifier: 'streak-reminder',
-      content: {
-        title: 'Não perca sua sequência! 🔥',
-        body: 'Ainda dá tempo de praticar hoje. Só alguns minutos mantêm o ritmo.',
-        data: { screen: 'index' },
-      },
-      trigger: { type: 'daily', hour: 21, minute: 0 },
-    });
-  }
-}
 
-export async function scheduleSRSReminder() {
-  if (!Device.isDevice) return;
-  const granted = await requestNotificationPermission();
-  if (!granted) return;
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  const hasSRS = scheduled.some(n => n.identifier === 'srs-reminder');
-  if (hasSRS) return;
-  await Notifications.scheduleNotificationAsync({
-    identifier: 'srs-reminder',
-    content: {
-      title: 'Hora de revisar! 📚',
-      body: 'Você tem frases aguardando revisão. 10 minutos e sua memória agradece.',
-      data: { screen: 'review' },
-    },
-    trigger: { type: 'daily', hour: 20, minute: 0 },
-  });
-}
+  // Replace whatever was scheduled before (including legacy 20h/21h reminders)
+  await Notifications.cancelAllScheduledNotificationsAsync();
 
-export async function scheduleStreakReminder() {
-  if (!Device.isDevice) return;
-  const granted = await requestNotificationPermission();
-  if (!granted) return;
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  const hasStreak = scheduled.some(n => n.identifier === 'streak-reminder');
-  if (hasStreak) return;
+  // Next 18:00 local — today if still ahead and user hasn't practiced, else tomorrow
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 18, 0, 0);
+  if (now >= next || practicedToday) next.setDate(next.getDate() + 1);
+
+  let title, body;
+  if (reviewCount > 0) {
+    title = 'Revisão te esperando 📚';
+    body = `Você tem ${reviewCount} frase${reviewCount > 1 ? 's' : ''} pra fixar na memória — 2 minutinhos resolvem.`;
+  } else if (dayStreak >= 2) {
+    title = `Sequência de ${dayStreak} dias em jogo 🔥`;
+    body = 'Uma lição rápida hoje e o Poly continua sorrindo.';
+  } else {
+    title = 'O Poly sente sua falta 🤖';
+    body = 'Que tal alguns minutos de prática hoje?';
+  }
+
   await Notifications.scheduleNotificationAsync({
-    identifier: 'streak-reminder',
-    content: {
-      title: 'Não perca sua sequência! 🔥',
-      body: 'Ainda dá tempo de praticar hoje. Só alguns minutos mantêm o ritmo.',
-      data: { screen: 'index' },
-    },
-    trigger: { type: 'daily', hour: 21, minute: 0 },
+    identifier: 'daily-reminder',
+    content: { title, body, data: { screen: reviewCount > 0 ? 'review' : 'index' } },
+    trigger: { type: 'date', date: next },
   });
 }
 
