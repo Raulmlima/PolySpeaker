@@ -2,6 +2,160 @@ export const MODULES_FR_PART2 = [
   // ─── BÁSICO ──────────────────────────────────────────────────────────────────
 
   {
+    id: 'bas-fr-ir',
+    language: 'fr',
+    stage: 'Básico',
+    title: 'Verbos -ir e -re no presente',
+    subtitle: 'finir, choisir, vendre, prendre, faire, aller',
+    theory: `## Verbos em -ir (grupo do finir)
+
+| Pessoa | finir (terminar) | choisir (escolher) |
+|--------|------------------|--------------------|
+| je | fini**s** | choisi**s** |
+| tu | fini**s** | choisi**s** |
+| il/elle | fini**t** | choisi**t** |
+| nous | fini**ssons** | choisi**ssons** |
+| vous | fini**ssez** | choisi**ssez** |
+| ils/elles | fini**ssent** | choisi**ssent** |
+
+💡 A marca desse grupo é o **-ss-** nas formas do plural. Outros verbos comuns: grandir (crescer), réussir (conseguir), réfléchir (refletir).
+
+## Verbos em -re (grupo do vendre)
+
+| Pessoa | vendre (vender) | attendre (esperar) |
+|--------|-----------------|--------------------|
+| je | vend**s** | attend**s** |
+| tu | vend**s** | attend**s** |
+| il/elle | vend | attend |
+| nous | vend**ons** | attend**ons** |
+| vous | vend**ez** | attend**ez** |
+| ils/elles | vend**ent** | attend**ent** |
+
+⚠️ Na 3ª pessoa do singular **não há terminação**: il vend, elle attend. Outros: répondre (responder), entendre (ouvir), perdre (perder).
+
+## Irregulares essenciais
+
+| | aller (ir) | faire (fazer) | prendre (pegar/tomar) |
+|--|-----------|---------------|----------------------|
+| je | vais | fais | prends |
+| tu | vas | fais | prends |
+| il/elle | va | fait | prend |
+| nous | allons | faisons | prenons |
+| vous | allez | faites | prenez |
+| ils/elles | vont | font | prennent |
+
+💡 **prendre** cobre "tomar/pegar": prendre le bus (pegar o ônibus), prendre un café (tomar um café), prendre le petit-déjeuner (tomar café da manhã).
+
+### Erros comuns
+⚠️ Não aplique as terminações do -er aos outros grupos: "je finie" ✗ → "je finis" ✓
+⚠️ "faire" na forma vous é **faites** (não "faisez") — uma das poucas formas vous irregulares do francês.`,
+    exercises: [
+      {
+        sentences: [
+          { prompt: 'Eu termino o trabalho às seis.', answers: ['Je finis le travail à six heures.', 'Je termine le travail à six heures.'] },
+          { prompt: 'Nós escolhemos o vinho.', answers: ['Nous choisissons le vin.', 'On choisit le vin.'] },
+          { prompt: 'Eles terminam tarde.', answers: ['Ils finissent tard.', 'Elles finissent tard.'] },
+          { prompt: 'Você escolhe a sobremesa?', answers: ['Tu choisis le dessert ?', 'Vous choisissez le dessert ?'] },
+          { prompt: 'Ela consegue sempre.', answers: ['Elle réussit toujours.'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Ele vende a casa dele.', answers: ['Il vend sa maison.'] },
+          { prompt: 'Eu espero o ônibus.', answers: ["J'attends le bus."] },
+          { prompt: 'Nós respondemos à pergunta.', answers: ['Nous répondons à la question.', 'On répond à la question.'] },
+          { prompt: 'Vocês ouvem a música?', answers: ['Vous entendez la musique ?'] },
+          { prompt: 'Eles esperam há uma hora.', answers: ['Ils attendent depuis une heure.'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Eu vou ao trabalho de metrô.', answers: ['Je vais au travail en métro.'] },
+          { prompt: 'Nós vamos à praia.', answers: ['Nous allons à la plage.', 'On va à la plage.'] },
+          { prompt: 'O que você faz?', answers: ["Qu'est-ce que tu fais ?", 'Tu fais quoi ?', 'Que faites-vous ?'] },
+          { prompt: 'Eu tomo um café todas as manhãs.', answers: ['Je prends un café tous les matins.'] },
+          { prompt: 'Eles pegam o trem às oito.', answers: ['Ils prennent le train à huit heures.'] },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'bas-fr-neg',
+    language: 'fr',
+    stage: 'Básico',
+    title: 'Negação — ne … pas e companhia',
+    subtitle: 'ne…pas, ne…jamais, ne…rien, ne…personne, ne…plus',
+    theory: `## A negação básica: ne … pas
+
+A negação francesa é feita em **duas partes** que envolvem o verbo:
+
+**sujeito + ne + verbo + pas**
+
+| Afirmativo | Negativo |
+|-----------|----------|
+| Je parle français. | Je **ne** parle **pas** français. |
+| Elle aime le café. | Elle **n'**aime **pas** le café. |
+| Nous avons le temps. | Nous **n'**avons **pas** le temps. |
+
+💡 **ne** vira **n'** antes de vogal ou h mudo: je n'aime pas, il n'habite pas.
+
+⚠️ No francês **falado** informal o "ne" costuma cair: "Je sais pas" (não sei). Entenda quando ouvir, mas escreva sempre com o ne.
+
+## As outras negações
+
+| Estrutura | Significado | Exemplo |
+|-----------|-------------|---------|
+| ne … jamais | nunca | Je **ne** fume **jamais**. (Nunca fumo.) |
+| ne … rien | nada | Il **ne** mange **rien**. (Ele não come nada.) |
+| ne … personne | ninguém | Je **ne** vois **personne**. (Não vejo ninguém.) |
+| ne … plus | não … mais | Elle **ne** travaille **plus** ici. (Ela não trabalha mais aqui.) |
+| ne … que | só, apenas | Je **n'**ai **qu'**un frère. (Só tenho um irmão.) |
+
+## Artigo depois da negação
+
+Depois de pas, os artigos **un / une / du / de la / des** viram **de**:
+
+- J'ai **une** voiture. → Je n'ai pas **de** voiture.
+- Il boit **du** café. → Il ne boit pas **de** café.
+
+⚠️ Com o verbo **être** o artigo não muda: Ce n'est pas **une** bonne idée.
+
+### Erros comuns
+⚠️ Não use "pas" sozinho na escrita: "Je pas comprends" ✗ → "Je ne comprends pas" ✓
+⚠️ Rien e personne já são negativos — não adicione pas: "Je ne vois pas personne" ✗`,
+    exercises: [
+      {
+        sentences: [
+          { prompt: 'Eu não falo inglês.', answers: ['Je ne parle pas anglais.'] },
+          { prompt: 'Ela não gosta de café.', answers: ["Elle n'aime pas le café."] },
+          { prompt: 'Nós não temos tempo.', answers: ["Nous n'avons pas le temps.", "On n'a pas le temps."] },
+          { prompt: 'Ele não mora em Paris.', answers: ["Il n'habite pas à Paris."] },
+          { prompt: 'Vocês não trabalham hoje?', answers: ['Vous ne travaillez pas aujourd\'hui ?'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Eu nunca fumo.', answers: ['Je ne fume jamais.'] },
+          { prompt: 'Ele não come nada de manhã.', answers: ['Il ne mange rien le matin.'] },
+          { prompt: 'Eu não vejo ninguém.', answers: ['Je ne vois personne.'] },
+          { prompt: 'Ela não trabalha mais aqui.', answers: ['Elle ne travaille plus ici.'] },
+          { prompt: 'Eu só tenho um irmão.', answers: ["Je n'ai qu'un frère."] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Eu não tenho carro.', answers: ["Je n'ai pas de voiture."] },
+          { prompt: 'Ele não bebe café.', answers: ['Il ne boit pas de café.'] },
+          { prompt: 'Não há problema.', answers: ["Il n'y a pas de problème.", 'Pas de problème.'] },
+          { prompt: 'Não é uma boa ideia.', answers: ["Ce n'est pas une bonne idée."] },
+          { prompt: 'Eu não entendo.', answers: ['Je ne comprends pas.'] },
+        ],
+      },
+    ],
+  },
+
+  {
     id: 'bas-fr-pc',
     language: 'fr',
     stage: 'Básico',
@@ -523,6 +677,148 @@ Da mais informal/falada à mais formal/escrita:
   // ─── AVANÇADO ─────────────────────────────────────────────────────────────────
 
   {
+    id: 'int-fr-comp',
+    language: 'fr',
+    stage: 'Intermediário',
+    title: 'Comparativos e superlativos',
+    subtitle: 'plus…que, moins…que, aussi…que, le meilleur',
+    theory: `## Comparativo
+
+| Estrutura | Significado | Exemplo |
+|-----------|-------------|---------|
+| **plus** + adj + **que** | mais … que | Paul est **plus** grand **que** Marie. |
+| **moins** + adj + **que** | menos … que | Ce film est **moins** intéressant **que** l'autre. |
+| **aussi** + adj + **que** | tão … quanto | Elle est **aussi** intelligente **que** lui. |
+
+Com **substantivos** usa-se de: plus **de**, moins **de**, autant **de**:
+- J'ai **plus de** travail **que** toi. (Tenho mais trabalho que você.)
+- Il a **autant d'**amis **que** moi. (Ele tem tantos amigos quanto eu.)
+
+## Superlativo
+
+**le/la/les + plus/moins + adjetivo**
+
+- C'est **le plus** beau musée de Paris. (É o museu mais bonito de Paris.)
+- C'est **la moins** chère. (É a mais barata.)
+
+💡 "de" depois do superlativo = "de/do" do português: le plus grand **du** monde (o maior **do** mundo).
+
+## Irregulares
+
+| Adjetivo | Comparativo | Superlativo |
+|----------|-------------|-------------|
+| bon (bom) | **meilleur** (melhor) | **le meilleur** (o melhor) |
+| mauvais (ruim) | **pire** / plus mauvais | **le pire** (o pior) |
+| bien (bem, advérbio) | **mieux** (melhor) | **le mieux** |
+
+⚠️ A dupla que confunde: **meilleur** é adjetivo (Ce café est meilleur), **mieux** é advérbio (Je vais mieux / Il chante mieux). Nunca "plus bon" nem "plus bien".
+
+### Erros comuns
+⚠️ "plus bon" ✗ → **meilleur** ✓
+⚠️ O adjetivo continua concordando: elle est plus grand**e**, les meilleur**es** équipes.`,
+    exercises: [
+      {
+        sentences: [
+          { prompt: 'Paul é mais alto que Marie.', answers: ['Paul est plus grand que Marie.'] },
+          { prompt: 'Este filme é menos interessante que o outro.', answers: ["Ce film est moins intéressant que l'autre."] },
+          { prompt: 'Ela é tão inteligente quanto ele.', answers: ['Elle est aussi intelligente que lui.'] },
+          { prompt: 'O metrô é mais rápido que o ônibus.', answers: ['Le métro est plus rapide que le bus.'] },
+          { prompt: 'Eu tenho mais trabalho que você.', answers: ["J'ai plus de travail que toi."] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'É o museu mais bonito de Paris.', answers: ['C\'est le plus beau musée de Paris.'] },
+          { prompt: 'Ela é a mais jovem da família.', answers: ['Elle est la plus jeune de la famille.'] },
+          { prompt: 'É o restaurante menos caro do bairro.', answers: ['C\'est le restaurant le moins cher du quartier.'] },
+          { prompt: 'É o maior país do mundo.', answers: ['C\'est le plus grand pays du monde.'] },
+          { prompt: 'São os melhores alunos.', answers: ['Ce sont les meilleurs élèves.', 'Ce sont les meilleurs étudiants.'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Este café é melhor.', answers: ['Ce café est meilleur.'] },
+          { prompt: 'Eu estou melhor hoje.', answers: ['Je vais mieux aujourd\'hui.'] },
+          { prompt: 'Ela canta melhor que eu.', answers: ['Elle chante mieux que moi.'] },
+          { prompt: 'É o pior dia da minha vida.', answers: ['C\'est le pire jour de ma vie.'] },
+          { prompt: 'É a melhor solução.', answers: ['C\'est la meilleure solution.'] },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'int-fr-yen',
+    language: 'fr',
+    stage: 'Intermediário',
+    title: 'Os pronomes y e en',
+    subtitle: 'j\'y vais, j\'en veux — os dois pronomes que os franceses usam o tempo todo',
+    theory: `## O pronome y — "lá / nisso"
+
+**y** substitui um **lugar** (à/en/dans + lugar) ou um complemento com **à**:
+
+| Frase completa | Com y |
+|----------------|-------|
+| Je vais **à Paris**. | J'**y** vais. (Eu vou lá.) |
+| Elle habite **en France**. | Elle **y** habite. (Ela mora lá.) |
+| Je pense **à mon avenir**. | J'**y** pense. (Penso nisso.) |
+
+💡 A expressão mais famosa do francês: **On y va !** (Vamos!) · **Allons-y !** (Vamos lá!)
+
+## O pronome en — "disso / delas"
+
+**en** substitui um complemento com **de** — quantidades, partitivos (du/de la/des):
+
+| Frase completa | Com en |
+|----------------|--------|
+| Tu veux **du café** ? | Tu **en** veux ? (Você quer (disso)?) |
+| J'ai **trois sœurs**. | J'**en** ai trois. (Tenho três (delas).) |
+| Il parle **de son travail**. | Il **en** parle. (Ele fala disso.) |
+
+⚠️ Com números, o **en é obrigatório** onde o português não usa nada: "Tenho três" → "J'**en** ai trois" (nunca "J'ai trois" sozinho).
+
+## Posição
+
+Como os outros pronomes objeto, **y** e **en** vêm **antes do verbo**:
+- J'y vais demain. · Je n'en veux pas. · Il y en a deux. (Há dois.)
+
+💡 **il y a** (há/tem) já contém o y! E "il y en a" = "tem (disso)".
+
+### Erros comuns
+⚠️ Não traduza "lá" por là nesses casos: "Je vais là" soa estranho para "eu vou lá (a esse lugar já citado)" — o natural é **J'y vais**.
+⚠️ Resposta curta a "Tu as des enfants ?" é "Oui, j'**en** ai deux" — nunca "j'ai deux".`,
+    exercises: [
+      {
+        sentences: [
+          { prompt: 'Eu vou lá amanhã.', answers: ["J'y vais demain."] },
+          { prompt: 'Vamos! (bora!)', answers: ['On y va !', 'Allons-y !'] },
+          { prompt: 'Ela mora lá há dois anos.', answers: ['Elle y habite depuis deux ans.'] },
+          { prompt: 'Eu penso nisso frequentemente.', answers: ["J'y pense souvent."] },
+          { prompt: 'Nós vamos lá de trem.', answers: ['Nous y allons en train.', 'On y va en train.'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Você quer? (café, já mencionado)', answers: ['Tu en veux ?', 'Vous en voulez ?'] },
+          { prompt: 'Eu tenho três. (irmãs)', answers: ["J'en ai trois."] },
+          { prompt: 'Ele fala disso o tempo todo.', answers: ['Il en parle tout le temps.'] },
+          { prompt: 'Eu não quero mais. (disso)', answers: ["Je n'en veux plus."] },
+          { prompt: 'Você tem filhos? — Sim, tenho dois.', answers: ["Tu as des enfants ? — Oui, j'en ai deux.", "Oui, j'en ai deux."] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Tem dois. (na mesa, disso)', answers: ['Il y en a deux.'] },
+          { prompt: 'Não tem mais. (disso)', answers: ["Il n'y en a plus."] },
+          { prompt: 'Eu venho de lá.', answers: ["J'en viens."] },
+          { prompt: 'Precisamos disso.', answers: ['Nous en avons besoin.', 'On en a besoin.'] },
+          { prompt: 'Eu vou pensar nisso.', answers: ['Je vais y penser.', "J'y penserai."] },
+        ],
+      },
+    ],
+  },
+
+  {
     id: 'adv-fr-1',
     language: 'fr',
     stage: 'Avançado',
@@ -873,7 +1169,7 @@ O francês falado está cheio de idiomáticas que não se traduzem literalmente 
   {
     id: 'rev-int-fr', stage: 'Intermediário', language: 'fr', order: 99, isReview: true,
     title: 'Révision — Intermédiaire',
-    subtitle: 'Subjonctif, imparfait, pronomes e passiva',
+    subtitle: 'Imparfait, conditionnel, comparativos, pronomes objeto, y e en',
     theory: null,
     exercises: [
       {

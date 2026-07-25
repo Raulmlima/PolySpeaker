@@ -404,6 +404,89 @@ Os verbos terminados em **-er** formam o maior grupo de verbos regulares do fran
       },
     ],
   },
+  {
+    id: 'fund-fr-6',
+    language: 'fr',
+    stage: 'Fundamentos',
+    title: 'Saudações e expressões do cotidiano',
+    subtitle: 'bonjour, ça va, merci, s\'il vous plaît',
+    theory: `## Saudações
+
+| Português | Francês | Quando usar |
+|-----------|---------|-------------|
+| bom dia / boa tarde | bonjour | até o anoitecer — a saudação universal |
+| boa noite (chegando) | bonsoir | ao anoitecer |
+| boa noite (despedindo, indo dormir) | bonne nuit | só antes de dormir |
+| oi | salut | informal, entre amigos |
+| tchau | au revoir | padrão |
+| até logo | à bientôt | despedida amistosa |
+| até amanhã | à demain | |
+
+⚠️ **bonne nuit** não é como o nosso "boa noite" de chegada — é exclusivamente de despedida antes de dormir. Ao entrar num restaurante à noite, diga **bonsoir**.
+
+## Como vai?
+
+| Pergunta | Registro |
+|----------|----------|
+| Comment allez-vous ? | formal |
+| Comment ça va ? / Ça va ? | informal |
+
+Respostas: **Ça va bien, merci.** (vou bem, obrigado) · **Très bien !** (muito bem) · **Comme ci, comme ça.** (mais ou menos)
+
+💡 "Ça va ?" também é a resposta: — Ça va ? — Ça va ! (— Tudo bem? — Tudo!)
+
+## Polidez essencial
+
+| Português | Francês |
+|-----------|---------|
+| por favor (formal) | s'il vous plaît |
+| por favor (informal) | s'il te plaît |
+| obrigado(a) | merci / merci beaucoup |
+| de nada | de rien / je vous en prie |
+| com licença / desculpe | excusez-moi / pardon |
+| desculpa (informal) | désolé(e) |
+
+## Apresentações
+
+- **Je m'appelle…** — Eu me chamo…
+- **Comment vous appelez-vous ?** — Como o senhor se chama? (formal)
+- **Tu t'appelles comment ?** — Como você se chama? (informal)
+- **Enchanté(e) !** — Prazer em conhecer!
+- **J'habite à…** — Eu moro em…
+
+### Erros comuns
+⚠️ Os franceses usam **vous** (formal) com desconhecidos por padrão — usar "tu" com um atendente soa rude. Na dúvida, vous.`,
+    exercises: [
+      {
+        sentences: [
+          { prompt: 'Bom dia! Como vai o senhor?', answers: ['Bonjour ! Comment allez-vous ?', 'Bonjour, comment allez-vous ?'] },
+          { prompt: 'Oi, tudo bem?', answers: ['Salut, ça va ?', 'Salut ! Ça va ?'] },
+          { prompt: 'Vou bem, obrigado.', answers: ['Ça va bien, merci.', 'Je vais bien, merci.'] },
+          { prompt: 'Boa noite! (chegando ao restaurante)', answers: ['Bonsoir !', 'Bonsoir.'] },
+          { prompt: 'Boa noite, durma bem!', answers: ['Bonne nuit, dors bien !', 'Bonne nuit !'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Eu me chamo Pierre.', answers: ["Je m'appelle Pierre."] },
+          { prompt: 'Como você se chama?', answers: ["Tu t'appelles comment ?", "Comment tu t'appelles ?", 'Comment vous appelez-vous ?'] },
+          { prompt: 'Prazer em conhecer!', answers: ['Enchanté !', 'Enchantée !'] },
+          { prompt: 'Eu moro em Paris.', answers: ["J'habite à Paris."] },
+          { prompt: 'Até amanhã!', answers: ['À demain !'] },
+        ],
+      },
+      {
+        sentences: [
+          { prompt: 'Um café, por favor.', answers: ["Un café, s'il vous plaît.", "Un café s'il vous plaît."] },
+          { prompt: 'Muito obrigado!', answers: ['Merci beaucoup !'] },
+          { prompt: 'De nada.', answers: ['De rien.', 'Je vous en prie.'] },
+          { prompt: 'Com licença, onde fica a estação?', answers: ['Excusez-moi, où est la gare ?', 'Pardon, où est la gare ?'] },
+          { prompt: 'Desculpa, estou atrasado.', answers: ['Désolé, je suis en retard.', 'Désolée, je suis en retard.'] },
+        ],
+      },
+    ],
+  },
+
   // ─── Revisão Fundamentos ────────────────────────────────────────────────
   {
     id: 'rev-fund-fr', stage: 'Fundamentos', language: 'fr', order: 99, isReview: true,
