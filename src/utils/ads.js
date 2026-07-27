@@ -1,8 +1,10 @@
 // AdMob — banner + interstitial. The native module only exists in dev/standalone
 // builds, so everything is lazily required and fails silent in Expo Go.
 //
-// Currently using Google's TestIds — swap for real ad unit IDs (AD_UNITS below)
-// once the AdMob account is created.
+// iOS uses real AdMob ad units; Android still uses Google TestIds until the
+// Android app is registered in the AdMob console (then swap below).
+import { Platform } from 'react-native';
+
 let ads = null;
 try {
   ads = require('react-native-google-mobile-ads');
@@ -10,10 +12,15 @@ try {
 
 export const adsAvailable = !!ads;
 
-export const AD_UNITS = {
-  banner: ads?.TestIds?.BANNER,
-  interstitial: ads?.TestIds?.INTERSTITIAL,
-};
+export const AD_UNITS = Platform.OS === 'ios'
+  ? {
+      banner: 'ca-app-pub-4015503697268177/6188346815',
+      interstitial: 'ca-app-pub-4015503697268177/3562183471',
+    }
+  : {
+      banner: ads?.TestIds?.BANNER,
+      interstitial: ads?.TestIds?.INTERSTITIAL,
+    };
 
 let initialized = false;
 export async function initAds() {
