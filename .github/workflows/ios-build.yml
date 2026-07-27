@@ -29,6 +29,14 @@ jobs:
       - name: Install CocoaPods
         run: cd ios && pod install --repo-update
 
+      - name: Set unique build number
+        # CFBundleVersion must increase on every TestFlight upload — derive it
+        # from the workflow run number (offset keeps it above old manual builds)
+        run: |
+          BUILD_NUM=$((100 + GITHUB_RUN_NUMBER))
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUM" ios/PolySpeaker/Info.plist
+          echo "Build number set to $BUILD_NUM"
+
       - name: Install certificate and provisioning profile
         env:
           P12_BASE64: ${{ secrets.IOS_DIST_P12_BASE64 }}
