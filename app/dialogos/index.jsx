@@ -5,6 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { getDialogosForLang } from '../../src/data/dialogos';
 import { LANGUAGES, LANGUAGE_GROUPS } from '../../src/storage';
 import { C } from '../../src/theme';
+import TabBar from '../../src/components/TabBar';
 
 const LEVELS = ['basico', 'intermediario', 'avancado', 'fluente'];
 
@@ -20,12 +21,7 @@ export default function DialogosScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-          <Text style={styles.backBtnText}>← Voltar</Text>
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>Diálogos Reais</Text>
-        <View style={{ width: 70 }} />
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.intro}>
@@ -50,6 +46,7 @@ export default function DialogosScreen() {
         })}
         <View style={{ height: 40 }} />
       </ScrollView>
+      <TabBar active="dialogos" lang={activeLang} />
     </SafeAreaView>
   );
 }
@@ -57,20 +54,20 @@ export default function DialogosScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
   header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14,
     borderBottomWidth: 1, borderBottomColor: C.border,
   },
   backBtn: { minWidth: 70 },
-  backBtnText: { fontFamily: 'serif', fontSize: 14, color: C.accent },
-  headerTitle: { fontFamily: 'serif', fontSize: 17, fontWeight: '700', color: C.text },
+  backBtnText: { fontSize: 14, color: C.accent },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: C.text },
   scroll: { padding: 20 },
-  intro: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, fontStyle: 'italic', marginBottom: 20, lineHeight: 20 },
+  intro: { fontSize: 13, color: C.textMuted, fontStyle: 'italic', marginBottom: 20, lineHeight: 20 },
   levelCard: {
     backgroundColor: C.bgAlt, borderWidth: 1, borderColor: C.border,
     borderRadius: 10, padding: 18, marginBottom: 12,
   },
-  levelLabel: { fontFamily: 'serif', fontSize: 18, fontWeight: '700', color: C.text, marginBottom: 4 },
-  levelDesc: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, fontStyle: 'italic', marginBottom: 8 },
-  levelCount: { fontFamily: 'serif', fontSize: 11, color: C.accent },
+  levelLabel: { fontSize: 18, fontWeight: '700', color: C.text, marginBottom: 4 },
+  levelDesc: { fontSize: 13, color: C.textMuted, fontStyle: 'italic', marginBottom: 8 },
+  levelCount: { fontSize: 11, color: C.accent },
 });

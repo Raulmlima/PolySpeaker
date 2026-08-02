@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
     borderBottomColor: C.border,
   },
   headerTitle: {
-    fontFamily: 'serif',
     fontSize: 18,
     color: C.text,
     fontWeight: '600',
@@ -218,8 +217,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 13,
     color: C.textMuted,
-    fontFamily: 'serif',
-  },
+    },
   tabTextActive: {
     color: C.accent,
     fontWeight: '600',
@@ -236,7 +234,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontFamily: 'serif',
     fontSize: 15,
     color: C.text,
     backgroundColor: C.bgAlt,
@@ -249,7 +246,6 @@ const styles = StyleSheet.create({
   },
   searchBtnText: {
     color: '#fff',
-    fontFamily: 'serif',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -259,7 +255,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: C.incorrect,
-    fontFamily: 'serif',
     fontSize: 14,
     marginTop: 16,
     textAlign: 'center',
@@ -268,13 +263,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   dictWord: {
-    fontFamily: 'serif',
     fontSize: 22,
     fontWeight: '700',
     color: C.text,
   },
   dictPhonetic: {
-    fontFamily: 'serif',
     fontSize: 14,
     color: C.textMuted,
     marginBottom: 8,
@@ -283,7 +276,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dictPartOfSpeech: {
-    fontFamily: 'serif',
     fontSize: 12,
     fontStyle: 'italic',
     color: C.accent,
@@ -295,13 +287,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   dictDefText: {
-    fontFamily: 'serif',
     fontSize: 14,
     color: C.text,
     lineHeight: 20,
   },
   dictExample: {
-    fontFamily: 'serif',
     fontSize: 13,
     color: C.textMuted,
     fontStyle: 'italic',
@@ -320,13 +310,11 @@ const styles = StyleSheet.create({
     borderBottomColor: C.border,
   },
   tenseName: {
-    fontFamily: 'serif',
     fontSize: 15,
     fontWeight: '700',
     color: C.text,
   },
   tenseDesc: {
-    fontFamily: 'serif',
     fontSize: 12,
     color: C.textMuted,
     marginTop: 2,
@@ -356,13 +344,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   verbInfinitive: {
-    fontFamily: 'serif',
     fontSize: 15,
     fontWeight: '700',
     color: '#fff',
   },
   verbMeaning: {
-    fontFamily: 'serif',
     fontSize: 12,
     color: 'rgba(255,255,255,0.8)',
     fontStyle: 'italic',
@@ -377,13 +363,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.03)',
   },
   verbPronoun: {
-    fontFamily: 'serif',
     fontSize: 13,
     color: C.textMuted,
     width: 100,
   },
   verbForm: {
-    fontFamily: 'serif',
     fontSize: 14,
     fontWeight: '600',
     color: C.text,

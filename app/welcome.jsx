@@ -353,20 +353,20 @@ const sl = StyleSheet.create({
   slide1: { flex: 1 },
   logoWrapBottom: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 120, gap: 12 },
   logoBig: { width: 140, height: 140, opacity: 0.92 },
-  polyCaption: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, fontStyle: 'italic', textAlign: 'center' },
+  polyCaption: { fontSize: 13, color: C.textMuted, fontStyle: 'italic', textAlign: 'center' },
   tag: {
-    fontFamily: 'serif', fontSize: 10, fontWeight: '700', color: C.accent,
+    fontSize: 10, fontWeight: '700', color: C.accent,
     letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14,
   },
   h1: {
-    fontFamily: 'serif', fontSize: 30, fontWeight: '700', color: C.text,
+    fontSize: 30, fontWeight: '700', color: C.text,
     lineHeight: 38, marginBottom: 18,
   },
   body: {
-    fontFamily: 'serif', fontSize: 15, color: C.textMuted, lineHeight: 24, marginBottom: 20,
+    fontSize: 15, color: C.textMuted, lineHeight: 24, marginBottom: 20,
   },
   bodySm: {
-    fontFamily: 'serif', fontSize: 14, color: C.textMuted, lineHeight: 22, marginTop: 12,
+    fontSize: 14, color: C.textMuted, lineHeight: 22, marginTop: 12,
   },
   bold: { fontWeight: '700', color: C.text },
   italic: { fontStyle: 'italic' },
@@ -379,10 +379,10 @@ const sl = StyleSheet.create({
     borderRadius: 8, padding: 16,
   },
   studyLabel: {
-    fontFamily: 'serif', fontSize: 10, fontWeight: '700', color: C.accent,
+    fontSize: 10, fontWeight: '700', color: C.accent,
     letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8,
   },
-  studyText: { fontFamily: 'serif', fontSize: 13, color: C.text, lineHeight: 20 },
+  studyText: { fontSize: 13, color: C.text, lineHeight: 20 },
 
   // Slide 3 — trilha
   stageList: { gap: 0, marginTop: 4 },
@@ -394,22 +394,22 @@ const sl = StyleSheet.create({
     backgroundColor: C.border, zIndex: 1,
   },
   stageInfo: { flex: 1, paddingLeft: 12, paddingBottom: 16 },
-  stageName: { fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: C.text },
-  stageDesc: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, marginTop: 2 },
+  stageName: { fontSize: 15, fontWeight: '700', color: C.text },
+  stageDesc: { fontSize: 13, color: C.textMuted, marginTop: 2 },
 
   // Slide 4 — idioma
   langHintBox: {
     backgroundColor: '#FFFBEA', borderWidth: 1, borderColor: '#C8A800',
     borderRadius: 8, padding: 12, marginBottom: 20,
   },
-  langHint: { fontFamily: 'serif', fontSize: 13, color: '#5A4000', lineHeight: 19 },
+  langHint: { fontSize: 13, color: '#5A4000', lineHeight: 19 },
   groupBlock: { marginBottom: 8 },
   groupHeader: {
-    fontFamily: 'serif', fontSize: 11, fontWeight: '700', color: C.accent,
+    fontSize: 11, fontWeight: '700', color: C.accent,
     textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 12, marginBottom: 2,
   },
   groupSub: {
-    fontFamily: 'serif', fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginBottom: 8,
+    fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginBottom: 8,
   },
   langList: { gap: 8 },
   langCard: {
@@ -419,13 +419,13 @@ const sl = StyleSheet.create({
   langCardSelected: { borderColor: C.accent, backgroundColor: C.accentLight },
   langCardDisabled: { opacity: 0.45 },
   langRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  langLabel: { fontFamily: 'serif', fontSize: 17, fontWeight: '700', color: C.text },
+  langLabel: { fontSize: 17, fontWeight: '700', color: C.text },
   langLabelDim: { color: C.textMuted },
   soonBadge: {
     paddingHorizontal: 8, paddingVertical: 2,
     borderWidth: 1, borderColor: C.border, borderRadius: 10,
   },
-  soonText: { fontFamily: 'serif', fontSize: 10, color: C.textMuted },
+  soonText: { fontSize: 10, color: C.textMuted },
   checkMark: { fontSize: 18, color: C.accent, fontWeight: '700' },
 
   // Slide 5 — evolução
@@ -435,12 +435,12 @@ const sl = StyleSheet.create({
     borderRadius: 8, padding: 16, marginBottom: 24,
   },
   placementTitle: {
-    fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: C.accent,
+    fontSize: 14, fontWeight: '700', color: C.accent,
     marginBottom: 8,
   },
-  placementText: { fontFamily: 'serif', fontSize: 13, color: C.text, lineHeight: 20 },
+  placementText: { fontSize: 13, color: C.text, lineHeight: 20 },
   freqTitle: {
-    fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: C.text,
+    fontSize: 15, fontWeight: '700', color: C.text,
     marginBottom: 12,
   },
   freqList: { gap: 8 },
@@ -455,19 +455,19 @@ const sl = StyleSheet.create({
     borderWidth: 2, borderColor: C.border, backgroundColor: '#fff',
   },
   freqDotSelected: { borderColor: C.accent, backgroundColor: C.accent },
-  freqLabel: { fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: C.text },
+  freqLabel: { fontSize: 15, fontWeight: '700', color: C.text },
   freqLabelSelected: { color: C.accent },
-  freqDesc: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, marginLeft: 24 },
+  freqDesc: { fontSize: 12, color: C.textMuted, marginLeft: 24 },
   // milestone slide
   milestoneList: { marginTop: 8, gap: 12 },
   milestoneRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   milestoneLeft: { alignItems: 'center', minWidth: 52 },
-  milestoneWeeks: { fontFamily: 'serif', fontSize: 10, color: C.accent, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' },
+  milestoneWeeks: { fontSize: 10, color: C.accent, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' },
   milestoneIcon: { fontSize: 22, marginTop: 2 },
   milestoneDivider: { width: 1, backgroundColor: C.border, alignSelf: 'stretch', marginHorizontal: 4 },
   milestoneRight: { flex: 1, paddingBottom: 8 },
-  milestoneTitle: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: C.text, marginBottom: 2 },
-  milestoneDesc: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, lineHeight: 18 },
+  milestoneTitle: { fontSize: 14, fontWeight: '700', color: C.text, marginBottom: 2 },
+  milestoneDesc: { fontSize: 12, color: C.textMuted, lineHeight: 18 },
 });
 
 // ─── Estilos da tela ──────────────────────────────────────────────────────
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24, paddingVertical: 12,
   },
   backBtn: { paddingVertical: 14, paddingRight: 16 },
-  backBtnText: { fontFamily: 'serif', fontSize: 15, color: C.textMuted },
+  backBtnText: { fontSize: 15, color: C.textMuted },
   nextBtn: {
     backgroundColor: C.accent, borderRadius: 8,
     paddingVertical: 14, paddingHorizontal: 28,
@@ -492,10 +492,10 @@ const styles = StyleSheet.create({
   nextBtnBlocked: { backgroundColor: C.border },
   finishBtn: { flex: 1 },
   nextBtnText: {
-    fontFamily: 'serif', fontSize: 16, fontWeight: '700', color: '#fff',
+    fontSize: 16, fontWeight: '700', color: '#fff',
     textAlign: 'center',
   },
   nextBtnTextBlocked: { color: C.textMuted },
   skipBtn: { alignItems: 'center', paddingBottom: 12 },
-  skipBtnText: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, textDecorationLine: 'underline' },
+  skipBtnText: { fontSize: 13, color: C.textMuted, textDecorationLine: 'underline' },
 });

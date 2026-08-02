@@ -11,8 +11,10 @@ import { getModulesForLang, STAGES, getTotalSentences } from '../src/data/module
 import { getAllProgress, getReviewCount } from '../src/db/database';
 import { scheduleDailyReminder, computeDayStreak } from '../src/notifications';
 import { getProfile, saveProfile, updateWeekStreak, LANGUAGES, getOrderedLanguageGroups, getLevels, getStageLabel, getStageDesc } from '../src/storage';
-import { C } from '../src/theme';
+import { C, cardShadow } from '../src/theme';
 import Poly from '../src/components/Poly';
+import ProgressRing from '../src/components/ProgressRing';
+import TabBar from '../src/components/TabBar';
 import AdBanner from '../src/components/AdBanner';
 import { initAds, prepareInterstitial } from '../src/utils/ads';
 
@@ -46,9 +48,7 @@ export default function HomeScreen() {
   const [placementOffer, setPlacementOffer] = useState(false);
   const [openStage, setOpenStage] = useState(null);
   const [reviewCount, setReviewCount] = useState(0);
-  const [reviewDismissed, setReviewDismissed] = useState(false);
   const scrollRef = useRef(null);
-  const variadosY = useRef(0);
   const floatAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -91,7 +91,6 @@ export default function HomeScreen() {
       setProfile(withStreak);
       const cnt = await getReviewCount(db).catch(() => 0);
       setReviewCount(cnt);
-      setReviewDismissed(false);
       const todayLocal = new Date();
       const todayKey = `${todayLocal.getFullYear()}-${String(todayLocal.getMonth() + 1).padStart(2, '0')}-${String(todayLocal.getDate()).padStart(2, '0')}`;
       scheduleDailyReminder({
@@ -141,25 +140,32 @@ export default function HomeScreen() {
       ? `Pratique hoje pra manter ${dayStreak} dia${dayStreak > 1 ? 's' : ''} de sequência`
       : 'Comece uma sequência hoje!';
 
+  // "Continue" card — first unfinished non-review module across the track
+  let nextModule = null;
+  let nextModuleStage = null;
+  for (const stage of STAGES) {
+    for (const m of modulesByStage[stage] ?? []) {
+      if (m.isReview) continue;
+      const total = getTotalSentences(m);
+      if (total === 0) continue;
+      if ((progressMap[m.id] ?? 0) < total) { nextModule = m; nextModuleStage = stage; break; }
+    }
+    if (nextModule) break;
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
       <View style={styles.topBar}>
-        {/* Linha 1: marca + streak/nível */}
         <View style={styles.topRow1}>
           <View style={styles.appTitleRow}>
             <Poly size={26} mood="happy" />
             <Text style={styles.appTitle}>PolySpeaker</Text>
           </View>
-          <TouchableOpacity style={styles.profilePill} onPress={() => router.push('/profile')} activeOpacity={0.75}>
-            {dayStreak > 0 && (
-              <Text style={styles.streakPillText}>{dayStreak}🔥</Text>
-            )}
-            {levelLabel ? <Text style={styles.levelPillText}>{levelLabel}</Text> : null}
-            <Text style={styles.pillChevron}>›</Text>
-          </TouchableOpacity>
+          {levelLabel ? (
+            <View style={styles.levelPill}><Text style={styles.levelPillText}>{levelLabel}</Text></View>
+          ) : null}
         </View>
-        {/* Linha 2: trilha ativa + teoria */}
         <View style={styles.topRow2}>
           <TouchableOpacity onPress={() => setLangModal(true)} activeOpacity={0.7} style={styles.langPairBtn}>
             <Text style={styles.langPair}>{
@@ -181,7 +187,7 @@ export default function HomeScreen() {
         {/* Hero: Poly emocional + streak diário */}
         <View style={styles.heroCard}>
           <Animated.View style={{ transform: [{ translateY: floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -6] }) }] }}>
-            <Poly size={72} mood={polyMood} />
+            <Poly size={64} mood={polyMood} />
           </Animated.View>
           <View style={styles.heroRight}>
             <View style={styles.heroStreakRow}>
@@ -193,23 +199,22 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* SRS review banner */}
-        {reviewCount > 0 && !reviewDismissed && (
-          <View style={styles.reviewBanner}>
-            <View style={styles.reviewBannerLeft}>
-              <Text style={styles.reviewBannerTitle}>📚 {reviewCount} frase{reviewCount > 1 ? 's' : ''} para revisar</Text>
-              <Text style={styles.reviewBannerSub}>Revisão espaçada — fixe o que você errou</Text>
+        {/* Continuar de onde parou */}
+        {nextModule && (
+          <TouchableOpacity style={styles.continueCard} activeOpacity={0.85}
+            onPress={() => router.push(`/exercise/${nextModule.id}`)}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.continueLabel}>CONTINUE DE ONDE PAROU</Text>
+              <Text style={styles.continueTitle} numberOfLines={1}>{nextModule.title}</Text>
+              <Text style={styles.continueStage}>{getStageLabel(nextModuleStage, uiGroup)}</Text>
             </View>
-            <View style={styles.reviewBannerActions}>
-              <TouchableOpacity style={styles.reviewBannerBtn} onPress={() => router.push('/review')}>
-                <Text style={styles.reviewBannerBtnText}>Revisar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setReviewDismissed(true)} hitSlop={{top:10,bottom:10,left:10,right:10}}>
-                <Text style={styles.reviewBannerDismiss}>✕</Text>
-              </TouchableOpacity>
+            <View style={styles.continueBtn}>
+              <Text style={styles.continueBtnText}>▶</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
+
+        {/* Trilha — etapas como marcos com módulos em linha vertical */}
         {STAGES.map(stage => {
           const stageMods = modulesByStage[stage];
           if (!stageMods?.length) return null;
@@ -218,28 +223,32 @@ export default function HomeScreen() {
           const stagePct = stageTotal > 0 ? stageDone / stageTotal : 0;
           const isVariados = stage === 'Variados';
           const isOpen = isVariados || openStage === stage;
+
+          // First unfinished non-review module of this stage = the "current" node
+          const currentId = stageMods.find(m => {
+            if (m.isReview) return false;
+            const t = getTotalSentences(m);
+            return t > 0 && (progressMap[m.id] ?? 0) < t;
+          })?.id;
+
+          const nonReviewMods = stageMods.filter(m => !m.isReview && getTotalSentences(m) > 0);
+          const allNonReviewDone = nonReviewMods.length > 0 && nonReviewMods.every(m => (progressMap[m.id] ?? 0) >= getTotalSentences(m));
+
           return (
-            <View key={stage} style={styles.stageSection}
-              onLayout={isVariados ? e => { variadosY.current = e.nativeEvent.layout.y; } : undefined}>
+            <View key={stage} style={styles.stageSection}>
               <TouchableOpacity
-                activeOpacity={isVariados ? 1 : 0.7}
+                activeOpacity={isVariados ? 1 : 0.75}
                 onPress={isVariados ? undefined : () => setOpenStage(s => s === stage ? null : stage)}
                 style={styles.stageHeader}>
-                <View style={{ flex: 1 }}>
+                <ProgressRing pct={stagePct} size={44} stroke={4.5} />
+                <View style={styles.stageHeaderMid}>
                   <View style={styles.stageTitleRow}>
                     <Text style={styles.stageTitle}>{getStageLabel(stage, uiGroup)}</Text>
-                    {stageTotal > 0 && stagePct >= 1 && (
-                      <View style={styles.stageDoneBadge}>
-                        <Text style={styles.stageDoneBadgeText}>✓</Text>
-                      </View>
-                    )}
+                    {stagePct >= 1 && stageTotal > 0 && <Text style={styles.stageMedal}>🏅</Text>}
                   </View>
-                  <Text style={styles.stageDesc}>{getStageDesc(stage, uiGroup)}</Text>
+                  <Text style={styles.stageDesc} numberOfLines={1}>{getStageDesc(stage, uiGroup)}</Text>
                 </View>
                 <View style={styles.stageRight}>
-                  {stageTotal > 0 && (
-                    <Text style={styles.stagePct}>{stagePct >= 1 ? 'Completo' : `${Math.round(stagePct * 100)}%`}</Text>
-                  )}
                   {!isVariados && (
                     <TouchableOpacity
                       style={styles.theoryTagBtn}
@@ -252,83 +261,73 @@ export default function HomeScreen() {
                   )}
                 </View>
               </TouchableOpacity>
-              {isOpen && <View style={styles.stageDivider} />}
-              {isOpen && (() => {
-                const nonReviewMods = stageMods.filter(m => !m.isReview && getTotalSentences(m) > 0);
-                const allNonReviewDone = nonReviewMods.length > 0 && nonReviewMods.every(m => {
-                  const t = getTotalSentences(m);
-                  return (progressMap[m.id] ?? 0) >= t;
-                });
-                return stageMods.map((mod, i) => {
-                const total = getTotalSentences(mod);
-                const done = progressMap[mod.id] ?? 0;
-                const pct = total > 0 ? done / total : 0;
-                const isComplete = total > 0 && done >= total;
-                const isEmpty = total === 0;
-                const isLocked = mod.isReview && !allNonReviewDone;
-                return (
-                  <TouchableOpacity
-                    key={mod.id}
-                    style={[styles.moduleRow, mod.isReview && styles.moduleRowReview, isLocked && styles.moduleRowLocked]}
-                    onPress={() => !isEmpty && !isLocked && router.push(`/exercise/${mod.id}`)}
-                    disabled={isEmpty || isLocked}
-                    activeOpacity={isEmpty || isLocked ? 1 : 0.7}>
-                    {!mod.isReview && (
-                      <View style={[styles.moduleNum, isComplete && styles.moduleNumDone]}>
-                        {isComplete
-                          ? <Text style={styles.moduleNumCheck}>✓</Text>
-                          : <Text style={styles.moduleNumText}>{i + 1}</Text>}
-                      </View>
-                    )}
-                    <View style={styles.moduleInfo}>
-                      <View style={styles.moduleTitleRow}>
-                        <Text style={[styles.moduleTitle, isEmpty && styles.moduleTitleMuted]} numberOfLines={2}>
-                          {mod.title}
-                        </Text>
-                        {isEmpty && (
-                          <View style={styles.soonBadge}>
-                            <Text style={styles.soonBadgeText}>Em breve</Text>
-                          </View>
-                        )}
-                        {mod.isReview && (
-                          <View style={styles.reviewBadge}>
-                            <Text style={styles.reviewBadgeText}>{isLocked ? '🔒 Revisão' : 'Revisão'}</Text>
-                          </View>
-                        )}
-                      </View>
-                      {isLocked ? (
-                        <Text style={styles.moduleLockedText}>Complete os módulos da etapa para desbloquear</Text>
-                      ) : mod.subtitle ? (
-                        <Text style={styles.moduleSub}>{mod.subtitle}</Text>
-                      ) : null}
-                      {!isEmpty && !isLocked && (
-                        <View style={styles.progRow}>
-                          <View style={styles.progBar}>
-                            <View style={[
-                              styles.progFill,
-                              { width: `${pct * 100}%` },
-                              isComplete && styles.progFillDone,
-                              pct > 0 && !isComplete && styles.progFillActive,
-                            ]} />
-                          </View>
-                          <Text style={[styles.progText, isComplete && styles.progTextDone]}>
-                            {isComplete ? 'Concluído ✓' : done > 0 ? `${done}/${total}` : `${total} fr.`}
-                          </Text>
+
+              {isOpen && (
+                <View style={styles.trail}>
+                  <View style={styles.trailLine} />
+                  {stageMods.map((mod, i) => {
+                    const total = getTotalSentences(mod);
+                    const done = progressMap[mod.id] ?? 0;
+                    const pct = total > 0 ? done / total : 0;
+                    const isComplete = total > 0 && done >= total;
+                    const isEmpty = total === 0;
+                    const isLocked = mod.isReview && !allNonReviewDone;
+                    const isCurrent = mod.id === currentId;
+                    return (
+                      <TouchableOpacity
+                        key={mod.id}
+                        style={[styles.nodeRow, isCurrent && styles.nodeRowCurrent]}
+                        onPress={() => !isEmpty && !isLocked && router.push(`/exercise/${mod.id}`)}
+                        disabled={isEmpty || isLocked}
+                        activeOpacity={isEmpty || isLocked ? 1 : 0.7}>
+                        {/* Nó do caminho */}
+                        <View style={[
+                          styles.node,
+                          isComplete && styles.nodeDone,
+                          isCurrent && styles.nodeCurrent,
+                          (isLocked || isEmpty) && styles.nodeLocked,
+                        ]}>
+                          {isComplete
+                            ? <Text style={styles.nodeCheck}>✓</Text>
+                            : isLocked
+                              ? <Text style={styles.nodeLockIcon}>🔒</Text>
+                              : mod.isReview
+                                ? <Text style={[styles.nodeText, isCurrent && styles.nodeTextCurrent]}>★</Text>
+                                : <Text style={[styles.nodeText, isCurrent && styles.nodeTextCurrent]}>{nonReviewMods.indexOf(mod) + 1}</Text>}
                         </View>
-                      )}
-                    </View>
-                    {isComplete && (
-                      <Text style={styles.medalEmoji}>{mod.isReview ? '🏅' : '⭐'}</Text>
-                    )}
-                    {!isEmpty && !isComplete && !isLocked && (
-                      <Text style={styles.chevron}>›</Text>
-                    )}
-                  </TouchableOpacity>
-                );
-              });
-              })()}
+                        <View style={styles.nodeInfo}>
+                          <View style={styles.nodeTitleRow}>
+                            <Text style={[styles.nodeTitle, isEmpty && styles.nodeTitleMuted]} numberOfLines={2}>
+                              {mod.title}
+                            </Text>
+                            {isCurrent && <Poly size={22} mood="happy" />}
+                            {isEmpty && <View style={styles.soonBadge}><Text style={styles.soonBadgeText}>Em breve</Text></View>}
+                          </View>
+                          {isLocked ? (
+                            <Text style={styles.nodeLockedText}>Complete a etapa para desbloquear</Text>
+                          ) : mod.subtitle ? (
+                            <Text style={styles.nodeSub} numberOfLines={1}>{mod.subtitle}</Text>
+                          ) : null}
+                          {!isEmpty && !isLocked && total > 0 && (
+                            <View style={styles.progRow}>
+                              <View style={styles.progBar}>
+                                <View style={[styles.progFill, { width: `${pct * 100}%` }, isComplete && styles.progFillDone]} />
+                              </View>
+                              <Text style={[styles.progText, isComplete && styles.progTextDone]}>
+                                {isComplete ? '100%' : done > 0 ? `${done}/${total}` : `${total} fr.`}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+
               {stage === 'Variados' && (
-                <TouchableOpacity style={styles.dialogosCard} onPress={() => router.push(`/dialogos?lang=${activeLang}`)} activeOpacity={0.7}>
+                <TouchableOpacity style={styles.dialogosCard} onPress={() => router.push(`/dialogos?lang=${activeLang}`)} activeOpacity={0.75}>
+                  <Text style={styles.dialogosEmoji}>💬</Text>
                   <View style={styles.dialogosCardLeft}>
                     <Text style={styles.dialogosCardTitle}>Diálogos Reais</Text>
                     <Text style={styles.dialogosCardSub}>Conversas autênticas — do básico ao fluente</Text>
@@ -339,9 +338,11 @@ export default function HomeScreen() {
             </View>
           );
         })}
-        <View style={{ height: 48 }} />
+        <View style={{ height: 24 }} />
       </ScrollView>
+
       <AdBanner />
+      <TabBar active="home" lang={activeLang} />
 
       {/* First-time placement offer */}
       <Modal visible={placementOffer} transparent animationType="fade" onRequestClose={() => setPlacementOffer(false)}>
@@ -412,172 +413,162 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
-  heroCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 16,
-    backgroundColor: C.brandLight, borderWidth: 1, borderColor: '#BBDDF5',
-    borderRadius: 14, paddingVertical: 16, paddingHorizontal: 18,
-    marginHorizontal: 20, marginTop: 14,
-  },
-  heroRight: { flex: 1 },
-  heroStreakRow: { flexDirection: 'row', alignItems: 'baseline', gap: 4 },
-  heroStreakNum: { fontFamily: 'serif', fontSize: 32, fontWeight: '800', color: C.brandDark },
-  heroStreakFlame: { fontSize: 20 },
-  heroStreakLabel: { fontFamily: 'serif', fontSize: 14, color: C.brandDark, fontWeight: '600' },
-  heroMsg: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, marginTop: 3, fontStyle: 'italic' },
-  reviewBanner: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FFF8EC', borderWidth: 1, borderColor: '#E6C97A',
-    borderRadius: 10, padding: 14, marginHorizontal: 20, marginTop: 16, marginBottom: 4,
-  },
-  reviewBannerLeft: { flex: 1, marginRight: 12 },
-  reviewBannerTitle: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: '#5C3D00' },
-  reviewBannerSub: { fontFamily: 'serif', fontSize: 11, color: '#7A5800', marginTop: 2 },
-  reviewBannerActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  reviewBannerBtn: {
-    backgroundColor: '#8B6F47', borderRadius: 6, paddingHorizontal: 14, paddingVertical: 7,
-  },
-  reviewBannerBtnText: { fontFamily: 'serif', fontSize: 13, fontWeight: '700', color: '#fff' },
-  reviewBannerDismiss: { fontFamily: 'serif', fontSize: 16, color: '#7A5800', paddingLeft: 4 },
   topBar: {
-    paddingTop: 14, paddingBottom: 12, paddingHorizontal: 20,
-    borderBottomWidth: 1, borderBottomColor: C.border,
+    paddingTop: 12, paddingBottom: 12, paddingHorizontal: 20,
     backgroundColor: C.bg,
   },
   topRow1: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   topRow2: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
   appTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  appTitle: { fontFamily: 'serif', fontSize: 18, fontWeight: '700', color: C.brand, letterSpacing: 0.5 },
-  profilePill: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: C.bgAlt, borderWidth: 1, borderColor: C.border,
-    borderRadius: 20, paddingVertical: 5, paddingHorizontal: 12,
+  appTitle: { fontSize: 19, fontWeight: '800', color: C.brand, letterSpacing: 0.3 },
+  levelPill: {
+    backgroundColor: C.accentLight, borderRadius: 14,
+    paddingVertical: 4, paddingHorizontal: 12,
   },
-  streakPillText: { fontFamily: 'serif', fontSize: 12, color: '#7A5900' },
-  levelPillText: {
-    fontFamily: 'serif', fontSize: 12, fontWeight: '700', color: C.accent,
-    backgroundColor: C.accentLight, paddingVertical: 2, paddingHorizontal: 8,
-    borderRadius: 10, overflow: 'hidden',
-  },
-  pillChevron: { fontSize: 14, color: C.textMuted, marginLeft: 2 },
+  levelPillText: { fontSize: 12, fontWeight: '700', color: C.brandDark },
   langPairBtn: { flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 8 },
-  langPair: { fontFamily: 'serif', fontSize: 16, fontWeight: '700', color: C.accent },
-  langPairChevron: { fontFamily: 'serif', fontSize: 13, color: C.accent },
+  langPair: { fontSize: 16, fontWeight: '700', color: C.text },
+  langPairChevron: { fontSize: 13, color: C.accent },
   theoryGeneralBtn: {
-    paddingVertical: 6, paddingHorizontal: 12,
-    borderWidth: 1, borderColor: C.accent, borderRadius: 6,
+    paddingVertical: 7, paddingHorizontal: 14,
+    backgroundColor: C.accentLight, borderRadius: 10,
   },
-  theoryGeneralText: { fontFamily: 'serif', fontSize: 12, color: C.accent, fontWeight: '700' },
-  dialogosBtn: {
-    paddingVertical: 6, paddingHorizontal: 12,
-    backgroundColor: C.accent, borderRadius: 6,
+  theoryGeneralText: { fontSize: 12, color: C.brandDark, fontWeight: '700' },
+
+  scroll: { paddingTop: 4, paddingBottom: 12 },
+
+  heroCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 16,
+    backgroundColor: C.brandLight,
+    borderRadius: 18, paddingVertical: 14, paddingHorizontal: 18,
+    marginHorizontal: 20, marginTop: 6,
   },
-  dialogosBtnText: { fontFamily: 'serif', fontSize: 12, color: '#fff', fontWeight: '700' },
-  dialogosCard: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: C.accentLight, borderWidth: 1, borderColor: C.accent,
-    borderRadius: 8, paddingHorizontal: 14, paddingVertical: 14, marginTop: 4,
+  heroRight: { flex: 1 },
+  heroStreakRow: { flexDirection: 'row', alignItems: 'baseline', gap: 4 },
+  heroStreakNum: { fontSize: 30, fontWeight: '800', color: C.brandDark },
+  heroStreakFlame: { fontSize: 19 },
+  heroStreakLabel: { fontSize: 14, color: C.brandDark, fontWeight: '600' },
+  heroMsg: { fontSize: 13, color: C.textMuted, marginTop: 2 },
+
+  continueCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 14,
+    backgroundColor: C.bg, borderRadius: 18,
+    paddingVertical: 16, paddingHorizontal: 18,
+    marginHorizontal: 20, marginTop: 14,
+    borderWidth: 1, borderColor: C.border,
+    ...cardShadow,
   },
-  dialogosCardLeft: { flex: 1 },
-  dialogosCardTitle: { fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: C.text },
-  dialogosCardSub: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginTop: 3 },
-  placementBtn: {
-    paddingVertical: 6, paddingHorizontal: 10,
-    borderWidth: 1, borderColor: '#C8A800', borderRadius: 6, backgroundColor: '#FFFBEA',
+  continueLabel: { fontSize: 10, fontWeight: '800', color: C.accent, letterSpacing: 1.5, marginBottom: 4 },
+  continueTitle: { fontSize: 17, fontWeight: '800', color: C.text },
+  continueStage: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  continueBtn: {
+    width: 52, height: 52, borderRadius: 26,
+    backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center',
+    shadowColor: C.accent, shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 4,
   },
-  placementBtnText: { fontFamily: 'serif', fontSize: 12, fontWeight: '700', color: '#7A5900' },
-  streakBadge: {
-    paddingVertical: 4, paddingHorizontal: 10, borderRadius: 6,
-    backgroundColor: '#FFF3CD', borderWidth: 1, borderColor: '#E8C44A',
-  },
-  streakText: { fontFamily: 'serif', fontSize: 12, fontWeight: '700', color: '#7A5900' },
-  offerModal: {
-    margin: 28, backgroundColor: C.bg, borderRadius: 14,
-    padding: 28, borderWidth: 1, borderColor: C.border,
-    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 20, elevation: 8,
-  },
-  offerTitle: { fontFamily: 'serif', fontSize: 20, fontWeight: '700', color: C.text, marginBottom: 12 },
-  offerBody: { fontFamily: 'serif', fontSize: 14, color: C.textMuted, lineHeight: 22, marginBottom: 24 },
-  offerBtnPrimary: {
-    backgroundColor: C.accent, borderRadius: 8,
-    paddingVertical: 14, alignItems: 'center', marginBottom: 12,
-  },
-  offerBtnPrimaryText: { fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: '#fff', textAlign: 'center' },
-  offerBtnSkip: { paddingVertical: 10, alignItems: 'center' },
-  offerBtnSkipText: { fontFamily: 'serif', fontSize: 14, color: C.textMuted },
-  scroll: { paddingTop: 6 },
-  stageSection: { paddingHorizontal: 22, paddingTop: 14, paddingBottom: 18, borderBottomWidth: 1, borderBottomColor: C.border },
+  continueBtnText: { fontSize: 18, color: '#fff', marginLeft: 3 },
+
+  stageSection: { paddingHorizontal: 20, paddingTop: 20 },
   stageHeader: {
-    flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8,
-    backgroundColor: C.accent, borderRadius: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 14,
+    backgroundColor: C.bgAlt, borderRadius: 16,
     paddingHorizontal: 14, paddingVertical: 12,
   },
-  stageTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  stageTitle: { fontFamily: 'serif', fontSize: 11, fontWeight: '700', color: '#fff', letterSpacing: 2.5, textTransform: 'uppercase' },
-  stageDoneBadge: {
-    width: 16, height: 16, borderRadius: 8,
-    backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center',
-  },
-  stageDoneBadgeText: { fontSize: 10, fontWeight: '700', color: C.accent },
-  stageDesc: { fontFamily: 'serif', fontSize: 12, color: 'rgba(255,255,255,0.78)', marginTop: 3, fontStyle: 'italic' },
-  stageRight: { alignItems: 'flex-end', gap: 4 },
-  stagePct: { fontFamily: 'serif', fontSize: 11, color: '#fff', fontWeight: '700' },
-  stageChevron: { fontSize: 18, color: '#fff', fontWeight: '300', marginTop: 2 },
+  stageHeaderMid: { flex: 1 },
+  stageTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  stageTitle: { fontSize: 15, fontWeight: '800', color: C.text },
+  stageMedal: { fontSize: 15 },
+  stageDesc: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  stageRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  stageChevron: { fontSize: 18, color: C.textMuted, fontWeight: '300' },
   theoryTagBtn: {
-    paddingVertical: 3, paddingHorizontal: 8,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)', borderRadius: 10,
+    paddingVertical: 5, paddingHorizontal: 10,
+    backgroundColor: C.accentLight, borderRadius: 8,
   },
-  theoryTagText: { fontFamily: 'serif', fontSize: 10, color: '#fff', fontWeight: '700' },
-  stageDivider: { height: 1, backgroundColor: C.border, marginBottom: 2 },
-  moduleRow: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: C.border, gap: 12,
+  theoryTagText: { fontSize: 11, color: C.brandDark, fontWeight: '700' },
+
+  trail: { position: 'relative', paddingTop: 8 },
+  trailLine: {
+    position: 'absolute', left: 33, top: 16, bottom: 20,
+    width: 3, borderRadius: 1.5, backgroundColor: C.border,
   },
-  moduleRowReview: { backgroundColor: C.bgAlt },
-  moduleRowLocked: { opacity: 0.55 },
-  moduleLockedText: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginTop: 2, marginBottom: 5 },
-  reviewBadge: { paddingHorizontal: 7, paddingVertical: 2, borderWidth: 1, borderColor: C.accent, borderRadius: 10 },
-  reviewBadgeText: { fontFamily: 'serif', fontSize: 10, color: C.accent, fontWeight: '700' },
-  moduleNum: {
-    width: 28, height: 28, borderRadius: 14,
-    backgroundColor: C.accentLight, alignItems: 'center', justifyContent: 'center',
+  nodeRow: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 14,
+    paddingVertical: 10, paddingLeft: 14, paddingRight: 4,
   },
-  moduleNumDone: { backgroundColor: C.correct },
-  moduleNumText: { fontFamily: 'serif', fontSize: 12, fontWeight: '700', color: C.accent },
-  moduleNumCheck: { fontSize: 14, color: '#fff', fontWeight: '700' },
-  moduleInfo: { flex: 1 },
-  moduleTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  moduleTitle: { fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: C.text, flex: 1 },
-  moduleTitleMuted: { color: C.textMuted },
-  moduleSub: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginTop: 2, marginBottom: 5 },
-  soonBadge: { paddingHorizontal: 7, paddingVertical: 2, borderWidth: 1, borderColor: C.border, borderRadius: 10 },
-  soonBadgeText: { fontFamily: 'serif', fontSize: 10, color: C.textMuted },
-  progRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
-  progBar: { flex: 1, height: 3, backgroundColor: C.border, borderRadius: 2, overflow: 'hidden' },
-  progFill: { height: 3, backgroundColor: C.accent, borderRadius: 2 },
+  nodeRowCurrent: {
+    backgroundColor: C.accentLight, borderRadius: 16,
+  },
+  node: {
+    width: 38, height: 38, borderRadius: 19,
+    backgroundColor: C.bg, borderWidth: 2.5, borderColor: C.border,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  nodeDone: { backgroundColor: C.accent, borderColor: C.accent },
+  nodeCurrent: { borderColor: C.accent, backgroundColor: C.bg },
+  nodeLocked: { backgroundColor: C.bgAlt, borderColor: C.border },
+  nodeCheck: { fontSize: 16, color: '#fff', fontWeight: '800' },
+  nodeLockIcon: { fontSize: 13 },
+  nodeText: { fontSize: 14, fontWeight: '800', color: C.textMuted },
+  nodeTextCurrent: { color: C.accent },
+  nodeInfo: { flex: 1, paddingTop: 1 },
+  nodeTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  nodeTitle: { fontSize: 15, fontWeight: '700', color: C.text, flexShrink: 1 },
+  nodeTitleMuted: { color: C.textMuted, fontWeight: '500' },
+  nodeSub: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  nodeLockedText: { fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginTop: 2 },
+  soonBadge: { paddingHorizontal: 7, paddingVertical: 2, backgroundColor: C.bgAlt, borderRadius: 10 },
+  soonBadgeText: { fontSize: 10, color: C.textMuted },
+  progRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6 },
+  progBar: { flex: 1, height: 5, backgroundColor: C.border, borderRadius: 3, overflow: 'hidden' },
+  progFill: { height: 5, backgroundColor: C.accent, borderRadius: 3 },
   progFillDone: { backgroundColor: C.correct },
-  progFillActive: { backgroundColor: '#8B6F47' },
-  progTextDone: { color: C.correct, fontWeight: '700' },
-  medalEmoji: { fontSize: 20, marginLeft: 4 },
-  progText: { fontFamily: 'serif', fontSize: 10, color: C.textMuted, minWidth: 55 },
-  chevron: { fontSize: 22, color: C.border, marginRight: 2 },
-  // Lang modal
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', padding: 28 },
-  langModal: { backgroundColor: C.bg, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: C.border },
-  langModalTitle: { fontFamily: 'serif', fontSize: 16, fontWeight: '700', color: C.text, marginBottom: 16 },
-  langGroupHeader: { fontFamily: 'serif', fontSize: 11, fontWeight: '700', color: C.accent, textTransform: 'uppercase', letterSpacing: 1, marginTop: 12, marginBottom: 2 },
-  langGroupSub: { fontFamily: 'serif', fontSize: 11, color: C.textMuted, fontStyle: 'italic', marginBottom: 6 },
+  progText: { fontSize: 10, fontWeight: '600', color: C.textMuted, minWidth: 44, textAlign: 'right' },
+  progTextDone: { color: C.correct, fontWeight: '800' },
+  chevron: { fontSize: 22, color: C.textMuted, marginRight: 2 },
+
+  dialogosCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: C.bg, borderWidth: 1, borderColor: C.border,
+    borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, marginTop: 12,
+    ...cardShadow,
+  },
+  dialogosEmoji: { fontSize: 22 },
+  dialogosCardLeft: { flex: 1 },
+  dialogosCardTitle: { fontSize: 15, fontWeight: '800', color: C.text },
+  dialogosCardSub: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(12,45,72,0.45)', justifyContent: 'center', padding: 28 },
+  offerModal: {
+    backgroundColor: C.bg, borderRadius: 20,
+    padding: 28, ...cardShadow,
+  },
+  offerTitle: { fontSize: 20, fontWeight: '800', color: C.text, marginBottom: 12 },
+  offerBody: { fontSize: 14, color: C.textMuted, lineHeight: 22, marginBottom: 24 },
+  offerBtnPrimary: {
+    backgroundColor: C.accent, borderRadius: 12,
+    paddingVertical: 14, alignItems: 'center', marginBottom: 12,
+  },
+  offerBtnPrimaryText: { fontSize: 15, fontWeight: '700', color: '#fff', textAlign: 'center' },
+  offerBtnSkip: { paddingVertical: 10, alignItems: 'center' },
+  offerBtnSkipText: { fontSize: 14, color: C.textMuted },
+
+  langModal: { backgroundColor: C.bg, borderRadius: 20, padding: 20, ...cardShadow },
+  langModalTitle: { fontSize: 16, fontWeight: '800', color: C.text, marginBottom: 16 },
+  langGroupHeader: { fontSize: 11, fontWeight: '800', color: C.accent, textTransform: 'uppercase', letterSpacing: 1, marginTop: 12, marginBottom: 2 },
+  langGroupSub: { fontSize: 11, color: C.textMuted, marginBottom: 6 },
   langOption: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 14,
     borderBottomWidth: 1, borderBottomColor: C.border,
   },
-  langOptionActive: { backgroundColor: C.accentLight },
+  langOptionActive: { backgroundColor: C.accentLight, borderRadius: 10, paddingHorizontal: 10 },
   langOptionDisabled: { opacity: 0.45 },
-  langOptionLabel: { fontFamily: 'serif', fontSize: 16, color: C.text, fontWeight: '600' },
+  langOptionLabel: { fontSize: 16, color: C.text, fontWeight: '600' },
   langOptionLabelMuted: { color: C.textMuted, fontWeight: '400' },
   langOptionCheck: { fontSize: 18, color: C.accent, fontWeight: '700' },
 });

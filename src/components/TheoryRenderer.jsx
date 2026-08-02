@@ -199,7 +199,6 @@ export default function TheoryRenderer({ text, textStyle }) {
 
 const styles = StyleSheet.create({
   bodyText: {
-    fontFamily: 'serif',
     fontSize: 14,
     color: C.text,
     lineHeight: 22,
@@ -207,7 +206,6 @@ const styles = StyleSheet.create({
   },
   bold: { fontWeight: '700', color: C.text },
   heading: {
-    fontFamily: 'serif',
     fontWeight: '700',
     color: C.accent,
     marginTop: 6,
@@ -218,7 +216,7 @@ const styles = StyleSheet.create({
   h3: { fontSize: 14, fontStyle: 'italic' },
   bulletGroup: { marginBottom: 10 },
   bulletRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 5 },
-  bulletDot: { fontFamily: 'serif', fontSize: 14, color: C.accent, marginRight: 8, lineHeight: 22 },
+  bulletDot: { fontSize: 14, color: C.accent, marginRight: 8, lineHeight: 22 },
   bulletText: { flex: 1, marginBottom: 0 },
   callout: {
     flexDirection: 'row',
@@ -233,7 +231,6 @@ const styles = StyleSheet.create({
   calloutWarn: { backgroundColor: '#FFF3E0', borderColor: '#E8A23D' },
   calloutIcon: { fontSize: 15, marginTop: 1 },
   calloutText: {
-    fontFamily: 'serif',
     fontSize: 13.5,
     color: C.text,
     lineHeight: 20,
@@ -276,7 +273,6 @@ const styles = StyleSheet.create({
     borderRightColor: 'rgba(255,255,255,0.25)',
   },
   cellText: {
-    fontFamily: 'serif',
     fontSize: 13,
     color: C.text,
     lineHeight: 19,

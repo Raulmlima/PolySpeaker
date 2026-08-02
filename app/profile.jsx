@@ -13,6 +13,7 @@ import { getProfile, saveProfile, getLevels, getStageLabel, LANGUAGES, LANGUAGE_
 import { getModulesForLang } from '../src/data/modules';
 import { exportBackup, importBackup } from '../src/utils/backup';
 import { C } from '../src/theme';
+import TabBar from '../src/components/TabBar';
 
 const STAGE_THRESHOLDS = ['Fundamentos', 'Básico', 'Intermediário', 'Avançado', 'Variados'];
 
@@ -102,18 +103,18 @@ function PlacementCard({ profile, activeLangId, langLabel, router }) {
 const pStyles = StyleSheet.create({
   card: { backgroundColor: C.bgAlt, borderRadius: 10, padding: 16, borderWidth: 1, borderColor: C.border, marginBottom: 14 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10 },
-  cardLabel: { fontFamily: 'serif', fontSize: 9, color: C.textMuted, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 },
-  cardLevel: { fontFamily: 'serif', fontSize: 20, fontWeight: '700', color: C.accent },
-  cardScore: { fontFamily: 'serif', fontSize: 32, fontWeight: '700', color: C.accent },
+  cardLabel: { fontSize: 9, color: C.textMuted, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 },
+  cardLevel: { fontSize: 20, fontWeight: '700', color: C.accent },
+  cardScore: { fontSize: 32, fontWeight: '700', color: C.accent },
   historyRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, marginBottom: 10, height: 56 },
   histDot: { alignItems: 'center', width: 32 },
   histBar: { width: 20, backgroundColor: C.accentLight, borderWidth: 1, borderColor: C.accent, borderRadius: 3, minHeight: 4 },
-  histScore: { fontFamily: 'serif', fontSize: 10, color: C.textMuted, marginTop: 2 },
-  histLabel: { fontFamily: 'serif', fontSize: 10, color: C.textMuted, alignSelf: 'flex-end', marginLeft: 4 },
-  noTest: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, fontStyle: 'italic', marginBottom: 10 },
+  histScore: { fontSize: 10, color: C.textMuted, marginTop: 2 },
+  histLabel: { fontSize: 10, color: C.textMuted, alignSelf: 'flex-end', marginLeft: 4 },
+  noTest: { fontSize: 13, color: C.textMuted, fontStyle: 'italic', marginBottom: 10 },
   testBtn: { backgroundColor: C.accent, borderRadius: 8, paddingVertical: 12, alignItems: 'center' },
-  testBtnText: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: '#fff' },
-  nextWeek: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, fontStyle: 'italic', textAlign: 'center' },
+  testBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  nextWeek: { fontSize: 12, color: C.textMuted, fontStyle: 'italic', textAlign: 'center' },
 });
 
 export default function ProfileScreen() {
@@ -212,11 +213,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backBtnText}>← Voltar</Text>
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>Perfil</Text>
-        <View style={{ width: 64 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -328,6 +325,7 @@ export default function ProfileScreen() {
 
         <View style={{ height: 48 }} />
       </ScrollView>
+      <TabBar active="profile" lang={activeLangId} />
     </SafeAreaView>
   );
 }
@@ -335,21 +333,21 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
   header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14,
     borderBottomWidth: 1, borderBottomColor: C.border,
   },
   backBtn: { paddingVertical: 4, paddingRight: 12, minWidth: 64 },
-  backBtnText: { fontFamily: 'serif', fontSize: 14, color: C.accent },
-  headerTitle: { fontFamily: 'serif', fontSize: 17, fontWeight: '700', color: C.text },
+  backBtnText: { fontSize: 14, color: C.accent },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: C.text },
   scroll: { padding: 20 },
 
   langCard: {
     backgroundColor: C.bgAlt, borderRadius: 10, padding: 16,
     borderWidth: 1, borderColor: C.border, marginBottom: 14,
   },
-  langCardLabel: { fontFamily: 'serif', fontSize: 9, color: C.textMuted, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 },
-  langCardLang: { fontFamily: 'serif', fontSize: 18, fontWeight: '700', color: C.text },
+  langCardLabel: { fontSize: 9, color: C.textMuted, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 },
+  langCardLang: { fontSize: 18, fontWeight: '700', color: C.text },
 
   levelCard: {
     backgroundColor: C.bgAlt, borderRadius: 10, padding: 16,
@@ -357,29 +355,29 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   levelCardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-  levelCardLabel: { fontFamily: 'serif', fontSize: 9, color: C.textMuted, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 },
-  levelCardValue: { fontFamily: 'serif', fontSize: 28, fontWeight: '700' },
+  levelCardLabel: { fontSize: 9, color: C.textMuted, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 },
+  levelCardValue: { fontSize: 28, fontWeight: '700' },
   levelCardRight: { alignItems: 'flex-end' },
-  levelCardStage: { fontFamily: 'serif', fontSize: 10, color: C.textMuted, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 },
-  levelCardStageName: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: C.text },
-  levelCardNote: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginTop: 8 },
+  levelCardStage: { fontSize: 10, color: C.textMuted, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 },
+  levelCardStageName: { fontSize: 14, fontWeight: '700', color: C.text },
+  levelCardNote: { fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginTop: 8 },
   streakRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFF3CD', borderRadius: 6, paddingHorizontal: 12, paddingVertical: 8, marginTop: 10 },
-  streakLabel: { fontFamily: 'serif', fontSize: 13, color: '#7A5900' },
-  streakValue: { fontFamily: 'serif', fontSize: 20, fontWeight: '700', color: '#7A5900' },
+  streakLabel: { fontSize: 13, color: '#7A5900' },
+  streakValue: { fontSize: 20, fontWeight: '700', color: '#7A5900' },
 
   globalBox: {
     backgroundColor: C.bgAlt, borderRadius: 10, padding: 16,
     borderWidth: 1, borderColor: C.border, marginBottom: 24,
   },
   globalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  globalLabel: { fontFamily: 'serif', fontSize: 14, fontWeight: '600', color: C.text },
-  globalPct: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: C.accent },
+  globalLabel: { fontSize: 14, fontWeight: '600', color: C.text },
+  globalPct: { fontSize: 14, fontWeight: '700', color: C.accent },
   globalBar: { height: 6, backgroundColor: C.border, borderRadius: 3, overflow: 'hidden', marginBottom: 6 },
   globalFill: { height: 6, backgroundColor: C.accent, borderRadius: 3 },
-  globalSub: { fontFamily: 'serif', fontSize: 11, color: C.textMuted },
+  globalSub: { fontSize: 11, color: C.textMuted },
 
   sectionTitle: {
-    fontFamily: 'serif', fontSize: 10, fontWeight: '700', color: C.accent,
+    fontSize: 10, fontWeight: '700', color: C.accent,
     letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 10,
   },
 
@@ -388,32 +386,32 @@ const styles = StyleSheet.create({
     paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: C.border, gap: 12,
   },
   stageRowLeft: { flex: 1 },
-  stageRowName: { fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: C.text },
-  stageRowMeta: { fontFamily: 'serif', fontSize: 11, color: C.textMuted, marginTop: 2 },
+  stageRowName: { fontSize: 15, fontWeight: '700', color: C.text },
+  stageRowMeta: { fontSize: 11, color: C.textMuted, marginTop: 2 },
   stageRowRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   stageBar: { width: 80, height: 4, backgroundColor: C.border, borderRadius: 2, overflow: 'hidden' },
   stageFill: { height: 4, borderRadius: 2 },
-  stageRowPct: { fontFamily: 'serif', fontSize: 12, color: C.accent, minWidth: 26, textAlign: 'right' },
+  stageRowPct: { fontSize: 12, color: C.accent, minWidth: 26, textAlign: 'right' },
 
   backupCard: {
     backgroundColor: C.bgAlt, borderRadius: 10, padding: 16,
     borderWidth: 1, borderColor: C.border, marginBottom: 24,
   },
-  backupDesc: { fontFamily: 'serif', fontSize: 12, color: C.textMuted, lineHeight: 18, marginBottom: 12 },
+  backupDesc: { fontSize: 12, color: C.textMuted, lineHeight: 18, marginBottom: 12 },
   backupBtnRow: { flexDirection: 'row', gap: 10 },
   backupBtn: {
     flex: 1, backgroundColor: C.accent, borderRadius: 8,
     paddingVertical: 12, alignItems: 'center',
   },
-  backupBtnText: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: '#fff' },
+  backupBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   backupBtnOutline: {
     flex: 1, borderWidth: 1, borderColor: C.accent, borderRadius: 8,
     paddingVertical: 12, alignItems: 'center',
   },
-  backupBtnOutlineText: { fontFamily: 'serif', fontSize: 14, fontWeight: '700', color: C.accent },
+  backupBtnOutlineText: { fontSize: 14, fontWeight: '700', color: C.accent },
   dangerBtn: {
     marginTop: 8, borderWidth: 1, borderColor: C.incorrect, borderRadius: 8,
     paddingVertical: 14, alignItems: 'center',
   },
-  dangerBtnText: { fontFamily: 'serif', fontSize: 14, color: C.incorrect, fontWeight: '600' },
+  dangerBtnText: { fontSize: 14, color: C.incorrect, fontWeight: '600' },
 });

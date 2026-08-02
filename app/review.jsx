@@ -12,6 +12,7 @@ import { checkAnswer } from '../src/utils/compare';
 import { getReviewsDue, markReviewCorrect, markReviewWrong } from '../src/db/database';
 import { playCorrect, playWrong } from '../src/utils/sounds';
 import { C } from '../src/theme';
+import TabBar from '../src/components/TabBar';
 
 export default function ReviewScreen() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function ReviewScreen() {
 
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      router.back();
+      router.replace('/');
       return true;
     });
     return () => sub.remove();
@@ -76,10 +77,11 @@ export default function ReviewScreen() {
           <Text style={s.doneRef}>
             Baseado em Ebbinghaus (1885) — repetição espaçada dobra a retenção.
           </Text>
-          <TouchableOpacity style={s.doneBtn} onPress={() => router.back()}>
+          <TouchableOpacity style={s.doneBtn} onPress={() => router.replace('/')}>
             <Text style={s.doneBtnText}>Voltar ao início</Text>
           </TouchableOpacity>
         </ScrollView>
+        <TabBar active="review" />
       </SafeAreaView>
     );
   }
@@ -233,17 +235,17 @@ export default function ReviewScreen() {
 
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
-  loading: { padding: 24, fontFamily: 'serif', color: C.textMuted, textAlign: 'center', marginTop: 40 },
+  loading: { padding: 24, color: C.textMuted, textAlign: 'center', marginTop: 40 },
   header: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12,
     borderBottomWidth: 1, borderBottomColor: C.border,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: { fontFamily: 'serif', fontSize: 15, fontWeight: '700', color: C.text },
-  headerMeta: { fontFamily: 'serif', fontSize: 11, color: C.textMuted, marginTop: 2 },
+  headerTitle: { fontSize: 15, fontWeight: '700', color: C.text },
+  headerMeta: { fontSize: 11, color: C.textMuted, marginTop: 2 },
   backBtn: { paddingVertical: 6, paddingHorizontal: 10, minWidth: 70 },
-  backBtnText: { fontFamily: 'serif', fontSize: 14, color: C.incorrect, fontWeight: '700' },
+  backBtnText: { fontSize: 14, color: C.incorrect, fontWeight: '700' },
   progressBar: { height: 3, backgroundColor: C.border },
   progressFill: { height: 3, backgroundColor: '#8B6F47' },
   scroll: { paddingHorizontal: 22, paddingTop: 20 },
@@ -252,17 +254,17 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: C.border, borderRadius: 20,
     paddingHorizontal: 12, paddingVertical: 4, marginBottom: 16,
   },
-  contextBadgeText: { fontFamily: 'serif', fontSize: 11, color: C.textMuted },
+  contextBadgeText: { fontSize: 11, color: C.textMuted },
   promptBox: { marginBottom: 22 },
   promptLabel: {
-    fontFamily: 'serif', fontSize: 10, color: C.textMuted,
+    fontSize: 10, color: C.textMuted,
     letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12,
   },
-  promptText: { fontFamily: 'serif', fontSize: 22, color: C.text, fontWeight: '600', lineHeight: 32 },
+  promptText: { fontSize: 22, color: C.text, fontWeight: '600', lineHeight: 32 },
   input: {
     borderWidth: 1.5, borderColor: C.border, borderRadius: 8,
     paddingHorizontal: 16, paddingVertical: 14,
-    fontFamily: 'serif', fontSize: 17, color: C.text,
+    fontSize: 17, color: C.text,
     backgroundColor: C.bgAlt, minHeight: 62, marginBottom: 14,
   },
   inputCorrect: { borderColor: C.correct, backgroundColor: C.correctBg },
@@ -272,26 +274,26 @@ const s = StyleSheet.create({
     paddingVertical: 15, alignItems: 'center', marginBottom: 16,
   },
   btnDisabled: { opacity: 0.35 },
-  verifyBtnText: { fontFamily: 'serif', fontSize: 16, fontWeight: '700', color: '#fff' },
+  verifyBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   nextBtn: {
     backgroundColor: C.correct, borderRadius: 8,
     paddingVertical: 15, alignItems: 'center', marginBottom: 16,
   },
-  nextBtnText: { fontFamily: 'serif', fontSize: 16, fontWeight: '700', color: '#fff' },
+  nextBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   feedbackBox: { borderRadius: 8, padding: 16, marginBottom: 12 },
   feedbackCorrect: { backgroundColor: C.correctBg, borderLeftWidth: 4, borderLeftColor: C.correct },
   feedbackIncorrect: { backgroundColor: C.incorrectBg, borderLeftWidth: 4, borderLeftColor: C.incorrect },
-  feedbackLabel: { fontFamily: 'serif', fontSize: 13, fontWeight: '700', color: C.text, marginBottom: 8 },
+  feedbackLabel: { fontSize: 13, fontWeight: '700', color: C.text, marginBottom: 8 },
   answerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  feedbackAnswer: { fontFamily: 'serif', fontSize: 18, color: C.text, fontWeight: '600', flex: 1 },
+  feedbackAnswer: { fontSize: 18, color: C.text, fontWeight: '600', flex: 1 },
   speakerIcon: { fontSize: 20 },
   // Done screen
   doneScroll: { padding: 32, alignItems: 'center', justifyContent: 'center', flex: 1 },
   doneEmoji: { fontSize: 56, marginBottom: 16 },
-  doneTitle: { fontFamily: 'serif', fontSize: 26, fontWeight: '700', color: C.text, textAlign: 'center', marginBottom: 8 },
-  doneScore: { fontFamily: 'serif', fontSize: 18, color: C.accent, fontWeight: '600', marginBottom: 16 },
-  doneBody: { fontFamily: 'serif', fontSize: 15, color: C.textMuted, textAlign: 'center', lineHeight: 24, marginBottom: 20 },
-  doneRef: { fontFamily: 'serif', fontSize: 11, color: C.textMuted, fontStyle: 'italic', textAlign: 'center', marginBottom: 32 },
+  doneTitle: { fontSize: 26, fontWeight: '700', color: C.text, textAlign: 'center', marginBottom: 8 },
+  doneScore: { fontSize: 18, color: C.accent, fontWeight: '600', marginBottom: 16 },
+  doneBody: { fontSize: 15, color: C.textMuted, textAlign: 'center', lineHeight: 24, marginBottom: 20 },
+  doneRef: { fontSize: 11, color: C.textMuted, fontStyle: 'italic', textAlign: 'center', marginBottom: 32 },
   doneBtn: { backgroundColor: C.accent, borderRadius: 8, paddingVertical: 15, paddingHorizontal: 40, alignItems: 'center' },
-  doneBtnText: { fontFamily: 'serif', fontSize: 16, fontWeight: '700', color: '#fff' },
+  doneBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
 });

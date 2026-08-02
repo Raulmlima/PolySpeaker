@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
     borderBottomColor: C.border,
   },
   title: {
-    fontFamily: 'serif',
     fontSize: 16,
     fontWeight: '700',
     color: C.text,
@@ -173,7 +172,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    fontFamily: 'serif',
     fontSize: 16,
     color: C.text,
     backgroundColor: C.bgAlt,
@@ -185,7 +183,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   searchBtnText: {
-    fontFamily: 'serif',
     fontSize: 14,
     fontWeight: '700',
     color: '#fff',
@@ -194,7 +191,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   errorText: {
-    fontFamily: 'serif',
     fontSize: 14,
     color: C.incorrect,
     marginTop: 16,
@@ -205,7 +201,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   originalWord: {
-    fontFamily: 'serif',
     fontSize: 22,
     color: C.textMuted,
     fontStyle: 'italic',
@@ -216,7 +211,6 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   translatedWord: {
-    fontFamily: 'serif',
     fontSize: 28,
     fontWeight: '700',
     color: C.accent,
@@ -231,7 +225,6 @@ const styles = StyleSheet.create({
     borderColor: C.border,
   },
   altsLabel: {
-    fontFamily: 'serif',
     fontSize: 11,
     color: C.textMuted,
     letterSpacing: 1,
@@ -239,7 +232,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   altText: {
-    fontFamily: 'serif',
     fontSize: 15,
     color: C.text,
     marginBottom: 3,

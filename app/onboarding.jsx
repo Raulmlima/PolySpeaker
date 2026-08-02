@@ -171,30 +171,30 @@ const styles = StyleSheet.create({
   logoArea: { marginBottom: 40, marginTop: 12, alignItems: 'flex-start' },
   logoImage: { width: 64, height: 64, marginBottom: 12 },
   logoText: {
-    fontFamily: 'serif', fontSize: 36, fontWeight: '700', color: C.text, letterSpacing: 1,
+    fontSize: 36, fontWeight: '700', color: C.text, letterSpacing: 1,
   },
   logoSub: {
-    fontFamily: 'serif', fontSize: 15, color: C.textMuted, marginTop: 4, fontStyle: 'italic',
+    fontSize: 15, color: C.textMuted, marginTop: 4, fontStyle: 'italic',
   },
   step: {},
   stepNum: {
-    fontFamily: 'serif', fontSize: 11, color: C.accent,
+    fontSize: 11, color: C.accent,
     letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10, fontWeight: '700',
   },
   question: {
-    fontFamily: 'serif', fontSize: 22, fontWeight: '700', color: C.text,
+    fontSize: 22, fontWeight: '700', color: C.text,
     marginBottom: 8, lineHeight: 30,
   },
   questionSub: {
-    fontFamily: 'serif', fontSize: 14, color: C.textMuted, marginBottom: 28, lineHeight: 20,
+    fontSize: 14, color: C.textMuted, marginBottom: 28, lineHeight: 20,
   },
   options: { gap: 8, marginBottom: 32 },
   groupHeader: {
-    fontFamily: 'serif', fontSize: 11, fontWeight: '700', color: C.accent,
+    fontSize: 11, fontWeight: '700', color: C.accent,
     textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 16, marginBottom: 2,
   },
   groupSub: {
-    fontFamily: 'serif', fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginBottom: 8,
+    fontSize: 12, color: C.textMuted, fontStyle: 'italic', marginBottom: 8,
   },
   optionCard: {
     borderWidth: 1.5, borderColor: C.border, borderRadius: 8, padding: 16, backgroundColor: C.bgAlt,
@@ -202,23 +202,23 @@ const styles = StyleSheet.create({
   optionCardSelected: { borderColor: C.accent, backgroundColor: C.accentLight },
   optionCardDisabled: { opacity: 0.45 },
   optionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  optionLabel: { fontFamily: 'serif', fontSize: 17, fontWeight: '700', color: C.text },
+  optionLabel: { fontSize: 17, fontWeight: '700', color: C.text },
   optionLabelDisabled: { color: C.textMuted },
-  optionDesc: { fontFamily: 'serif', fontSize: 13, color: C.textMuted, marginTop: 4 },
+  optionDesc: { fontSize: 13, color: C.textMuted, marginTop: 4 },
   soonBadge: {
     paddingHorizontal: 8, paddingVertical: 2,
     borderWidth: 1, borderColor: C.border, borderRadius: 10,
   },
-  soonBadgeText: { fontFamily: 'serif', fontSize: 10, color: C.textMuted },
+  soonBadgeText: { fontSize: 10, color: C.textMuted },
   checkIcon: { fontSize: 18, color: C.accent, fontWeight: '700' },
   btnRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   backBtn: { paddingVertical: 15, paddingRight: 8 },
-  backBtnText: { fontFamily: 'serif', fontSize: 15, color: C.textMuted },
+  backBtnText: { fontSize: 15, color: C.textMuted },
   nextBtn: {
     backgroundColor: C.accent, borderRadius: 8,
     paddingVertical: 15, paddingHorizontal: 28, alignItems: 'center',
   },
   nextBtnFlex: { flex: 1 },
   nextBtnDisabled: { opacity: 0.35 },
-  nextBtnText: { fontFamily: 'serif', fontSize: 16, fontWeight: '700', color: '#fff', letterSpacing: 0.3 },
+  nextBtnText: { fontSize: 16, fontWeight: '700', color: '#fff', letterSpacing: 0.3 },
 });
