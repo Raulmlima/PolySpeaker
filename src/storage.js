@@ -1,23 +1,34 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 
-function getProfilePath() {
+const PROFILE_KEY = 'lingua_profile';
+// Legacy path from before the AsyncStorage migration — read once to migrate
+// existing installs, never written to again.
+function legacyProfilePath() {
   return FileSystem.documentDirectory + 'lingua_profile.json';
 }
 
 export async function getProfile() {
   try {
-    const path = getProfilePath();
+    const raw = await AsyncStorage.getItem(PROFILE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  // Fallback/migration: read the old FileSystem-based profile once, if present.
+  try {
+    const path = legacyProfilePath();
     const info = await FileSystem.getInfoAsync(path);
     if (!info.exists) return null;
     const raw = await FileSystem.readAsStringAsync(path);
-    return JSON.parse(raw);
+    const profile = JSON.parse(raw);
+    await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile)).catch(() => {});
+    return profile;
   } catch {
     return null;
   }
 }
 
 export async function saveProfile(profile) {
-  await FileSystem.writeAsStringAsync(getProfilePath(), JSON.stringify(profile));
+  await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }
 
 function getISOWeekKey(date = new Date()) {

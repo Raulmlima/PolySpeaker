@@ -257,11 +257,15 @@ export default function WelcomeScreen() {
   }
 
   async function finish() {
-    const p = await getProfile();
+    const p = await getProfile().catch(() => null);
     const base = p ?? {};
     const toSave = { ...base, seenWelcome: true, testFrequency: freq };
     if (selectedLang) toSave.language = selectedLang;
-    await saveProfile(toSave);
+    try {
+      await saveProfile(toSave);
+    } catch (e) {
+      console.warn('saveProfile failed during welcome:', e);
+    }
     router.replace('/onboarding');
   }
 

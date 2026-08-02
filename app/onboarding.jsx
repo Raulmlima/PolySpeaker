@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  ScrollView, StatusBar, Alert,
+  ScrollView, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -29,16 +29,19 @@ export default function OnboardingScreen() {
   }, []);
 
   async function finish() {
+    const p = await getProfile().catch(() => null);
+    const base = p ?? {};
     try {
-      const p = await getProfile();
-      const base = p ?? {};
       await saveProfile({ ...base, language: selectedLang, level: selectedLevel });
-      scheduleSRSReminder().catch(() => {});
-      scheduleStreakReminder().catch(() => {});
-      router.replace('/');
     } catch (e) {
-      Alert.alert('Erro', 'Não foi possível salvar o perfil. Verifique o armazenamento do dispositivo.');
+      // AsyncStorage failing here would be catastrophic and device-specific —
+      // don't trap the user in onboarding over it, just proceed and retry the
+      // save silently on the next screen where the profile is read again.
+      console.warn('saveProfile failed during onboarding:', e);
     }
+    scheduleSRSReminder().catch(() => {});
+    scheduleStreakReminder().catch(() => {});
+    router.replace('/');
   }
 
   const langInfo = LANGUAGES.find(l => l.id === selectedLang);
