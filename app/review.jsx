@@ -115,6 +115,21 @@ export default function ReviewScreen() {
     }
   }
 
+  // Moves the current item to the end of the queue without answering it —
+  // doesn't touch its SRS schedule, just lets the user skip past it in this
+  // session (useful when reviews from multiple languages are interleaved).
+  function handleSkip() {
+    if (feedback || isLast) return;
+    setItems(list => {
+      const copy = [...list];
+      const [cur] = copy.splice(idx, 1);
+      copy.push(cur);
+      return copy;
+    });
+    setInput('');
+    setFeedback(null);
+  }
+
   function speak() {
     Speech.stop();
     const ttsText = langInfo.id === 'zh' && item.correct_answer?.includes(' — ')
@@ -135,14 +150,20 @@ export default function ReviewScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+        <TouchableOpacity onPress={() => router.replace('/')} style={s.backBtn}>
           <Text style={s.backBtnText}>✕ Sair</Text>
         </TouchableOpacity>
         <View style={s.headerCenter}>
           <Text style={s.headerTitle}>Revisão SRS</Text>
           <Text style={s.headerMeta}>{idx + 1}/{items.length} · {reviewLabel}</Text>
         </View>
-        <View style={{ width: 70 }} />
+        {items.length > 1 ? (
+          <TouchableOpacity onPress={handleSkip} style={s.skipBtn} disabled={!!feedback || isLast}>
+            <Text style={[s.skipBtnText, (!!feedback || isLast) && s.skipBtnTextDisabled]}>Pular →</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 70 }} />
+        )}
       </View>
 
       <View style={s.progressBar}>
@@ -246,6 +267,9 @@ const s = StyleSheet.create({
   headerMeta: { fontSize: 11, color: C.textMuted, marginTop: 2 },
   backBtn: { paddingVertical: 6, paddingHorizontal: 10, minWidth: 70 },
   backBtnText: { fontSize: 14, color: C.incorrect, fontWeight: '700' },
+  skipBtn: { paddingVertical: 6, paddingHorizontal: 10, minWidth: 70, alignItems: 'flex-end' },
+  skipBtnText: { fontSize: 14, color: C.accent, fontWeight: '700' },
+  skipBtnTextDisabled: { color: C.border },
   progressBar: { height: 3, backgroundColor: C.border },
   progressFill: { height: 3, backgroundColor: '#8B6F47' },
   scroll: { paddingHorizontal: 22, paddingTop: 20 },
