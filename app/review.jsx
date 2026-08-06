@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import * as Speech from 'expo-speech';
-import { LANGUAGES } from '../src/storage';
+import { LANGUAGES, getProfile } from '../src/storage';
 import { checkAnswer } from '../src/utils/compare';
 import { getReviewsDue, markReviewCorrect, markReviewWrong } from '../src/db/database';
 import { playCorrect, playWrong } from '../src/utils/sounds';
@@ -25,10 +25,15 @@ export default function ReviewScreen() {
   const [feedback, setFeedback] = useState(null); // null | 'correct' | 'incorrect'
   const [done, setDone] = useState(false);
   const [correct, setCorrect] = useState(0);
+  const [activeLang, setActiveLang] = useState('es');
   const inputRef = useRef(null);
 
   useEffect(() => {
-    getReviewsDue(db).then(rows => {
+    getProfile().then(p => {
+      const lang = p?.language ?? 'es';
+      setActiveLang(lang);
+      return getReviewsDue(db, lang);
+    }).then(rows => {
       setItems(rows);
     }).catch(() => setItems([]));
   }, []);
@@ -83,7 +88,7 @@ export default function ReviewScreen() {
             <Text style={s.doneBtnText}>Voltar ao início</Text>
           </TouchableOpacity>
         </ScrollView>
-        <TabBar active="review" />
+        <TabBar active="review" lang={activeLang} />
       </SafeAreaView>
     );
   }

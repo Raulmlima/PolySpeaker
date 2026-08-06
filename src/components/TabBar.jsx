@@ -54,8 +54,8 @@ export default function TabBar({ active, lang }) {
   const [reviewCount, setReviewCount] = useState(0);
 
   useFocusEffect(useCallback(() => {
-    getReviewCount(db).then(setReviewCount).catch(() => {});
-  }, []));
+    getReviewCount(db, lang ?? 'es').then(setReviewCount).catch(() => {});
+  }, [lang]));
 
   function go(tab) {
     if (tab.key === active) return;

@@ -96,7 +96,7 @@ export default function HomeScreen() {
       }
       const withStreak = await updateWeekStreak(activeProfile);
       setProfile(withStreak);
-      const cnt = await getReviewCount(db).catch(() => 0);
+      const cnt = await getReviewCount(db, withStreak.language ?? 'es').catch(() => 0);
       setReviewCount(cnt);
       const todayLocal = new Date();
       const todayKey = `${todayLocal.getFullYear()}-${String(todayLocal.getMonth() + 1).padStart(2, '0')}-${String(todayLocal.getDate()).padStart(2, '0')}`;

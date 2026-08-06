@@ -81,17 +81,23 @@ export async function addWrongSentence(db, moduleId, exIdx, senIdx, prompt, corr
   );
 }
 
-export async function getReviewsDue(db) {
+// Daily review is capped at 5 sentences and scoped to the language the user
+// is currently studying — mixing every language ever studied into one queue
+// made review feel random and unmanageable. Anything past 5 stays queued
+// (next_review untouched) and surfaces on a later day.
+const DAILY_REVIEW_LIMIT = 5;
+
+export async function getReviewsDue(db, language) {
   return db.getAllAsync(
-    'SELECT * FROM wrong_sentences WHERE next_review <= ? ORDER BY next_review ASC',
-    [Date.now()]
+    'SELECT * FROM wrong_sentences WHERE language = ? AND next_review <= ? ORDER BY next_review ASC LIMIT ?',
+    [language, Date.now(), DAILY_REVIEW_LIMIT]
   );
 }
 
-export async function getReviewCount(db) {
+export async function getReviewCount(db, language) {
   const row = await db.getFirstAsync(
-    'SELECT COUNT(*) as cnt FROM wrong_sentences WHERE next_review <= ?',
-    [Date.now()]
+    'SELECT COUNT(*) as cnt FROM (SELECT id FROM wrong_sentences WHERE language = ? AND next_review <= ? LIMIT ?)',
+    [language, Date.now(), DAILY_REVIEW_LIMIT]
   );
   return row?.cnt ?? 0;
 }
