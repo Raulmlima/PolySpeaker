@@ -23,8 +23,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import * as Speech from 'expo-speech';
-import { getAllLanguageModules } from '../../src/data/modules';
-import { LANGUAGES, getProfile, saveProfile } from '../../src/storage';
+import { getAllLanguageModules, getTotalSentences, STAGES } from '../../src/data/modules';
+import { LANGUAGES, getProfile, saveProfile, getStageLabel } from '../../src/storage';
 import { checkAnswer } from '../../src/utils/compare';
 import { aiCheckAnswer, AI_CHECK_URL } from '../../src/utils/aiCheck';
 import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
@@ -33,7 +33,7 @@ import AdBanner from '../../src/components/AdBanner';
 import ExerciseCompleteOverlay from '../../src/components/ExerciseCompleteOverlay';
 import AiConsentModal from '../../src/components/AiConsentModal';
 import TappableSentence from '../../src/components/TappableSentence';
-import { markSentenceComplete, addWrongSentence, logEvent, getCompletedSentences } from '../../src/db/database';
+import { markSentenceComplete, addWrongSentence, logEvent, getCompletedSentences, getAllProgress } from '../../src/db/database';
 import { markPracticedToday } from '../../src/notifications';
 import { C } from '../../src/theme';
 import TheoryRenderer from '../../src/components/TheoryRenderer';
@@ -64,6 +64,7 @@ export default function ExerciseScreen() {
   const [aiMistakeNote, setAiMistakeNote] = useState(null); // short AI explanation when genuinely wrong
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showExerciseCompleteModal, setShowExerciseCompleteModal] = useState(false);
+  const [stageCompleteInfo, setStageCompleteInfo] = useState(null); // { stageLabel, nextStageLabel } | null
   // Listening exercise phase (after all translation exercises)
   const [listeningPhase, setListeningPhase] = useState(false);
   const [listeningChoice, setListeningChoice] = useState(null); // index chosen
@@ -261,6 +262,36 @@ export default function ExerciseScreen() {
     inputRef.current?.blur();
   }
 
+  // Called from every place the module can finish. Checks whether the
+  // module just completed was the LAST one in its stage — if so, the modal
+  // celebrates the whole stage (e.g. "Você completou o Básico!") instead of
+  // just this module, and names what unlocks next.
+  async function finishModule() {
+    logEvent(db, 'module_complete', mod.id, mod.language ?? 'es');
+    try {
+      const rows = await getAllProgress(db);
+      const progressMap = {};
+      rows.forEach(r => { progressMap[r.module_id] = r.cnt; });
+      const allMods = getAllLanguageModules().filter(m => m.language === mod.language);
+      const stageMods = allMods.filter(m => m.stage === mod.stage && !m.isReview && getTotalSentences(m) > 0);
+      const allStageDone = stageMods.length > 0 && stageMods.every(m => (progressMap[m.id] ?? 0) >= getTotalSentences(m));
+      if (allStageDone) {
+        const uiGroup = langInfo.group ?? 'pt';
+        const stageIdx = STAGES.indexOf(mod.stage);
+        const nextStage = STAGES.slice(stageIdx + 1).find(s => allMods.some(m => m.stage === s && getTotalSentences(m) > 0));
+        setStageCompleteInfo({
+          stageLabel: getStageLabel(mod.stage, uiGroup),
+          nextStageLabel: nextStage ? getStageLabel(nextStage, uiGroup) : null,
+        });
+      } else {
+        setStageCompleteInfo(null);
+      }
+    } catch (e) {
+      setStageCompleteInfo(null);
+    }
+    setShowCompleteModal(true);
+  }
+
   function handleNext() {
     setInput('');
     setFeedback(null);
@@ -286,8 +317,7 @@ export default function ExerciseScreen() {
       setListeningPhase(true);
       return;
     } else {
-      logEvent(db, 'module_complete', mod.id, mod.language ?? 'es');
-      setShowCompleteModal(true);
+      finishModule();
       return;
     }
     setTimeout(() => inputRef.current?.focus(), 120);
@@ -459,7 +489,7 @@ export default function ExerciseScreen() {
                   {correct ? '✓ Correto! Boa compreensão auditiva.' : `✗ Incorreto. A resposta certa era: "${opts.find(o => o.correct)?.text}"`}
                 </Text>
               </View>
-              <TouchableOpacity style={styles.nextBtn} onPress={() => setShowCompleteModal(true)}>
+              <TouchableOpacity style={styles.nextBtn} onPress={finishModule}>
                 <Text style={styles.nextBtnText}>Concluir módulo ✓</Text>
               </TouchableOpacity>
             </>
@@ -471,9 +501,23 @@ export default function ExerciseScreen() {
         <Modal visible={showCompleteModal} transparent animationType="fade">
           <View style={styles.completeOverlay}>
             <View style={styles.completeCard}>
-              <Poly size={100} mood="happy" />
-              <Text style={styles.completeTitle}>Módulo concluído!</Text>
-              <Text style={styles.completeBody}>Poly tá orgulhoso de você. Bora pro próximo?</Text>
+              {stageCompleteInfo ? (
+                <>
+                  <Text style={styles.stageTrophy}>🏆</Text>
+                  <Text style={styles.completeTitle}>Você completou {stageCompleteInfo.stageLabel}!</Text>
+                  <Text style={styles.completeBody}>
+                    {stageCompleteInfo.nextStageLabel
+                      ? `Poly tá muito orgulhoso. A seguir: ${stageCompleteInfo.nextStageLabel}.`
+                      : 'Poly tá muito orgulhoso de você!'}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Poly size={100} mood="happy" />
+                  <Text style={styles.completeTitle}>Módulo concluído!</Text>
+                  <Text style={styles.completeBody}>Poly tá orgulhoso de você. Bora pro próximo?</Text>
+                </>
+              )}
               <TouchableOpacity style={styles.completeBtn} onPress={() => { router.back(); setTimeout(() => showInterstitialIfReady(), 400); }}>
                 <Text style={styles.completeBtnText}>Continuar →</Text>
               </TouchableOpacity>
@@ -904,7 +948,8 @@ const styles = StyleSheet.create({
     backgroundColor: C.bg, borderRadius: 16, padding: 28, alignItems: 'center',
     width: '100%', maxWidth: 320,
   },
-  completeTitle: { fontSize: 20, fontWeight: '700', color: C.text, marginTop: 14 },
+  completeTitle: { fontSize: 20, fontWeight: '700', color: C.text, marginTop: 14, textAlign: 'center' },
+  stageTrophy: { fontSize: 64 },
   completeBody: { fontSize: 14, color: C.textMuted, textAlign: 'center', marginTop: 8, marginBottom: 22 },
   completeBtn: { backgroundColor: C.accent, borderRadius: 8, paddingVertical: 14, paddingHorizontal: 32 },
   completeBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
