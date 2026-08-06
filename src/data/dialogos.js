@@ -561,8 +561,16 @@ function loadDialogosExtra() {
   return _dialogosExtra;
 }
 
+// Only es/en/de have native dialog content today. Every other language used
+// to silently fall back to the Spanish set here — same UI, wrong language,
+// impossible to notice until a learner spotted Spanish sentences mislabeled
+// as French/Italian/etc. Returning null now forces the screen to show an
+// honest "coming soon" state instead of leaking the wrong language.
+const HAS_DIALOGOS = new Set(['es', 'en', 'de']);
+
 export function getDialogosForLang(lang) {
-  if (!lang || lang === 'es') return DIALOGOS;
+  if (!lang || !HAS_DIALOGOS.has(lang)) return null;
+  if (lang === 'es') return DIALOGOS;
   const extra = loadDialogosExtra();
-  return extra[lang] ?? DIALOGOS;
+  return extra[lang] ?? null;
 }

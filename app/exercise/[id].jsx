@@ -51,11 +51,6 @@ export default function ExerciseScreen() {
   const [feedback, setFeedback] = useState(null);
   const [showVars, setShowVars] = useState(false);
   const [showTheory, setShowTheory] = useState(false);
-  const [dictOpen, setDictOpen] = useState(false);
-  const [dictQuery, setDictQuery] = useState('');
-  const [dictResult, setDictResult] = useState(null);
-  const [dictLoading, setDictLoading] = useState(false);
-  const [dictError, setDictError] = useState(null);
   const [micState, setMicState] = useState('idle'); // idle | listening | result
   const [micTranscript, setMicTranscript] = useState('');
   const [micMatch, setMicMatch] = useState(null);
@@ -76,7 +71,6 @@ export default function ExerciseScreen() {
   const [aiConsentGranted, setAiConsentGranted] = useState(null); // null=unknown, true/false
   const pendingAiCallRef = useRef(null);
   const inputRef = useRef(null);
-  const dictInputRef = useRef(null);
   const routerRef = useRef(router);
 
   useEffect(() => {
@@ -268,9 +262,6 @@ export default function ExerciseScreen() {
     setInput('');
     setFeedback(null);
     setShowVars(false);
-    setDictOpen(false);
-    setDictResult(null);
-    setDictQuery('');
     setMicState('idle');
     setMicTranscript('');
     setMicMatch(null);
@@ -317,39 +308,6 @@ export default function ExerciseScreen() {
       } catch (_) {}
     }
     Linking.openURL(urls[0]);
-  }
-
-  async function searchDict() {
-    const word = dictQuery.trim();
-    if (!word) return;
-    if (word.split(/\s+/).length > 6) {
-      setDictError('Use apenas uma palavra ou expressão curta — não frases inteiras.');
-      return;
-    }
-    const consent = await getConsent();
-    if (!consent) return;
-    setDictLoading(true);
-    setDictError(null);
-    setDictResult(null);
-    try {
-      const res = await fetch(`${AI_CHECK_URL}/dict`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ word, language: mod.language ?? 'es' }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.translation) throw new Error('Não encontrado');
-      setDictResult({
-        word,
-        main: data.translation,
-        pronunciation: data.pronunciation ?? '',
-        alts: data.alternates ?? [],
-      });
-    } catch {
-      setDictError('Palavra não encontrada ou sem conexão.');
-    } finally {
-      setDictLoading(false);
-    }
   }
 
   const correctAnswer = sentence?.answers[0];
@@ -833,64 +791,6 @@ export default function ExerciseScreen() {
             </TouchableOpacity>
           )}
 
-          {/* Inline dictionary */}
-          <View style={styles.dictSection}>
-            <TouchableOpacity
-              style={styles.dictToggle}
-              onPress={() => {
-                Keyboard.dismiss();
-                setDictOpen(v => !v);
-                if (!dictOpen) setTimeout(() => dictInputRef.current?.focus(), 300);
-              }}>
-              {!dictOpen && <Poly size={20} mood="neutral" />}
-              <Text style={styles.dictToggleText}>
-                {dictOpen
-                  ? '- Fechar Dicionário Poly'
-                  : langInfo.reverseMode
-                    ? `Dicionário Poly  ${langInfo.group === 'ar' ? 'AR' : 'EN'} → PT`
-                    : `Dicionário Poly  PT → ${langInfo.label}`}
-              </Text>
-            </TouchableOpacity>
-
-            {dictOpen && (
-              <View style={styles.dictBody}>
-                <View style={styles.dictSearchRow}>
-                  <TextInput
-                    ref={dictInputRef}
-                    style={styles.dictInput}
-                    placeholder={`Palavra em ${langInfo.dictFromLabel ?? 'português'}...`}
-                    placeholderTextColor={C.textMuted}
-                    value={dictQuery}
-                    onChangeText={setDictQuery}
-                    onSubmitEditing={searchDict}
-                    returnKeyType="search"
-                    autoCapitalize="none"
-                    maxLength={60}
-                  />
-                  <TouchableOpacity style={styles.dictSearchBtn} onPress={searchDict}>
-                    <Text style={styles.dictSearchBtnText}>Buscar</Text>
-                  </TouchableOpacity>
-                </View>
-                {dictLoading && <ActivityIndicator color={C.accent} style={{ marginTop: 16 }} />}
-                {dictError && <Text style={styles.dictError}>{dictError}</Text>}
-                {dictResult && (
-                  <View style={styles.dictResult}>
-                    <Text style={styles.dictArrow}>↓</Text>
-                    <View style={styles.dictResultBox}>
-                      <Text style={styles.dictMainTrans}>{dictResult.main}</Text>
-                      {dictResult.pronunciation ? (
-                        <Text style={styles.dictPronunciation}>{dictResult.pronunciation}</Text>
-                      ) : null}
-                    </View>
-                    {dictResult.alts.map((a, i) => (
-                      <Text key={i} style={styles.dictAlt}>• {a}</Text>
-                    ))}
-                  </View>
-                )}
-              </View>
-            )}
-          </View>
-
           <View style={{ height: 60 }} />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -994,33 +894,6 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: C.border, borderRadius: 8, marginBottom: 20,
   },
   iaBtnText: { fontSize: 14, color: C.accent },
-  // Inline dict
-  dictSection: { borderTopWidth: 1, borderTopColor: C.border, paddingTop: 12 },
-  dictToggle: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 },
-  dictToggleText: { fontSize: 14, color: C.accent, fontWeight: '600' },
-  dictBody: { marginTop: 12 },
-  dictSearchRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  dictInput: {
-    flex: 1, borderWidth: 1.5, borderColor: C.border, borderRadius: 6,
-    paddingHorizontal: 12, paddingVertical: 10,
-    fontSize: 15, color: C.text, backgroundColor: C.bgAlt,
-  },
-  dictSearchBtn: {
-    backgroundColor: C.accent, borderRadius: 6,
-    paddingHorizontal: 14, justifyContent: 'center',
-  },
-  dictSearchBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
-  dictError: { fontSize: 14, color: C.incorrect, textAlign: 'center', marginTop: 8 },
-  dictResult: { paddingTop: 4, paddingBottom: 8 },
-  dictArrow: { fontSize: 18, color: C.textMuted, textAlign: 'center', marginBottom: 6 },
-  dictResultBox: {
-    borderWidth: 1.5, borderColor: C.border, borderRadius: 6,
-    paddingHorizontal: 14, paddingVertical: 12,
-    backgroundColor: C.bgAlt, marginBottom: 8,
-  },
-  dictMainTrans: { fontSize: 20, fontWeight: '700', color: C.text },
-  dictPronunciation: { fontSize: 14, color: C.accent, fontStyle: 'italic', marginTop: 4 },
-  dictAlt: { fontSize: 14, color: C.accent, marginTop: 4, marginLeft: 2 },
   // Coming soon
   comingSoonScroll: { padding: 28, alignItems: 'center', justifyContent: 'center', flex: 1 },
   comingSoonTitle: { fontSize: 22, fontWeight: '700', color: C.text, textAlign: 'center' },

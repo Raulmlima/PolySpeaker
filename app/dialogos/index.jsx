@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { getDialogosForLang } from '../../src/data/dialogos';
 import { LANGUAGES, LANGUAGE_GROUPS } from '../../src/storage';
-import { C } from '../../src/theme';
+import { C, cardShadow } from '../../src/theme';
 import TabBar from '../../src/components/TabBar';
+import Poly from '../../src/components/Poly';
 
 const LEVELS = ['basico', 'intermediario', 'avancado', 'fluente'];
 
@@ -24,26 +25,40 @@ export default function DialogosScreen() {
         <Text style={styles.headerTitle}>Diálogos Reais</Text>
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.intro}>
-          {isReverse
-            ? `Traduza conversas reais para o português. Escolha um nível:`
-            : `Traduza conversas reais do português para o ${langLabel.toLowerCase()}. Escolha um nível:`}
-        </Text>
-        {LEVELS.map(level => {
-          const d = DIALOGOS[level];
-          if (!d) return null;
-          return (
-            <TouchableOpacity
-              key={level}
-              style={styles.levelCard}
-              onPress={() => router.push(`/dialogos/${level}?lang=${activeLang}`)}
-              activeOpacity={0.7}>
-              <Text style={styles.levelLabel}>{d.label}</Text>
-              <Text style={styles.levelDesc}>{d.desc}</Text>
-              <Text style={styles.levelCount}>{d.dialogos.length} diálogos</Text>
-            </TouchableOpacity>
-          );
-        })}
+        {!DIALOGOS ? (
+          <View style={styles.comingSoon}>
+            <Poly size={72} mood="neutral" />
+            <Text style={styles.comingSoonTitle}>Diálogos de {langLabel} a caminho</Text>
+            <Text style={styles.comingSoonBody}>
+              Ainda não temos conversas reais prontas para {langLabel.toLowerCase()}. Estamos
+              escrevendo esse conteúdo com cuidado — sem atalhos — e ele chega em breve.
+              Enquanto isso, continue pela trilha principal.
+            </Text>
+          </View>
+        ) : (
+          <>
+            <Text style={styles.intro}>
+              {isReverse
+                ? `Traduza conversas reais para o português. Escolha um nível:`
+                : `Traduza conversas reais do português para o ${langLabel.toLowerCase()}. Escolha um nível:`}
+            </Text>
+            {LEVELS.map(level => {
+              const d = DIALOGOS[level];
+              if (!d) return null;
+              return (
+                <TouchableOpacity
+                  key={level}
+                  style={styles.levelCard}
+                  onPress={() => router.push(`/dialogos/${level}?lang=${activeLang}`)}
+                  activeOpacity={0.7}>
+                  <Text style={styles.levelLabel}>{d.label}</Text>
+                  <Text style={styles.levelDesc}>{d.desc}</Text>
+                  <Text style={styles.levelCount}>{d.dialogos.length} diálogos</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </>
+        )}
         <View style={{ height: 40 }} />
       </ScrollView>
       <TabBar active="dialogos" lang={activeLang} />
@@ -70,4 +85,7 @@ const styles = StyleSheet.create({
   levelLabel: { fontSize: 18, fontWeight: '700', color: C.text, marginBottom: 4 },
   levelDesc: { fontSize: 13, color: C.textMuted, fontStyle: 'italic', marginBottom: 8 },
   levelCount: { fontSize: 11, color: C.accent },
+  comingSoon: { alignItems: 'center', paddingTop: 48, paddingHorizontal: 12 },
+  comingSoonTitle: { fontSize: 19, fontWeight: '800', color: C.text, marginTop: 18, textAlign: 'center' },
+  comingSoonBody: { fontSize: 14, color: C.textMuted, textAlign: 'center', lineHeight: 21, marginTop: 10 },
 });

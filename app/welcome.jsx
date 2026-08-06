@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { getProfile, saveProfile, LANGUAGES, getOrderedLanguageGroups } from '../src/storage';
 import { C } from '../src/theme';
 import Poly from '../src/components/Poly';
+import TutorialOverlay from '../src/components/TutorialOverlay';
 
 const { width } = Dimensions.get('window');
 
@@ -238,6 +239,7 @@ export default function WelcomeScreen() {
   const [current, setCurrent] = useState(0);
   const [freq, setFreq] = useState('weekly');
   const [selectedLang, setSelectedLang] = useState(null);
+  const [showTutorial, setShowTutorial] = useState(false);
   const flatRef = useRef(null);
 
   function goTo(idx) {
@@ -257,6 +259,10 @@ export default function WelcomeScreen() {
   }
 
   async function finish() {
+    setShowTutorial(true);
+  }
+
+  async function finishTutorial() {
     const p = await getProfile().catch(() => null);
     const base = p ?? {};
     const toSave = { ...base, seenWelcome: true, testFrequency: freq };
@@ -341,6 +347,8 @@ export default function WelcomeScreen() {
           <Text style={styles.skipBtnText}>Pular apresentação</Text>
         </TouchableOpacity>
       )}
+
+      <TutorialOverlay visible={showTutorial} onFinish={finishTutorial} />
     </SafeAreaView>
   );
 }
