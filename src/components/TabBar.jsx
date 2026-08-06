@@ -1,17 +1,49 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter, usePathname, useFocusEffect } from 'expo-router';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getReviewCount } from '../db/database';
 import { C } from '../theme';
+import { TrailIcon, ReviewIcon, DialogosIcon, ProfileIcon } from './TabIcons';
 
 const TABS = [
-  { key: 'home', label: 'Trilha', icon: '🏠', path: '/' },
-  { key: 'review', label: 'Revisão', icon: '📚', path: '/review' },
-  { key: 'dialogos', label: 'Diálogos', icon: '💬', path: '/dialogos' },
-  { key: 'profile', label: 'Perfil', icon: '👤', path: '/profile' },
+  { key: 'home', label: 'Trilha', Icon: TrailIcon, path: '/' },
+  { key: 'review', label: 'Revisão', Icon: ReviewIcon, path: '/review' },
+  { key: 'dialogos', label: 'Diálogos', Icon: DialogosIcon, path: '/dialogos' },
+  { key: 'profile', label: 'Perfil', Icon: ProfileIcon, path: '/profile' },
 ];
+
+function TabButton({ tab, isActive, reviewCount, onPress }) {
+  const scale = useRef(new Animated.Value(isActive ? 1 : 0.88)).current;
+
+  useEffect(() => {
+    Animated.spring(scale, {
+      toValue: isActive ? 1 : 0.88,
+      friction: 5,
+      tension: 140,
+      useNativeDriver: true,
+    }).start();
+  }, [isActive]);
+
+  const { Icon } = tab;
+  const color = isActive ? C.accent : C.textMuted;
+
+  return (
+    <TouchableOpacity style={styles.tab} onPress={onPress} activeOpacity={0.65}>
+      <Animated.View style={[styles.iconWrap, { transform: [{ scale }] }]}>
+        <Icon color={color} active={isActive} />
+        {tab.key === 'review' && reviewCount > 0 && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{reviewCount > 99 ? '99+' : reviewCount}</Text>
+          </View>
+        )}
+      </Animated.View>
+      <Text style={[styles.label, isActive && styles.labelActive]}>{tab.label}</Text>
+      {isActive && <View style={styles.activeDot} />}
+    </TouchableOpacity>
+  );
+}
 
 // Bottom navigation shared by the four main screens. `active` is which tab the
 // current screen belongs to; navigation uses replace to avoid stacking.
@@ -34,23 +66,15 @@ export default function TabBar({ active, lang }) {
 
   return (
     <View style={[styles.bar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
-      {TABS.map(tab => {
-        const isActive = tab.key === active;
-        return (
-          <TouchableOpacity key={tab.key} style={styles.tab} onPress={() => go(tab)} activeOpacity={0.65}>
-            <View style={styles.iconWrap}>
-              <Text style={[styles.icon, !isActive && styles.iconMuted]}>{tab.icon}</Text>
-              {tab.key === 'review' && reviewCount > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{reviewCount > 99 ? '99+' : reviewCount}</Text>
-                </View>
-              )}
-            </View>
-            <Text style={[styles.label, isActive && styles.labelActive]}>{tab.label}</Text>
-            {isActive && <View style={styles.activeDot} />}
-          </TouchableOpacity>
-        );
-      })}
+      {TABS.map(tab => (
+        <TabButton
+          key={tab.key}
+          tab={tab}
+          isActive={tab.key === active}
+          reviewCount={reviewCount}
+          onPress={() => go(tab)}
+        />
+      ))}
     </View>
   );
 }
@@ -63,15 +87,13 @@ const styles = StyleSheet.create({
     borderTopColor: C.border,
     paddingTop: 8,
   },
-  tab: { flex: 1, alignItems: 'center', gap: 2 },
+  tab: { flex: 1, alignItems: 'center', gap: 3 },
   iconWrap: { position: 'relative' },
-  icon: { fontSize: 20 },
-  iconMuted: { opacity: 0.45 },
   label: { fontSize: 10, fontWeight: '600', color: C.textMuted },
-  labelActive: { color: C.accent },
+  labelActive: { color: C.accent, fontWeight: '700' },
   activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: C.accent, marginTop: 1 },
   badge: {
-    position: 'absolute', top: -4, right: -10,
+    position: 'absolute', top: -6, right: -12,
     backgroundColor: C.incorrect, borderRadius: 8, minWidth: 16, height: 16,
     alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4,
   },

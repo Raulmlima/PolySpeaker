@@ -662,6 +662,7 @@ export default function ExerciseScreen() {
             <TappableSentence
               text={sentence?.prompt}
               language={mod.language ?? 'es'}
+              contextLang={langInfo.reverseMode ? (langInfo.group ?? 'en') : 'pt'}
               textStyle={styles.promptText}
               ensureConsent={getConsent}
             />

@@ -50,6 +50,7 @@ export default function HomeScreen() {
   const [reviewCount, setReviewCount] = useState(0);
   const scrollRef = useRef(null);
   const floatAnim = useRef(new Animated.Value(0)).current;
+  const glowAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     initAds().then(() => prepareInterstitial()).catch(() => {});
@@ -57,6 +58,12 @@ export default function HomeScreen() {
       Animated.sequence([
         Animated.timing(floatAnim, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
         Animated.timing(floatAnim, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ])
+    ).start();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, { toValue: 1, duration: 1100, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+        Animated.timing(glowAnim, { toValue: 0, duration: 1100, easing: Easing.in(Easing.quad), useNativeDriver: true }),
       ])
     ).start();
   }, []);
@@ -208,8 +215,14 @@ export default function HomeScreen() {
               <Text style={styles.continueTitle} numberOfLines={1}>{nextModule.title}</Text>
               <Text style={styles.continueStage}>{getStageLabel(nextModuleStage, uiGroup)}</Text>
             </View>
-            <View style={styles.continueBtn}>
-              <Text style={styles.continueBtnText}>▶</Text>
+            <View style={styles.continueBtnWrap}>
+              <Animated.View style={[styles.continueBtnGlow, {
+                opacity: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.45, 0] }),
+                transform: [{ scale: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.55] }) }],
+              }]} />
+              <View style={styles.continueBtn}>
+                <Text style={styles.continueBtnText}>▶</Text>
+              </View>
             </View>
           </TouchableOpacity>
         )}
@@ -474,6 +487,11 @@ const styles = StyleSheet.create({
   continueLabel: { fontSize: 10, fontWeight: '800', color: C.accent, letterSpacing: 1.5, marginBottom: 4 },
   continueTitle: { fontSize: 17, fontWeight: '800', color: C.text },
   continueStage: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  continueBtnWrap: { width: 52, height: 52, alignItems: 'center', justifyContent: 'center' },
+  continueBtnGlow: {
+    position: 'absolute', width: 52, height: 52, borderRadius: 26,
+    backgroundColor: C.accent,
+  },
   continueBtn: {
     width: 52, height: 52, borderRadius: 26,
     backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center',

@@ -8,9 +8,15 @@ const cache = {};
 
 // Duolingo-style tappable sentence: each word can be tapped to show its
 // translation in a bubble above the sentence. `language` is the module's
-// target language (the worker dictionary is bilingual pt ↔ target).
+// foreign language (the worker dictionary is bilingual pt ↔ that language).
+// `contextLang` is the ACTUAL language `text` is written in — defaults to
+// `language`, but must be 'pt' when this text is a Portuguese prompt (most
+// modules show the prompt in Portuguese and only the answer in the foreign
+// language; only reverse-mode modules flip that). Getting this wrong makes
+// the model think a Portuguese sentence is already in the target language
+// and echo the word back untranslated instead of translating it.
 // `ensureConsent` (optional async → bool) gates the DeepSeek call.
-export default function TappableSentence({ text, language, textStyle, ensureConsent }) {
+export default function TappableSentence({ text, language, contextLang, textStyle, ensureConsent }) {
   const [sel, setSel] = useState(null); // { idx, word, state: 'loading'|'done'|'error', translation }
 
   async function tapWord(rawWord, idx) {
@@ -35,12 +41,15 @@ export default function TappableSentence({ text, language, textStyle, ensureCons
       const res = await fetch(`${AI_CHECK_URL}/dict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ word, language, context: text }),
+        body: JSON.stringify({ word, language, context: text, contextLang: contextLang ?? language }),
       });
       const data = await res.json();
-      if (!res.ok || !data.translation) throw new Error('no translation');
-      cache[key] = data.translation;
-      setSel(s => (s && s.idx === idx ? { idx, word, state: 'done', translation: data.translation } : s));
+      // Safety net: a single tapped word should never come back as a full
+      // sentence — cap it so a model slip-up can't blow up the whole layout.
+      const translation = String(data.translation ?? '').slice(0, 80);
+      if (!res.ok || !translation) throw new Error('no translation');
+      cache[key] = translation;
+      setSel(s => (s && s.idx === idx ? { idx, word, state: 'done', translation } : s));
     } catch {
       setSel(s => (s && s.idx === idx ? { idx, word, state: 'error' } : s));
     }

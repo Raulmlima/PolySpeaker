@@ -188,6 +188,7 @@ export default function ReviewScreen() {
             <TappableSentence
               text={item.prompt}
               language={item.language}
+              contextLang={langInfo.reverseMode ? (langInfo.group ?? 'en') : 'pt'}
               textStyle={s.promptText}
               ensureConsent={hasAiConsent}
             />
