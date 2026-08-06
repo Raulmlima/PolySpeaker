@@ -3,11 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'rea
 import { AI_CHECK_URL } from '../utils/aiCheck';
 import { C } from '../theme';
 
-// In-memory translation cache — a word tapped once never refetches this
-// session. Cleared automatically on cold app restart (it's just a module
-// variable), which is when a stale/wrong cached value would ever matter.
-const cache = {};
-
 const BUBBLE_MAX_WIDTH = 220;
 const BUBBLE_GAP = 10; // space between bubble and the word above which it sits
 const DEFAULT_BUBBLE_H = 40;
@@ -49,13 +44,9 @@ export default function TappableSentence({ text, language, contextLang, textStyl
       if (!ok) return;
     }
 
-    // Keyed by sentence too — the same word can mean something different
-    // depending on its conjugation/gender/number in this specific sentence.
-    const key = `${language}:${(text ?? '').toLowerCase()}:${word.toLowerCase()}`;
-    if (cache[key]) {
-      setSel({ idx, word, state: 'done', translation: cache[key] });
-      return;
-    }
+    // No caching — this is a single learning session, and a stale cached
+    // value hanging around after a fix or a rare model slip is worse than
+    // the cost of one extra cheap API call per tap.
     setSel({ idx, word, state: 'loading' });
     try {
       const res = await fetch(`${AI_CHECK_URL}/dict`, {
@@ -68,7 +59,6 @@ export default function TappableSentence({ text, language, contextLang, textStyl
       // sentence — cap it so a model slip-up can't blow up the layout.
       const translation = String(data.translation ?? '').slice(0, 80);
       if (!res.ok || !translation) throw new Error('no translation');
-      cache[key] = translation;
       setSel(s => (s && s.idx === idx ? { idx, word, state: 'done', translation } : s));
     } catch {
       setSel(s => (s && s.idx === idx ? { idx, word, state: 'error' } : s));
