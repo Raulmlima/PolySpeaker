@@ -13,6 +13,8 @@ import { getReviewsDue, markReviewCorrect, markReviewWrong } from '../src/db/dat
 import { playCorrect, playWrong } from '../src/utils/sounds';
 import { C } from '../src/theme';
 import TabBar from '../src/components/TabBar';
+import TappableSentence from '../src/components/TappableSentence';
+import { hasAiConsent } from '../src/utils/aiConsent';
 
 export default function ReviewScreen() {
   const router = useRouter();
@@ -183,7 +185,12 @@ export default function ReviewScreen() {
             <Text style={s.promptLabel}>
               {langInfo.reverseMode ? 'Como se diz em português?' : `Traduza para o ${langInfo.label?.toLowerCase()}`}
             </Text>
-            <Text style={s.promptText}>{item.prompt}</Text>
+            <TappableSentence
+              text={item.prompt}
+              language={item.language}
+              textStyle={s.promptText}
+              ensureConsent={hasAiConsent}
+            />
           </View>
 
           <TextInput

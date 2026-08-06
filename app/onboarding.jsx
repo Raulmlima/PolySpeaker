@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { getProfile, saveProfile, getLevels, LANGUAGES, getOrderedLanguageGroups } from '../src/storage';
-import { scheduleSRSReminder, scheduleStreakReminder } from '../src/notifications';
+import { scheduleDailyReminder } from '../src/notifications';
 import { C } from '../src/theme';
 import Poly from '../src/components/Poly';
 
@@ -39,8 +39,7 @@ export default function OnboardingScreen() {
       // save silently on the next screen where the profile is read again.
       console.warn('saveProfile failed during onboarding:', e);
     }
-    scheduleSRSReminder().catch(() => {});
-    scheduleStreakReminder().catch(() => {});
+    scheduleDailyReminder().catch(() => {});
     router.replace('/');
   }
 

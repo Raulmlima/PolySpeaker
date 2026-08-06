@@ -2447,10 +2447,36 @@ export function getModulesByStage() {
 
 // Tag all Spanish modules
 const MODULES_ES = modules.map(m => ({ ...m, language: 'es' }));
-const _allExtra = [...(MODULES_EN ?? []), ...(MODULES_DE ?? []), ...(MODULES_FR ?? []), ...(MODULES_IT ?? []), ...(MODULES_PT ?? []), ...(MODULES_AR ?? []), ...(MODULES_ZH ?? [])];
+// Every exercise is capped at 5 sentences: longer blocks are split into
+// consecutive chunks so a 20-sentence module becomes 4 exercises of 5.
+// Done once at load; progress keys (module_id, exercise_idx, sentence_idx)
+// stay consistent everywhere because all consumers read through these getters.
+function _chunkExercises(mod) {
+  const exercises = [];
+  for (const ex of mod.exercises ?? []) {
+    const sentences = ex.sentences ?? [];
+    if (sentences.length <= 5) {
+      exercises.push(ex);
+      continue;
+    }
+    const parts = Math.ceil(sentences.length / 5);
+    for (let i = 0; i < sentences.length; i += 5) {
+      const partNum = i / 5 + 1;
+      exercises.push({
+        ...ex,
+        title: ex.title ? `${ex.title} (${partNum}/${parts})` : ex.title,
+        sentences: sentences.slice(i, i + 5),
+      });
+    }
+  }
+  return { ...mod, exercises };
+}
+
+const _MODULES_ES = (MODULES_ES ?? []).map(_chunkExercises);
+const _allExtra = [...(MODULES_EN ?? []), ...(MODULES_DE ?? []), ...(MODULES_FR ?? []), ...(MODULES_IT ?? []), ...(MODULES_PT ?? []), ...(MODULES_AR ?? []), ...(MODULES_ZH ?? [])].map(_chunkExercises);
 
 export function getModulesForLang(lang) {
-  if (!lang || lang === 'es') return MODULES_ES;
+  if (!lang || lang === 'es') return _MODULES_ES;
   // Stable sort by `order` within each stage (modules without order keep their
   // array position at priority 50; reviews use 99 so they always come last).
   return _allExtra
@@ -2459,5 +2485,5 @@ export function getModulesForLang(lang) {
 }
 
 export function getAllLanguageModules() {
-  return [...MODULES_ES, ..._allExtra];
+  return [..._MODULES_ES, ..._allExtra];
 }

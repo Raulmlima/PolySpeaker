@@ -30,6 +30,7 @@ import { aiCheckAnswer, AI_CHECK_URL } from '../../src/utils/aiCheck';
 import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
 import { showInterstitialIfReady } from '../../src/utils/ads';
 import AiConsentModal from '../../src/components/AiConsentModal';
+import TappableSentence from '../../src/components/TappableSentence';
 import { markSentenceComplete, addWrongSentence, logEvent, getCompletedSentences } from '../../src/db/database';
 import { markPracticedToday } from '../../src/notifications';
 import { C } from '../../src/theme';
@@ -659,7 +660,7 @@ export default function ExerciseScreen() {
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle} numberOfLines={1}>{mod.title}</Text>
           <Text style={styles.headerMeta}>
-            {exercise?.title ? exercise.title + ' · ' : ''}{doneSentencesAll + 1}/{totalSentencesAll + (mod.dialogExercise ? 1 : 0)}
+            Exercício {exIdx + 1}/{mod.exercises.length} · Frase {senIdx + 1}/{sentence ? (mod.exercises[exIdx]?.sentences?.length ?? 5) : 5}
           </Text>
         </View>
         <View style={{ width: 70 }} />
@@ -692,10 +693,15 @@ export default function ExerciseScreen() {
             </>
           )}
 
-          {/* Prompt */}
+          {/* Prompt — cada palavra é tocável e mostra a tradução num balão */}
           <View style={styles.promptBox}>
             <Text style={styles.promptLabel}>{langInfo.reverseMode ? 'Como se diz em português?' : `Traduza para o ${langInfo.label.toLowerCase()}`}</Text>
-            <Text style={styles.promptText}>{sentence?.prompt}</Text>
+            <TappableSentence
+              text={sentence?.prompt}
+              language={mod.language ?? 'es'}
+              textStyle={styles.promptText}
+              ensureConsent={getConsent}
+            />
           </View>
 
           {/* Answer input */}

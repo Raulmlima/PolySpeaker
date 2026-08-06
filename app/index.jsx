@@ -269,6 +269,14 @@ export default function HomeScreen() {
                     const total = getTotalSentences(mod);
                     const done = progressMap[mod.id] ?? 0;
                     const pct = total > 0 ? done / total : 0;
+                    // Exercise-level progress (each exercise = up to 5 sentences):
+                    // count exercises fully covered by the number of completed sentences
+                    const exTotal = (mod.exercises ?? []).length;
+                    let exDone = 0, restantes = done;
+                    for (const ex of mod.exercises ?? []) {
+                      const len = (ex.sentences ?? []).length;
+                      if (len > 0 && restantes >= len) { exDone++; restantes -= len; } else break;
+                    }
                     const isComplete = total > 0 && done >= total;
                     const isEmpty = total === 0;
                     const isLocked = mod.isReview && !allNonReviewDone;
@@ -314,7 +322,7 @@ export default function HomeScreen() {
                                 <View style={[styles.progFill, { width: `${pct * 100}%` }, isComplete && styles.progFillDone]} />
                               </View>
                               <Text style={[styles.progText, isComplete && styles.progTextDone]}>
-                                {isComplete ? '100%' : done > 0 ? `${done}/${total}` : `${total} fr.`}
+                                {isComplete ? `${exTotal}/${exTotal} ✓` : `${exDone}/${exTotal}`}
                               </Text>
                             </View>
                           )}
