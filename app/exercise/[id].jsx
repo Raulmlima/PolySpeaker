@@ -30,6 +30,7 @@ import { aiCheckAnswer, AI_CHECK_URL } from '../../src/utils/aiCheck';
 import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
 import { showInterstitialIfReady } from '../../src/utils/ads';
 import AdBanner from '../../src/components/AdBanner';
+import ExerciseCompleteOverlay from '../../src/components/ExerciseCompleteOverlay';
 import AiConsentModal from '../../src/components/AiConsentModal';
 import TappableSentence from '../../src/components/TappableSentence';
 import { markSentenceComplete, addWrongSentence, logEvent, getCompletedSentences } from '../../src/db/database';
@@ -62,6 +63,7 @@ export default function ExerciseScreen() {
   const [aiAccepted, setAiAccepted] = useState(null); // { note } when AI accepted an alternate answer
   const [aiMistakeNote, setAiMistakeNote] = useState(null); // short AI explanation when genuinely wrong
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showExerciseCompleteModal, setShowExerciseCompleteModal] = useState(false);
   // Listening exercise phase (after all translation exercises)
   const [listeningPhase, setListeningPhase] = useState(false);
   const [listeningChoice, setListeningChoice] = useState(null); // index chosen
@@ -271,11 +273,11 @@ export default function ExerciseScreen() {
     if (!isLastSen) {
       setSenIdx(s => s + 1);
     } else if (!isLastEx) {
-      // End of an exercise block (every ~5 sentences) — always try an
-      // interstitial here, it's the natural break point mid-module.
-      showInterstitialIfReady();
-      setExIdx(e => e + 1);
-      setSenIdx(0);
+      // End of an exercise block (every ~5 sentences) — show the completion
+      // ring/celebration first; advancing + the interstitial only happen
+      // once the user taps through in ExerciseCompleteOverlay.
+      setShowExerciseCompleteModal(true);
+      return;
     } else if (mod.dialogExercise && !listeningPhase) {
       // Enter listening phase
       const opts = mod.dialogExercise.options;
@@ -289,6 +291,14 @@ export default function ExerciseScreen() {
       return;
     }
     setTimeout(() => inputRef.current?.focus(), 120);
+  }
+
+  function advanceToNextExercise() {
+    setShowExerciseCompleteModal(false);
+    setExIdx(e => e + 1);
+    setSenIdx(0);
+    setTimeout(() => showInterstitialIfReady(), 300);
+    setTimeout(() => inputRef.current?.focus(), 400);
   }
 
   async function openIA() {
@@ -813,6 +823,13 @@ export default function ExerciseScreen() {
           </View>
         </View>
       </Modal>
+      <ExerciseCompleteOverlay
+        visible={showExerciseCompleteModal}
+        moduleTitle={mod.title}
+        completedNum={exIdx + 1}
+        nextNum={exIdx + 2}
+        onNext={advanceToNextExercise}
+      />
     </SafeAreaView>
   );
 }

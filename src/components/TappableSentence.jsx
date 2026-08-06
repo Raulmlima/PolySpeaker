@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { AI_CHECK_URL } from '../utils/aiCheck';
 import { C } from '../theme';
@@ -18,6 +18,11 @@ const cache = {};
 // `ensureConsent` (optional async → bool) gates the DeepSeek call.
 export default function TappableSentence({ text, language, contextLang, textStyle, ensureConsent }) {
   const [sel, setSel] = useState(null); // { idx, word, state: 'loading'|'done'|'error', translation }
+
+  // Dismiss any open bubble the moment the sentence itself changes (next
+  // sentence, next exercise, etc.) — otherwise the old translation for a word
+  // that no longer exists on screen just sits there.
+  useEffect(() => { setSel(null); }, [text]);
 
   async function tapWord(rawWord, idx) {
     const word = rawWord.replace(/[.,!?¿¡;:'"()«»。，？！、]/g, '').trim();
