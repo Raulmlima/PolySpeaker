@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Dimensions, Modal, Pressable } from 'react-native';
 import { AI_CHECK_URL } from '../utils/aiCheck';
+import { subscribeDismiss, dismissAllBubbles } from '../utils/dismissBubbles';
 import { C } from '../theme';
 
 const BUBBLE_MAX_WIDTH = 220;
@@ -32,8 +33,12 @@ export default function TappableSentence({ text, language, contextLang, textStyl
   const wordRefs = useRef({});
   const screenW = Dimensions.get('window').width;
 
-  // Dismiss when the sentence itself changes (next sentence/exercise).
+  // Dismiss when the sentence itself changes (next sentence/exercise), or
+  // when a bubble opens in a DIFFERENT TappableSentence instance on the same
+  // screen — otherwise two bubbles from different sentences can end up open
+  // and stacked at once (e.g. Diálogos, which mounts several at a time).
   useEffect(() => { setSel(null); wordRefs.current = {}; }, [text]);
+  useEffect(() => subscribeDismiss(() => setSel(null)), []);
 
   async function tapWord(rawWord, idx) {
     const word = rawWord.replace(/[.,!?¿¡;:'"()«»。，？！、]/g, '').trim();
@@ -48,6 +53,7 @@ export default function TappableSentence({ text, language, contextLang, textStyl
         if (!ok) return;
       }
       const rect = { x, y, width, height };
+      dismissAllBubbles(); // close any bubble open in another instance first
       setBubbleH(DEFAULT_BUBBLE_H);
       setSel({ idx, word, state: 'loading', rect });
       try {
