@@ -23,7 +23,9 @@ export default function TappableSentence({ text, language, textStyle, ensureCons
       if (!ok) return;
     }
 
-    const key = `${language}:${word.toLowerCase()}`;
+    // Keyed by sentence too — the same word can mean something different
+    // depending on its conjugation/gender/number in this specific sentence.
+    const key = `${language}:${(text ?? '').toLowerCase()}:${word.toLowerCase()}`;
     if (cache[key]) {
       setSel({ idx, word, state: 'done', translation: cache[key] });
       return;
@@ -33,7 +35,7 @@ export default function TappableSentence({ text, language, textStyle, ensureCons
       const res = await fetch(`${AI_CHECK_URL}/dict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ word, language }),
+        body: JSON.stringify({ word, language, context: text }),
       });
       const data = await res.json();
       if (!res.ok || !data.translation) throw new Error('no translation');

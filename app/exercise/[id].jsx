@@ -29,6 +29,7 @@ import { checkAnswer } from '../../src/utils/compare';
 import { aiCheckAnswer, AI_CHECK_URL } from '../../src/utils/aiCheck';
 import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
 import { showInterstitialIfReady } from '../../src/utils/ads';
+import AdBanner from '../../src/components/AdBanner';
 import AiConsentModal from '../../src/components/AiConsentModal';
 import TappableSentence from '../../src/components/TappableSentence';
 import { markSentenceComplete, addWrongSentence, logEvent, getCompletedSentences } from '../../src/db/database';
@@ -270,6 +271,9 @@ export default function ExerciseScreen() {
     if (!isLastSen) {
       setSenIdx(s => s + 1);
     } else if (!isLastEx) {
+      // End of an exercise block (every ~5 sentences) — always try an
+      // interstitial here, it's the natural break point mid-module.
+      showInterstitialIfReady();
       setExIdx(e => e + 1);
       setSenIdx(0);
     } else if (mod.dialogExercise && !listeningPhase) {
@@ -453,6 +457,7 @@ export default function ExerciseScreen() {
 
           <View style={{ height: 60 }} />
         </ScrollView>
+        <AdBanner />
         <Modal visible={showCompleteModal} transparent animationType="fade">
           <View style={styles.completeOverlay}>
             <View style={styles.completeCard}>
@@ -793,6 +798,7 @@ export default function ExerciseScreen() {
 
           <View style={{ height: 60 }} />
         </ScrollView>
+        <AdBanner />
       </KeyboardAvoidingView>
       <Modal visible={showCompleteModal} transparent animationType="fade">
         <View style={styles.completeOverlay}>

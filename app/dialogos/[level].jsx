@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, Linking, ActivityIndicator, Keyboard,
+  StyleSheet, Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,9 +9,10 @@ import * as Speech from 'expo-speech';
 import { getDialogosForLang } from '../../src/data/dialogos';
 import { LANGUAGES } from '../../src/storage';
 import { normalize } from '../../src/utils/compare';
-import { AI_CHECK_URL } from '../../src/utils/aiCheck';
 import { C } from '../../src/theme';
-import Poly from '../../src/components/Poly';
+import TappableSentence from '../../src/components/TappableSentence';
+import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
+import AiConsentModal from '../../src/components/AiConsentModal';
 
 export default function DialogoExercise() {
   const { level, lang } = useLocalSearchParams();
@@ -25,12 +26,8 @@ export default function DialogoExercise() {
   const [lineIdx, setLineIdx] = useState(0);
   const [input, setInput] = useState('');
   const [checked, setChecked] = useState(false);
-  const [dictOpen, setDictOpen] = useState(false);
-  const [dictQuery, setDictQuery] = useState('');
-  const [dictResult, setDictResult] = useState(null);
-  const [dictLoading, setDictLoading] = useState(false);
-  const [dictError, setDictError] = useState(null);
-  const dictInputRef = useRef(null);
+  const [aiConsentVisible, setAiConsentVisible] = useState(false);
+  const pendingConsentRef = useRef(null);
 
   if (!levelData || !levelData.dialogos?.length) {
     return (
@@ -54,43 +51,17 @@ export default function DialogoExercise() {
     setChecked(true);
   }
 
-  async function searchDict() {
-    const word = dictQuery.trim();
-    if (!word) return;
-    if (word.split(/\s+/).length > 6) {
-      setDictError('Use apenas uma palavra ou expressão curta — não frases inteiras.');
-      return;
-    }
-    setDictLoading(true);
-    setDictError(null);
-    setDictResult(null);
-    try {
-      const res = await fetch(`${AI_CHECK_URL}/dict`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ word, language: activeLang }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.translation) throw new Error();
-      setDictResult({
-        word,
-        main: data.translation,
-        pronunciation: data.pronunciation ?? '',
-        alts: data.alternates ?? [],
-      });
-    } catch {
-      setDictError('Palavra não encontrada ou sem conexão.');
-    } finally {
-      setDictLoading(false);
-    }
+  async function ensureConsent() {
+    if (await hasAiConsent()) return true;
+    return new Promise(resolve => {
+      pendingConsentRef.current = resolve;
+      setAiConsentVisible(true);
+    });
   }
 
   function handleNext() {
     setInput('');
     setChecked(false);
-    setDictOpen(false);
-    setDictQuery('');
-    setDictResult(null);
     if (!isLastLine) {
       setLineIdx(l => l + 1);
     } else if (!isLastDialogo) {
@@ -150,7 +121,7 @@ Explique detalhadamente a gramática, vocabulário e expressões naturais desta 
               <Text style={styles.bubbleSpeaker}>{l.speaker}</Text>
               <Text style={styles.bubblePt}>{l.pt}</Text>
               <View style={styles.bubbleEsRow}>
-                <Text style={styles.bubbleEs}>{lt}</Text>
+                <TappableSentence text={lt} language={activeLang} textStyle={styles.bubbleEs} ensureConsent={ensureConsent} />
                 <TouchableOpacity onPress={() => speak(lt)} style={styles.speakerBtn}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                   <Text style={styles.speakerIcon}>🔊</Text>
@@ -195,24 +166,13 @@ Explique detalhadamente a gramática, vocabulário e expressões naturais desta 
                       <Text style={styles.feedbackIcon}>{isCorrect ? '✓' : '✗'}</Text>
                       <Text style={styles.feedbackLabel}>{isCorrect ? 'Muito bem!' : 'Resposta correta:'}</Text>
                     </View>
-                    {!isCorrect && (
-                      <View style={styles.feedbackEsRow}>
-                        <Text style={styles.feedbackEs}>{targetText}</Text>
-                        <TouchableOpacity onPress={() => speak(targetText)} style={styles.speakerBtn}
-                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                          <Text style={styles.speakerIcon}>🔊</Text>
-                        </TouchableOpacity>
-                      </View>
-                    )}
-                    {isCorrect && (
-                      <View style={styles.feedbackEsRow}>
-                        <Text style={styles.feedbackEs}>{targetText}</Text>
-                        <TouchableOpacity onPress={() => speak(targetText)} style={styles.speakerBtn}
-                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                          <Text style={styles.speakerIcon}>🔊</Text>
-                        </TouchableOpacity>
-                      </View>
-                    )}
+                    <View style={styles.feedbackEsRow}>
+                      <TappableSentence text={targetText} language={activeLang} textStyle={styles.feedbackEs} ensureConsent={ensureConsent} />
+                      <TouchableOpacity onPress={() => speak(targetText)} style={styles.speakerBtn}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                        <Text style={styles.speakerIcon}>🔊</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                   <TouchableOpacity style={styles.iaBtn} onPress={askIA}>
                     <Text style={styles.iaBtnText}>Tirar dúvida detalhada com IA →</Text>
@@ -237,62 +197,23 @@ Explique detalhadamente a gramática, vocabulário e expressões naturais desta 
             </>
           )}
         </View>
-        {/* Inline dictionary */}
-        <View style={styles.dictSection}>
-          <TouchableOpacity
-            style={styles.dictToggle}
-            onPress={() => {
-              Keyboard.dismiss();
-              setDictOpen(v => {
-                if (!v) setTimeout(() => dictInputRef.current?.focus(), 300);
-                return !v;
-              });
-            }}>
-            {!dictOpen && <Poly size={20} mood="neutral" />}
-            <Text style={styles.dictToggleText}>
-              {dictOpen ? '- Fechar Dicionário Poly' : `Dicionário Poly  PT → ${langInfo.label.split(' ')[0]}`}
-            </Text>
-          </TouchableOpacity>
-          {dictOpen && (
-            <View style={styles.dictBody}>
-              <View style={styles.dictSearchRow}>
-                <TextInput
-                  ref={dictInputRef}
-                  style={styles.dictInput}
-                  placeholder="Palavra em português..."
-                  placeholderTextColor={C.textMuted}
-                  value={dictQuery}
-                  onChangeText={setDictQuery}
-                  onSubmitEditing={searchDict}
-                  returnKeyType="search"
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity style={styles.dictSearchBtn} onPress={searchDict}>
-                  <Text style={styles.dictSearchBtnText}>Buscar</Text>
-                </TouchableOpacity>
-              </View>
-              {dictLoading && <ActivityIndicator color={C.accent} style={{ marginTop: 16 }} />}
-              {dictError && <Text style={styles.dictError}>{dictError}</Text>}
-              {dictResult && (
-                <View style={styles.dictResult}>
-                  <Text style={styles.dictArrow}>↓</Text>
-                  <View style={styles.dictResultBox}>
-                    <Text style={styles.dictMainTrans}>{dictResult.main}</Text>
-                    {dictResult.pronunciation ? (
-                      <Text style={styles.dictPronunciation}>{dictResult.pronunciation}</Text>
-                    ) : null}
-                  </View>
-                  {dictResult.alts.map((a, i) => (
-                    <Text key={i} style={styles.dictAlt}>• {a}</Text>
-                  ))}
-                </View>
-              )}
-            </View>
-          )}
-        </View>
-
         <View style={{ height: 60 }} />
       </ScrollView>
+
+      <AiConsentModal
+        visible={aiConsentVisible}
+        onAccept={async () => {
+          await setAiConsent();
+          setAiConsentVisible(false);
+          pendingConsentRef.current?.(true);
+          pendingConsentRef.current = null;
+        }}
+        onDecline={() => {
+          setAiConsentVisible(false);
+          pendingConsentRef.current?.(false);
+          pendingConsentRef.current = null;
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -361,27 +282,4 @@ const styles = StyleSheet.create({
   npcAudioText: { fontSize: 14, color: C.text },
   nextBtn: { backgroundColor: C.correct, borderRadius: 8, paddingVertical: 14, alignItems: 'center', marginBottom: 10 },
   nextBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
-  dictSection: { borderTopWidth: 1, borderTopColor: C.border, paddingTop: 12, marginTop: 8 },
-  dictToggle: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 },
-  dictToggleText: { fontSize: 14, color: C.accent, fontWeight: '600' },
-  dictBody: { marginTop: 12 },
-  dictSearchRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  dictInput: {
-    flex: 1, borderWidth: 1.5, borderColor: C.border, borderRadius: 6,
-    paddingHorizontal: 12, paddingVertical: 10,
-    fontSize: 15, color: C.text, backgroundColor: C.bgAlt,
-  },
-  dictSearchBtn: { backgroundColor: C.accent, borderRadius: 6, paddingHorizontal: 14, justifyContent: 'center' },
-  dictSearchBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
-  dictError: { fontSize: 14, color: C.incorrect, textAlign: 'center', marginTop: 8 },
-  dictResult: { paddingTop: 4, paddingBottom: 8 },
-  dictArrow: { fontSize: 18, color: C.textMuted, textAlign: 'center', marginBottom: 6 },
-  dictResultBox: {
-    borderWidth: 1.5, borderColor: C.border, borderRadius: 6,
-    paddingHorizontal: 14, paddingVertical: 12,
-    backgroundColor: C.bgAlt, marginBottom: 8,
-  },
-  dictMainTrans: { fontSize: 20, fontWeight: '700', color: C.text },
-  dictPronunciation: { fontSize: 14, color: C.accent, fontStyle: 'italic', marginTop: 4 },
-  dictAlt: { fontSize: 14, color: C.accent, marginTop: 4, marginLeft: 2 },
 });
