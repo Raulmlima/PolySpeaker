@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Modal, View, Text, TouchableOpacity, StyleSheet, Animated, Easing,
+  Modal, View, Text, TouchableOpacity, StyleSheet, Animated, Easing, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Poly from './Poly';
@@ -8,6 +8,13 @@ import { C, cardShadow } from '../theme';
 
 // First-run tutorial. Each slide pairs a short explanation with a miniature of
 // the real UI, so the concept is shown rather than only described.
+
+// These mockups are fixed-size illustrative diagrams, not real content — they
+// shouldn't reflow when the device's system text-size (accessibility) setting
+// is increased, or the tight hand-tuned layout breaks.
+function MockText(props) {
+  return <Text allowFontScaling={false} {...props} />;
+}
 
 function MiniTrail() {
   const nodes = [
@@ -18,10 +25,10 @@ function MiniTrail() {
   return (
     <View style={mk.card}>
       <View style={mk.stageHeader}>
-        <View style={mk.ring}><Text style={mk.ringText}>40%</Text></View>
+        <View style={mk.ring}><MockText style={mk.ringText}>40%</MockText></View>
         <View style={{ flex: 1 }}>
-          <Text style={mk.stageTitle}>Fundamentos</Text>
-          <Text style={mk.stageSub}>As bases do idioma</Text>
+          <MockText style={mk.stageTitle}>Fundamentos</MockText>
+          <MockText style={mk.stageSub}>As bases do idioma</MockText>
         </View>
       </View>
       <View style={mk.trail}>
@@ -33,11 +40,11 @@ function MiniTrail() {
               nd.state === 'done' && mk.nodeDone,
               nd.state === 'current' && mk.nodeCurrent,
             ]}>
-              <Text style={[mk.nodeText, nd.state === 'done' && mk.nodeTextDone, nd.state === 'current' && mk.nodeTextCurrent]}>
+              <MockText style={[mk.nodeText, nd.state === 'done' && mk.nodeTextDone, nd.state === 'current' && mk.nodeTextCurrent]}>
                 {nd.state === 'done' ? '✓' : nd.n}
-              </Text>
+              </MockText>
             </View>
-            <Text style={mk.nodeLabel} numberOfLines={1}>{nd.label}</Text>
+            <MockText style={mk.nodeLabel} numberOfLines={1}>{nd.label}</MockText>
           </View>
         ))}
       </View>
@@ -48,7 +55,7 @@ function MiniTrail() {
 function MiniExercises() {
   return (
     <View style={mk.card}>
-      <Text style={mk.moduleName}>Ser e estar</Text>
+      <MockText style={mk.moduleName}>Ser e estar</MockText>
       <View style={mk.exList}>
         {[
           { t: 'Exercício 1', s: '5 frases', done: true },
@@ -58,16 +65,16 @@ function MiniExercises() {
         ].map(ex => (
           <View key={ex.t} style={mk.exRow}>
             <View style={[mk.exDot, ex.done && mk.exDotDone]}>
-              {ex.done && <Text style={mk.exCheck}>✓</Text>}
+              {ex.done && <MockText style={mk.exCheck}>✓</MockText>}
             </View>
-            <Text style={[mk.exTitle, !ex.done && mk.exTitleTodo]}>{ex.t}</Text>
-            <Text style={mk.exSub}>{ex.s}</Text>
+            <MockText style={[mk.exTitle, !ex.done && mk.exTitleTodo]}>{ex.t}</MockText>
+            <MockText style={mk.exSub}>{ex.s}</MockText>
           </View>
         ))}
       </View>
       <View style={mk.progressWrap}>
         <View style={mk.progressBar}><View style={mk.progressFill} /></View>
-        <Text style={mk.progressText}>2/4</Text>
+        <MockText style={mk.progressText}>2/4</MockText>
       </View>
     </View>
   );
@@ -75,6 +82,7 @@ function MiniExercises() {
 
 function MiniTapWord() {
   const pulse = useRef(new Animated.Value(0)).current;
+  const [bubbleW, setBubbleW] = useState(0);
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
@@ -85,21 +93,22 @@ function MiniTapWord() {
   }, []);
   return (
     <View style={mk.card}>
-      <Text style={mk.promptLabel}>TRADUZA PARA O INGLÊS</Text>
-      <View style={mk.bubble}>
-        <Text style={mk.bubbleText}><Text style={mk.bubbleWord}>maçã</Text> = apple</Text>
+      <Text style={mk.promptLabel} allowFontScaling={false}>TRADUZA PARA O INGLÊS</Text>
+      <View style={mk.bubble} onLayout={e => setBubbleW(e.nativeEvent.layout.width)}>
+        <Text style={mk.bubbleText} allowFontScaling={false}>
+          <Text style={mk.bubbleWord}>maçã</Text> = apple
+        </Text>
       </View>
-      <View style={mk.bubbleArrow} />
-      <Text style={mk.promptText}>
+      {/* Centered under the bubble using its actual measured width — no
+          guessed pixel offset that breaks the moment the text/font differs. */}
+      <View style={[mk.bubbleArrow, bubbleW ? { marginLeft: bubbleW / 2 - 7 } : null]} />
+      <Text style={mk.promptText} allowFontScaling={false}>
         Eu como uma{' '}
         <Text style={mk.tappedWord}>maçã</Text>
         {' '}todo dia.
       </Text>
-      <Animated.View style={[mk.tapHint, {
-        opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.35, 1] }),
-        transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.05] }) }],
-      }]}>
-        <Text style={mk.tapHintText}>👆</Text>
+      <Animated.View style={{ opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }}>
+        <Text style={mk.tapCaption} allowFontScaling={false}>👆 toque em qualquer palavra pra ver a tradução</Text>
       </Animated.View>
     </View>
   );
@@ -109,22 +118,22 @@ function MiniReview() {
   return (
     <View style={mk.card}>
       <View style={mk.reviewHeader}>
-        <Text style={mk.reviewIcon}>📚</Text>
+        <MockText style={mk.reviewIcon}>📚</MockText>
         <View style={{ flex: 1 }}>
-          <Text style={mk.reviewTitle}>Revisão</Text>
-          <Text style={mk.reviewSub}>frases que você errou</Text>
+          <MockText style={mk.reviewTitle}>Revisão</MockText>
+          <MockText style={mk.reviewSub}>frases que você errou</MockText>
         </View>
-        <View style={mk.badge}><Text style={mk.badgeText}>7</Text></View>
+        <View style={mk.badge}><MockText style={mk.badgeText}>5</MockText></View>
       </View>
       <View style={mk.srsRow}>
         {['1 dia', '3 dias', '7 dias', '14 dias'].map((d, i) => (
           <View key={d} style={mk.srsStep}>
             <View style={[mk.srsDot, i === 0 && mk.srsDotActive]} />
-            <Text style={[mk.srsLabel, i === 0 && mk.srsLabelActive]}>{d}</Text>
+            <MockText style={[mk.srsLabel, i === 0 && mk.srsLabelActive]}>{d}</MockText>
           </View>
         ))}
       </View>
-      <Text style={mk.srsCaption}>Cada acerto adia a próxima revisão — o que você quase esquece volta na hora certa.</Text>
+      <MockText style={mk.srsCaption}>Cada acerto adia a próxima revisão — o que você quase esquece volta na hora certa.</MockText>
     </View>
   );
 }
@@ -183,10 +192,14 @@ export default function TutorialOverlay({ visible, onFinish }) {
           </TouchableOpacity>
         </View>
 
-        <Animated.View style={[s.body, { opacity: fade }]}>
-          <View style={s.mockWrap}>{slide.render()}</View>
-          <Text style={s.title}>{slide.title}</Text>
-          <Text style={s.text}>{slide.body}</Text>
+        <Animated.View style={[s.bodyFlex, { opacity: fade }]}>
+          <ScrollView
+            contentContainerStyle={s.bodyScroll}
+            showsVerticalScrollIndicator={false}>
+            <View style={s.mockWrap}>{slide.render()}</View>
+            <Text style={s.title}>{slide.title}</Text>
+            <Text style={s.text}>{slide.body}</Text>
+          </ScrollView>
         </Animated.View>
 
         <View style={s.dots}>
@@ -222,7 +235,8 @@ const s = StyleSheet.create({
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   brand: { fontSize: 15, fontWeight: '800', color: C.brand },
   skip: { fontSize: 14, color: C.textMuted, fontWeight: '600' },
-  body: { flex: 1, paddingHorizontal: 24, justifyContent: 'center' },
+  bodyFlex: { flex: 1 },
+  bodyScroll: { flexGrow: 1, paddingHorizontal: 24, justifyContent: 'center', paddingVertical: 12 },
   mockWrap: { marginBottom: 28 },
   title: { fontSize: 24, fontWeight: '800', color: C.text, marginBottom: 10, lineHeight: 31 },
   text: { fontSize: 15, color: C.textMuted, lineHeight: 23 },
@@ -305,8 +319,7 @@ const mk = StyleSheet.create({
   },
   promptText: { fontSize: 19, color: C.text, fontWeight: '600', lineHeight: 28 },
   tappedWord: { color: C.accent, textDecorationLine: 'underline', textDecorationStyle: 'dotted' },
-  tapHint: { position: 'absolute', left: 92, bottom: 2 },
-  tapHintText: { fontSize: 22 },
+  tapCaption: { fontSize: 12, color: C.accent, fontWeight: '700', marginTop: 14 },
   // review
   reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
   reviewIcon: { fontSize: 26 },

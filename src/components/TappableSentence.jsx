@@ -12,15 +12,20 @@ const SCREEN_MARGIN = 8;
 // Duolingo-style tappable sentence: each word can be tapped to show its
 // translation in a bubble positioned right above that specific word.
 //
-// The bubble renders inside a transparent Modal instead of a locally
-// absolutely-positioned sibling — a local overlay's coordinates are relative
-// to its own parent, which almost never sits at the screen's (0,0), and it
-// can get clipped by an ancestor ScrollView. A Modal renders in its own
-// layer anchored to the screen, so screen coordinates from measureInWindow
-// (captured at tap time, not via onLayout — nested <Text> layout events are
-// unreliable in RN and go stale the moment the screen scrolls) line up
-// correctly, and its full-screen backdrop closes the bubble on any outside
-// tap for free.
+// Each word is its OWN top-level <Text> laid out in a flex-wrap row —
+// deliberately NOT nested <Text> children inside one wrapping parent <Text>.
+// Nested inline Text spans don't reliably support measureInWindow/onLayout
+// in React Native (they can report the parent's bounds, stale values, or
+// nothing useful); a standalone Text node does. That's what was landing the
+// bubble at the top of the screen instead of over the tapped word.
+//
+// The bubble itself renders inside a transparent Modal — a locally
+// absolutely-positioned sibling's coordinates are relative to its own
+// parent (almost never the screen's (0,0)) and can get clipped by an
+// ancestor ScrollView. A Modal renders in its own layer anchored to the
+// screen, so the screen coordinates from measureInWindow line up correctly,
+// and its full-screen backdrop closes the bubble on any outside tap for free.
+//
 // `language` is the module's foreign language (the worker dictionary is
 // bilingual pt ↔ that language). `contextLang` is the ACTUAL language `text`
 // is written in — defaults to `language`, but must be 'pt' when this text is
@@ -32,6 +37,7 @@ export default function TappableSentence({ text, language, contextLang, textStyl
   const [bubbleH, setBubbleH] = useState(DEFAULT_BUBBLE_H);
   const wordRefs = useRef({});
   const screenW = Dimensions.get('window').width;
+  const isRTL = contextLang === 'ar';
 
   // Dismiss when the sentence itself changes (next sentence/exercise), or
   // when a bubble opens in a DIFFERENT TappableSentence instance on the same
@@ -74,8 +80,7 @@ export default function TappableSentence({ text, language, contextLang, textStyl
     });
   }
 
-  const segments = String(text ?? '').split(/(\s+)/);
-  let wordIdx = -1;
+  const words = String(text ?? '').split(/\s+/).filter(Boolean);
 
   const rect = sel?.rect;
   const bubbleLeft = rect
@@ -98,26 +103,21 @@ export default function TappableSentence({ text, language, contextLang, textStyl
 
   return (
     <View>
-      <Text style={textStyle}>
-        {segments.map((seg, i) => {
-          if (/^\s+$/.test(seg) || seg === '') {
-            return <Text key={i}>{seg}</Text>;
-          }
-          wordIdx++;
-          const idx = wordIdx;
+      <View style={[styles.row, isRTL && styles.rowRTL]}>
+        {words.map((w, idx) => {
           const isSel = sel && sel.idx === idx;
           return (
             <Text
-              key={i}
+              key={idx}
               ref={el => { wordRefs.current[idx] = el; }}
               suppressHighlighting
-              onPress={() => tapWord(seg, idx)}
-              style={isSel ? styles.wordSelected : styles.word}>
-              {seg}
+              onPress={() => tapWord(w, idx)}
+              style={[textStyle, isSel ? styles.wordSelected : styles.word]}>
+              {w}
             </Text>
           );
         })}
-      </Text>
+      </View>
 
       <Modal visible={!!sel} transparent animationType="none" onRequestClose={() => setSel(null)}>
         <Pressable style={StyleSheet.absoluteFill} onPress={() => setSel(null)}>
@@ -136,16 +136,20 @@ export default function TappableSentence({ text, language, contextLang, textStyl
 }
 
 const styles = StyleSheet.create({
+  row: { flexDirection: 'row', flexWrap: 'wrap' },
+  rowRTL: { flexDirection: 'row-reverse' },
   word: {
     textDecorationLine: 'underline',
     textDecorationStyle: 'dotted',
     textDecorationColor: C.border,
+    marginRight: 5,
   },
   wordSelected: {
     textDecorationLine: 'underline',
     textDecorationStyle: 'dotted',
     textDecorationColor: C.accent,
     color: C.accent,
+    marginRight: 5,
   },
   bubbleWrapAbs: { position: 'absolute', alignItems: 'flex-start' },
   bubble: {
