@@ -5,13 +5,17 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getReviewCount } from '../db/database';
 import { C } from '../theme';
+import { t } from '../utils/uiLang';
 import { TrailIcon, ReviewIcon, DialogosIcon, ProfileIcon } from './TabIcons';
 
+// Tab bar chrome follows the device's system language (not the language
+// being studied) — a first-time user should recognize these labels even
+// before picking a course.
 const TABS = [
-  { key: 'home', label: 'Trilha', Icon: TrailIcon, path: '/' },
-  { key: 'review', label: 'Revisão', Icon: ReviewIcon, path: '/review' },
-  { key: 'dialogos', label: 'Diálogos', Icon: DialogosIcon, path: '/dialogos' },
-  { key: 'profile', label: 'Perfil', Icon: ProfileIcon, path: '/profile' },
+  { key: 'home', label: t({ pt: 'Trilha', en: 'Path', ar: 'المسار' }), Icon: TrailIcon, path: '/' },
+  { key: 'review', label: t({ pt: 'Revisão', en: 'Review', ar: 'المراجعة' }), Icon: ReviewIcon, path: '/review' },
+  { key: 'dialogos', label: t({ pt: 'Diálogos', en: 'Dialogues', ar: 'حوارات' }), Icon: DialogosIcon, path: '/dialogos' },
+  { key: 'profile', label: t({ pt: 'Perfil', en: 'Profile', ar: 'الملف الشخصي' }), Icon: ProfileIcon, path: '/profile' },
 ];
 
 function TabButton({ tab, isActive, reviewCount, onPress }) {

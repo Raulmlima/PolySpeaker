@@ -5,9 +5,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Poly from './Poly';
 import { C, cardShadow } from '../theme';
+import { t, getUILang } from '../utils/uiLang';
 
-// First-run tutorial. Each slide pairs a short explanation with a miniature of
-// the real UI, so the concept is shown rather than only described.
+// First-run tutorial. Each slide pairs a short explanation with a miniature
+// of the real UI, so the concept is shown rather than only described.
+//
+// Text follows the DEVICE's system language (pt/en/ar, English as fallback)
+// — separate from whichever language the user ends up studying — so a
+// first-time user understands onboarding before they've learned anything.
 
 // These mockups are fixed-size illustrative diagrams, not real content — they
 // shouldn't reflow when the device's system text-size (accessibility) setting
@@ -16,19 +21,58 @@ function MockText(props) {
   return <Text allowFontScaling={false} {...props} />;
 }
 
-function MiniTrail() {
-  const nodes = [
-    { n: '1', label: 'Artigos e substantivos', state: 'done' },
-    { n: '2', label: 'Ser e estar', state: 'current' },
-    { n: '3', label: 'Presente simples', state: 'todo' },
-  ];
+const TR = {
+  pt: {
+    header: 'Como funciona', skip: 'Pular', back: '← Voltar', next: 'Próximo →', start: 'Começar a estudar',
+    slides: [
+      { title: 'Sua trilha, etapa por etapa', body: 'O conteúdo vai de Fundamentos a Avançado. Cada etapa reúne módulos que você desbloqueia no seu ritmo — o Poly marca onde você parou.' },
+      { title: 'Módulos em blocos de 5 frases', body: 'Cada módulo tem 3 ou 4 exercícios, e cada exercício traz 5 frases. Dá pra avançar um bloco de cada vez, mesmo com pouco tempo.' },
+      { title: 'Travou numa palavra? Toque nela', body: 'Qualquer palavra da frase pode ser tocada para ver a tradução na hora, sem sair do exercício e sem precisar de dicionário.' },
+      { title: 'O que você erra, você revê', body: 'Toda frase errada entra na Revisão e volta em intervalos crescentes. É repetição espaçada — o método com mais evidência para fixar de verdade.' },
+    ],
+    trail: { stage: 'Fundamentos', stageSub: 'As bases do idioma', nodes: ['Artigos e substantivos', 'Ser e estar', 'Presente simples'] },
+    exercises: { module: 'Ser e estar', exLabel: 'Exercício', sentences: '5 frases' },
+    tap: { label: 'TRADUZA PARA O PORTUGUÊS', bubbleWord: 'apple', bubbleTrans: 'maçã', words: ['I', 'eat', 'an', 'apple', 'every', 'day.'], tappedIdx: 3, caption: '👆 toque em qualquer palavra pra ver a tradução' },
+    review: { title: 'Revisão', sub: 'frases que você errou', steps: ['1 dia', '3 dias', '7 dias', '14 dias'], caption: 'Cada acerto adia a próxima revisão — o que você quase esquece volta na hora certa.' },
+  },
+  en: {
+    header: 'How it works', skip: 'Skip', back: '← Back', next: 'Next →', start: 'Start studying',
+    slides: [
+      { title: 'Your path, stage by stage', body: 'Content goes from Fundamentals to Advanced. Each stage groups modules you unlock at your own pace — Poly marks where you left off.' },
+      { title: 'Modules in blocks of 5 sentences', body: 'Each module has 3 or 4 exercises, and each exercise has 5 sentences. You can move one block at a time, even with little time.' },
+      { title: 'Stuck on a word? Tap it', body: 'Any word in a sentence can be tapped to see its translation instantly, without leaving the exercise and without needing a dictionary.' },
+      { title: 'What you get wrong, you review', body: 'Every wrong sentence goes into Review and comes back at growing intervals. That’s spaced repetition — the method with the most evidence behind it.' },
+    ],
+    trail: { stage: 'Fundamentals', stageSub: 'The basics of the language', nodes: ['Articles and nouns', 'To be & to have', 'Simple present'] },
+    exercises: { module: 'To be & to have', exLabel: 'Exercise', sentences: '5 sentences' },
+    tap: { label: 'TRANSLATE TO PORTUGUESE', bubbleWord: 'apple', bubbleTrans: 'maçã', words: ['I', 'eat', 'an', 'apple', 'every', 'day.'], tappedIdx: 3, caption: '👆 tap any word to see its translation' },
+    review: { title: 'Review', sub: 'sentences you got wrong', steps: ['1 day', '3 days', '7 days', '14 days'], caption: 'Every correct answer pushes the next review further out — what you’re about to forget comes back right on time.' },
+  },
+  ar: {
+    header: 'كيف يعمل التطبيق', skip: 'تخطي', back: '→ رجوع', next: 'التالي ←', start: 'ابدأ الدراسة',
+    slides: [
+      { title: 'مسارك، مرحلة بمرحلة', body: 'يمتد المحتوى من الأساسيات إلى المستوى المتقدم. تضم كل مرحلة وحدات تفتحها بالوتيرة التي تناسبك — ويحدد بولي أين توقفت.' },
+      { title: 'وحدات في مجموعات من 5 جمل', body: 'تحتوي كل وحدة على 3 أو 4 تمارين، وكل تمرين يضم 5 جمل. يمكنك التقدم مجموعة تلو الأخرى، حتى مع وقت قصير.' },
+      { title: 'توقفت عند كلمة؟ اضغط عليها', body: 'يمكن الضغط على أي كلمة في الجملة لرؤية ترجمتها فورًا، دون مغادرة التمرين ودون الحاجة إلى قاموس.' },
+      { title: 'ما تخطئ فيه، تراجعه', body: 'كل جملة خاطئة تدخل في المراجعة وتعود على فترات متزايدة — هذا هو التكرار المتباعد، الطريقة الأكثر إثباتًا علميًا لترسيخ التعلم.' },
+    ],
+    trail: { stage: 'الأساسيات', stageSub: 'أساسيات اللغة', nodes: ['أدوات التعريف والأسماء', 'الكينونة والامتلاك', 'المضارع البسيط'] },
+    exercises: { module: 'الكينونة والامتلاك', exLabel: 'تمرين', sentences: '5 جمل' },
+    tap: { label: 'ترجم إلى البرتغالية', bubbleWord: 'apple', bubbleTrans: 'maçã', words: ['I', 'eat', 'an', 'apple', 'every', 'day.'], tappedIdx: 3, caption: '👆 اضغط على أي كلمة لرؤية ترجمتها' },
+    review: { title: 'المراجعة', sub: 'الجمل التي أخطأت فيها', steps: ['يوم واحد', '3 أيام', '7 أيام', '14 يومًا'], caption: 'كل إجابة صحيحة تؤجل المراجعة التالية — ما توشك على نسيانه يعود في الوقت المناسب.' },
+  },
+};
+
+function MiniTrail({ L }) {
+  const states = ['done', 'current', 'todo'];
+  const nodes = L.trail.nodes.map((label, i) => ({ n: String(i + 1), label, state: states[i] }));
   return (
     <View style={mk.card}>
       <View style={mk.stageHeader}>
         <View style={mk.ring}><MockText style={mk.ringText}>40%</MockText></View>
         <View style={{ flex: 1 }}>
-          <MockText style={mk.stageTitle}>Fundamentos</MockText>
-          <MockText style={mk.stageSub}>As bases do idioma</MockText>
+          <MockText style={mk.stageTitle}>{L.trail.stage}</MockText>
+          <MockText style={mk.stageSub}>{L.trail.stageSub}</MockText>
         </View>
       </View>
       <View style={mk.trail}>
@@ -52,17 +96,13 @@ function MiniTrail() {
   );
 }
 
-function MiniExercises() {
+function MiniExercises({ L }) {
+  const rows = [1, 2, 3, 4].map(n => ({ t: `${L.exercises.exLabel} ${n}`, s: L.exercises.sentences, done: n <= 2 }));
   return (
     <View style={mk.card}>
-      <MockText style={mk.moduleName}>Ser e estar</MockText>
+      <MockText style={mk.moduleName}>{L.exercises.module}</MockText>
       <View style={mk.exList}>
-        {[
-          { t: 'Exercício 1', s: '5 frases', done: true },
-          { t: 'Exercício 2', s: '5 frases', done: true },
-          { t: 'Exercício 3', s: '5 frases', done: false },
-          { t: 'Exercício 4', s: '5 frases', done: false },
-        ].map(ex => (
+        {rows.map(ex => (
           <View key={ex.t} style={mk.exRow}>
             <View style={[mk.exDot, ex.done && mk.exDotDone]}>
               {ex.done && <MockText style={mk.exCheck}>✓</MockText>}
@@ -80,10 +120,7 @@ function MiniExercises() {
   );
 }
 
-const TAP_WORDS = ['Eu', 'como', 'uma', 'maçã', 'todo', 'dia.'];
-const TAPPED_IDX = 3; // 'maçã'
-
-function MiniTapWord() {
+function MiniTapWord({ L, isRTL }) {
   const pulse = useRef(new Animated.Value(0)).current;
   const [wordRect, setWordRect] = useState(null); // { x, y, width } relative to the card
   const [bubbleSize, setBubbleSize] = useState({ width: 0, height: 0 });
@@ -110,7 +147,7 @@ function MiniTapWord() {
 
   return (
     <View style={mk.card}>
-      <Text style={mk.promptLabel} allowFontScaling={false}>TRADUZA PARA O INGLÊS</Text>
+      <Text style={mk.promptLabel} allowFontScaling={false}>{L.tap.label}</Text>
 
       {wordRect && (
         <View
@@ -118,86 +155,72 @@ function MiniTapWord() {
           onLayout={e => setBubbleSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height - 7 })}>
           <View style={mk.bubble}>
             <Text style={mk.bubbleText} allowFontScaling={false}>
-              <Text style={mk.bubbleWord}>maçã</Text> = apple
+              <Text style={mk.bubbleWord}>{L.tap.bubbleWord}</Text> = {L.tap.bubbleTrans}
             </Text>
           </View>
           <View style={[mk.bubbleArrow, { marginLeft: arrowLeft }]} />
         </View>
       )}
 
-      <View style={mk.promptRow}>
-        {TAP_WORDS.map((w, i) => (
+      <View style={[mk.promptRow, isRTL && mk.promptRowRTL]}>
+        {L.tap.words.map((w, i) => (
           <Text
             key={i}
             allowFontScaling={false}
-            style={[mk.promptText, i === TAPPED_IDX && mk.tappedWord]}
-            onLayout={i === TAPPED_IDX ? e => setWordRect(e.nativeEvent.layout) : undefined}>
+            style={[mk.promptText, i === L.tap.tappedIdx && mk.tappedWord]}
+            onLayout={i === L.tap.tappedIdx ? e => setWordRect(e.nativeEvent.layout) : undefined}>
             {w}
           </Text>
         ))}
       </View>
 
       <Animated.View style={{ opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }}>
-        <Text style={mk.tapCaption} allowFontScaling={false}>👆 toque em qualquer palavra pra ver a tradução</Text>
+        <Text style={mk.tapCaption} allowFontScaling={false}>{L.tap.caption}</Text>
       </Animated.View>
     </View>
   );
 }
 
-function MiniReview() {
+function MiniReview({ L }) {
   return (
     <View style={mk.card}>
       <View style={mk.reviewHeader}>
         <MockText style={mk.reviewIcon}>📚</MockText>
         <View style={{ flex: 1 }}>
-          <MockText style={mk.reviewTitle}>Revisão</MockText>
-          <MockText style={mk.reviewSub}>frases que você errou</MockText>
+          <MockText style={mk.reviewTitle}>{L.review.title}</MockText>
+          <MockText style={mk.reviewSub}>{L.review.sub}</MockText>
         </View>
         <View style={mk.badge}><MockText style={mk.badgeText}>5</MockText></View>
       </View>
       <View style={mk.srsRow}>
-        {['1 dia', '3 dias', '7 dias', '14 dias'].map((d, i) => (
+        {L.review.steps.map((d, i) => (
           <View key={d} style={mk.srsStep}>
             <View style={[mk.srsDot, i === 0 && mk.srsDotActive]} />
             <MockText style={[mk.srsLabel, i === 0 && mk.srsLabelActive]}>{d}</MockText>
           </View>
         ))}
       </View>
-      <MockText style={mk.srsCaption}>Cada acerto adia a próxima revisão — o que você quase esquece volta na hora certa.</MockText>
+      <MockText style={mk.srsCaption}>{L.review.caption}</MockText>
     </View>
   );
 }
 
-const SLIDES = [
-  {
-    key: 'trilha',
-    title: 'Sua trilha, etapa por etapa',
-    body: 'O conteúdo vai de Fundamentos a Avançado. Cada etapa reúne módulos que você desbloqueia no seu ritmo — o Poly marca onde você parou.',
-    render: () => <MiniTrail />,
-  },
-  {
-    key: 'exercicios',
-    title: 'Módulos em blocos de 5 frases',
-    body: 'Cada módulo tem 3 ou 4 exercícios, e cada exercício traz 5 frases. Dá pra avançar um bloco de cada vez, mesmo com pouco tempo.',
-    render: () => <MiniExercises />,
-  },
-  {
-    key: 'toque',
-    title: 'Travou numa palavra? Toque nela',
-    body: 'Qualquer palavra da frase pode ser tocada para ver a tradução na hora, sem sair do exercício e sem precisar de dicionário.',
-    render: () => <MiniTapWord />,
-  },
-  {
-    key: 'revisao',
-    title: 'O que você erra, você revê',
-    body: 'Toda frase errada entra na Revisão e volta em intervalos crescentes. É repetição espaçada — o método com mais evidência para fixar de verdade.',
-    render: () => <MiniReview />,
-  },
-];
-
 export default function TutorialOverlay({ visible, onFinish }) {
   const [idx, setIdx] = useState(0);
   const fade = useRef(new Animated.Value(1)).current;
+  const L = t(TR);
+  const isRTL = getUILang() === 'ar';
+  const SLIDES = L.slides.map((sl, i) => ({
+    key: ['trilha', 'exercicios', 'toque', 'revisao'][i],
+    title: sl.title,
+    body: sl.body,
+    render: () => [
+      <MiniTrail L={L} key="trilha" />,
+      <MiniExercises L={L} key="exercicios" />,
+      <MiniTapWord L={L} isRTL={isRTL} key="toque" />,
+      <MiniReview L={L} key="revisao" />,
+    ][i],
+  }));
   const isLast = idx === SLIDES.length - 1;
   // SafeAreaView doesn't reliably pick up safe-area insets for content
   // presented inside a <Modal> on iOS (it portals to a separate native root)
@@ -217,13 +240,13 @@ export default function TutorialOverlay({ visible, onFinish }) {
   return (
     <Modal visible={visible} animationType="fade" onRequestClose={onFinish}>
       <View style={[s.safe, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-        <View style={s.topRow}>
-          <View style={s.brandRow}>
+        <View style={[s.topRow, isRTL && s.rowRTL]}>
+          <View style={[s.brandRow, isRTL && s.rowRTL]}>
             <Poly size={22} mood="happy" />
-            <Text style={s.brand}>Como funciona</Text>
+            <Text style={s.brand}>{L.header}</Text>
           </View>
           <TouchableOpacity onPress={onFinish} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Text style={s.skip}>Pular</Text>
+            <Text style={s.skip}>{L.skip}</Text>
           </TouchableOpacity>
         </View>
 
@@ -232,8 +255,8 @@ export default function TutorialOverlay({ visible, onFinish }) {
             contentContainerStyle={s.bodyScroll}
             showsVerticalScrollIndicator={false}>
             <View style={s.mockWrap}>{slide.render()}</View>
-            <Text style={s.title}>{slide.title}</Text>
-            <Text style={s.text}>{slide.body}</Text>
+            <Text style={[s.title, isRTL && s.textRTL]}>{slide.title}</Text>
+            <Text style={[s.text, isRTL && s.textRTL]}>{slide.body}</Text>
           </ScrollView>
         </Animated.View>
 
@@ -243,17 +266,17 @@ export default function TutorialOverlay({ visible, onFinish }) {
           ))}
         </View>
 
-        <View style={s.controls}>
+        <View style={[s.controls, isRTL && s.rowRTL]}>
           {idx > 0 ? (
             <TouchableOpacity style={s.backBtn} onPress={() => go(idx - 1)}>
-              <Text style={s.backText}>← Voltar</Text>
+              <Text style={s.backText}>{L.back}</Text>
             </TouchableOpacity>
           ) : <View style={s.backBtn} />}
           <TouchableOpacity
             style={s.nextBtn}
             activeOpacity={0.85}
             onPress={() => (isLast ? onFinish() : go(idx + 1))}>
-            <Text style={s.nextText}>{isLast ? 'Começar a estudar' : 'Próximo →'}</Text>
+            <Text style={s.nextText}>{isLast ? L.start : L.next}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -267,6 +290,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 8, paddingBottom: 4,
   },
+  rowRTL: { flexDirection: 'row-reverse' },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   brand: { fontSize: 15, fontWeight: '800', color: C.brand },
   skip: { fontSize: 14, color: C.textMuted, fontWeight: '600' },
@@ -275,6 +299,7 @@ const s = StyleSheet.create({
   mockWrap: { marginBottom: 28 },
   title: { fontSize: 24, fontWeight: '800', color: C.text, marginBottom: 10, lineHeight: 31 },
   text: { fontSize: 15, color: C.textMuted, lineHeight: 23 },
+  textRTL: { textAlign: 'right', writingDirection: 'rtl' },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: 6, paddingVertical: 14 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: C.border },
   dotActive: { width: 20, backgroundColor: C.accent },
@@ -354,6 +379,7 @@ const mk = StyleSheet.create({
     marginBottom: 8,
   },
   promptRow: { flexDirection: 'row', flexWrap: 'wrap' },
+  promptRowRTL: { flexDirection: 'row-reverse' },
   promptText: { fontSize: 19, color: C.text, fontWeight: '600', lineHeight: 28, marginRight: 5 },
   tappedWord: { color: C.accent, textDecorationLine: 'underline', textDecorationStyle: 'dotted' },
   tapCaption: { fontSize: 12, color: C.accent, fontWeight: '700', marginTop: 14 },

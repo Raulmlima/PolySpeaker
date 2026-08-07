@@ -26,7 +26,8 @@
         }
       ],
       "./plugins/withReleaseSigning",
-      "expo-sharing"
+      "expo-sharing",
+      "expo-localization"
     ],
     "ios": {
       "supportsTablet": true,
