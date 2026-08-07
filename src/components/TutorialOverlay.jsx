@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Modal, View, Text, TouchableOpacity, StyleSheet, Animated, Easing, ScrollView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Poly from './Poly';
 import { C, cardShadow } from '../theme';
 
@@ -80,9 +80,14 @@ function MiniExercises() {
   );
 }
 
+const TAP_WORDS = ['Eu', 'como', 'uma', 'maçã', 'todo', 'dia.'];
+const TAPPED_IDX = 3; // 'maçã'
+
 function MiniTapWord() {
   const pulse = useRef(new Animated.Value(0)).current;
-  const [bubbleW, setBubbleW] = useState(0);
+  const [wordRect, setWordRect] = useState(null); // { x, y, width } relative to the card
+  const [bubbleSize, setBubbleSize] = useState({ width: 0, height: 0 });
+
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
@@ -91,22 +96,47 @@ function MiniTapWord() {
       ])
     ).start();
   }, []);
+
+  // Same technique as the real tap-to-translate feature: measure the actual
+  // word's position and place the bubble above THAT, instead of guessing —
+  // a static offset breaks the moment font/text/device differs.
+  const bubbleLeft = wordRect
+    ? Math.max(0, Math.min(wordRect.x + wordRect.width / 2 - bubbleSize.width / 2, 300 - bubbleSize.width))
+    : 0;
+  const arrowLeft = wordRect
+    ? Math.max(10, Math.min(wordRect.x + wordRect.width / 2 - bubbleLeft - 7, bubbleSize.width - 20))
+    : 10;
+  const bubbleTop = wordRect ? Math.max(0, wordRect.y - bubbleSize.height - 10) : 0;
+
   return (
     <View style={mk.card}>
       <Text style={mk.promptLabel} allowFontScaling={false}>TRADUZA PARA O INGLÊS</Text>
-      <View style={mk.bubble} onLayout={e => setBubbleW(e.nativeEvent.layout.width)}>
-        <Text style={mk.bubbleText} allowFontScaling={false}>
-          <Text style={mk.bubbleWord}>maçã</Text> = apple
-        </Text>
+
+      {wordRect && (
+        <View
+          style={[mk.bubbleWrapAbs, { left: bubbleLeft, top: bubbleTop }]}
+          onLayout={e => setBubbleSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height - 7 })}>
+          <View style={mk.bubble}>
+            <Text style={mk.bubbleText} allowFontScaling={false}>
+              <Text style={mk.bubbleWord}>maçã</Text> = apple
+            </Text>
+          </View>
+          <View style={[mk.bubbleArrow, { marginLeft: arrowLeft }]} />
+        </View>
+      )}
+
+      <View style={mk.promptRow}>
+        {TAP_WORDS.map((w, i) => (
+          <Text
+            key={i}
+            allowFontScaling={false}
+            style={[mk.promptText, i === TAPPED_IDX && mk.tappedWord]}
+            onLayout={i === TAPPED_IDX ? e => setWordRect(e.nativeEvent.layout) : undefined}>
+            {w}
+          </Text>
+        ))}
       </View>
-      {/* Centered under the bubble using its actual measured width — no
-          guessed pixel offset that breaks the moment the text/font differs. */}
-      <View style={[mk.bubbleArrow, bubbleW ? { marginLeft: bubbleW / 2 - 7 } : null]} />
-      <Text style={mk.promptText} allowFontScaling={false}>
-        Eu como uma{' '}
-        <Text style={mk.tappedWord}>maçã</Text>
-        {' '}todo dia.
-      </Text>
+
       <Animated.View style={{ opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }}>
         <Text style={mk.tapCaption} allowFontScaling={false}>👆 toque em qualquer palavra pra ver a tradução</Text>
       </Animated.View>
@@ -169,6 +199,11 @@ export default function TutorialOverlay({ visible, onFinish }) {
   const [idx, setIdx] = useState(0);
   const fade = useRef(new Animated.Value(1)).current;
   const isLast = idx === SLIDES.length - 1;
+  // SafeAreaView doesn't reliably pick up safe-area insets for content
+  // presented inside a <Modal> on iOS (it portals to a separate native root)
+  // — read the insets explicitly instead so the title never sits under the
+  // notch/Dynamic Island and the button never hugs the home-indicator edge.
+  const insets = useSafeAreaInsets();
 
   function go(next) {
     Animated.timing(fade, { toValue: 0, duration: 130, useNativeDriver: true }).start(() => {
@@ -181,7 +216,7 @@ export default function TutorialOverlay({ visible, onFinish }) {
 
   return (
     <Modal visible={visible} animationType="fade" onRequestClose={onFinish}>
-      <SafeAreaView style={s.safe}>
+      <View style={[s.safe, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         <View style={s.topRow}>
           <View style={s.brandRow}>
             <Poly size={22} mood="happy" />
@@ -221,7 +256,7 @@ export default function TutorialOverlay({ visible, onFinish }) {
             <Text style={s.nextText}>{isLast ? 'Começar a estudar' : 'Próximo →'}</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 }
@@ -261,7 +296,7 @@ const s = StyleSheet.create({
 const mk = StyleSheet.create({
   card: {
     backgroundColor: C.bg, borderRadius: 18, borderWidth: 1, borderColor: C.border,
-    padding: 16, ...cardShadow,
+    padding: 16, position: 'relative', ...cardShadow,
   },
   // trail
   stageHeader: {
@@ -307,7 +342,8 @@ const mk = StyleSheet.create({
   progressFill: { width: '50%', height: 5, backgroundColor: C.accent, borderRadius: 3 },
   progressText: { fontSize: 11, fontWeight: '700', color: C.textMuted },
   // tap word
-  promptLabel: { fontSize: 9, color: C.textMuted, letterSpacing: 2, fontWeight: '700', marginBottom: 14 },
+  promptLabel: { fontSize: 9, color: C.textMuted, letterSpacing: 2, fontWeight: '700', marginBottom: 34 },
+  bubbleWrapAbs: { position: 'absolute', alignItems: 'flex-start', zIndex: 10 },
   bubble: { alignSelf: 'flex-start', backgroundColor: C.navy, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
   bubbleText: { color: '#fff', fontSize: 13 },
   bubbleWord: { fontWeight: '800' },
@@ -317,7 +353,8 @@ const mk = StyleSheet.create({
     borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: C.navy,
     marginBottom: 8,
   },
-  promptText: { fontSize: 19, color: C.text, fontWeight: '600', lineHeight: 28 },
+  promptRow: { flexDirection: 'row', flexWrap: 'wrap' },
+  promptText: { fontSize: 19, color: C.text, fontWeight: '600', lineHeight: 28, marginRight: 5 },
   tappedWord: { color: C.accent, textDecorationLine: 'underline', textDecorationStyle: 'dotted' },
   tapCaption: { fontSize: 12, color: C.accent, fontWeight: '700', marginTop: 14 },
   // review
