@@ -10,86 +10,65 @@ import { getProfile, saveProfile, LANGUAGES, getOrderedLanguageGroups } from '..
 import { C } from '../src/theme';
 import Poly from '../src/components/Poly';
 import TutorialOverlay from '../src/components/TutorialOverlay';
+import { t, getUILang } from '../src/utils/uiLang';
+import { WELCOME_TR } from '../src/utils/onboardingText';
 
 const { width } = Dimensions.get('window');
 
-const TEST_OPTIONS = [
-  { id: 'weekly',    label: 'Semanal',       desc: 'Todo domingo — consistência máxima' },
-  { id: 'biweekly',  label: 'Quinzenal',     desc: 'A cada 15 dias — ritmo equilibrado' },
-  { id: 'monthly',   label: 'Mensal',        desc: 'Uma vez por mês — sem pressão' },
-  { id: 'manual',    label: 'Quando quiser', desc: 'Você decide a hora certa' },
-];
-
 // ─── Slide 1 · Apresentação ───────────────────────────────────────────────
-function Slide1() {
+function Slide1({ L }) {
   return (
     <View style={[sl.slide, sl.slide1]}>
-      <Text style={sl.tag}>DESENVOLVIDO POR ESTUDANTES DA UFABC</Text>
-      <Text style={sl.h1}>Bem-vindo ao{'\n'}PolySpeaker.</Text>
+      <Text style={sl.tag}>{L.tag}</Text>
+      <Text style={sl.h1}>{L.s1Title}</Text>
       <Text style={sl.body}>
-        Uma plataforma de aprendizado de idiomas pensada do zero por estudantes da Universidade
-        Federal do ABC — para quem quer aprender{' '}
-        <Text style={sl.bold}>de verdade</Text>, não só decorar.
+        {L.s1Body1}<Text style={sl.bold}>{L.s1Bold}</Text>{L.s1Body2}
       </Text>
       <View style={sl.logoWrapBottom}>
         <Poly size={120} mood="happy" />
-        <Text style={sl.polyCaption}>Esse é o Poly — vai te acompanhar na jornada.</Text>
+        <Text style={sl.polyCaption}>{L.polyCaption}</Text>
       </View>
     </View>
   );
 }
 
 // ─── Slide 2 · Método ────────────────────────────────────────────────────
-function Slide2() {
+function Slide2({ L }) {
   return (
     <View style={sl.slide}>
       <Text style={sl.emoji}>🧠</Text>
-      <Text style={sl.h1}>O método que a{'\n'}neurociência aprova.</Text>
+      <Text style={sl.h1}>{L.s2Title}</Text>
       <Text style={sl.body}>
-        Toda a trilha é baseada em <Text style={sl.bold}>tradução ativa</Text>: você vê uma
-        frase no seu idioma e produz a resposta na língua alvo — sem múltipla escolha, sem cola.
+        {L.s2Body1}<Text style={sl.bold}>{L.s2Bold}</Text>{L.s2Body2}
       </Text>
       <View style={sl.studyCard}>
-        <Text style={sl.studyLabel}>📖 ESTUDO DE REFERÊNCIA</Text>
+        <Text style={sl.studyLabel}>{L.studyLabel}</Text>
         <Text style={sl.studyText}>
-          Karpicke & Roediger (2008,{' '}
-          <Text style={sl.italic}>Science</Text>) demonstraram que a{' '}
-          <Text style={sl.bold}>prática de recuperação ativa</Text> — forçar o cérebro a
-          produzir a resposta em vez de reconhecê-la — aumenta a retenção de longo prazo em
-          até <Text style={sl.bold}>3×</Text> comparado à releitura passiva.
+          {L.studyPre}<Text style={sl.italic}>{L.studyItalic}</Text>{L.studyMid}
+          <Text style={sl.bold}>{L.studyBold}</Text>{L.studyEnd}
+          <Text style={sl.bold}>{L.studyBold2}</Text>{L.studyFinal}
         </Text>
       </View>
-      <Text style={sl.bodySm}>
-        Traduzir ativamente é exatamente isso: cada exercício é um treino de recuperação que
-        consolida o idioma na memória de verdade.
-      </Text>
+      <Text style={sl.bodySm}>{L.s2Small}</Text>
     </View>
   );
 }
 
 // ─── Slide 3 · Trilha ────────────────────────────────────────────────────
-function Slide3() {
-  const stages = [
-    { stage: 'Fundamentos',   desc: 'Vocabulário, pronomes e estrutura básica',              icon: '🏗️' },
-    { stage: 'Básico',        desc: 'Verbos, tempos e o essencial para se comunicar',        icon: '🗣️' },
-    { stage: 'Intermediário', desc: 'Subjuntivo, passiva e estruturas que diferenciam',      icon: '📈' },
-    { stage: 'Avançado',      desc: 'Idioms, condicionais e nuances',                        icon: '🏆' },
-    { stage: 'Variados',      desc: 'Treino livre + Diálogos Reais',                         icon: '🎲' },
-  ];
+function Slide3({ L }) {
+  const icons = ['🏗️', '🗣️', '📈', '🏆', '🎲'];
   return (
     <View style={sl.slide}>
       <Text style={sl.emoji}>🗺️</Text>
-      <Text style={sl.h1}>Uma trilha do zero{'\n'}ao fluente.</Text>
-      <Text style={sl.body}>
-        Cada módulo tem teoria integrada e exercícios progressivos. Você avança no seu ritmo.
-      </Text>
+      <Text style={sl.h1}>{L.s3Title}</Text>
+      <Text style={sl.body}>{L.s3Body}</Text>
       <View style={sl.stageList}>
-        {stages.map((s, i) => (
+        {L.stages.map((s, i) => (
           <View key={s.stage} style={sl.stageRow}>
             <View style={sl.stageNumWrap}>
-              <Text style={sl.stageNum}>{s.icon}</Text>
+              <Text style={sl.stageNum}>{icons[i]}</Text>
             </View>
-            {i < stages.length - 1 && <View style={sl.stageLine} />}
+            {i < L.stages.length - 1 && <View style={sl.stageLine} />}
             <View style={sl.stageInfo}>
               <Text style={sl.stageName}>{s.stage}</Text>
               <Text style={sl.stageDesc}>{s.desc}</Text>
@@ -102,17 +81,14 @@ function Slide3() {
 }
 
 // ─── Slide 4 · Seleção de idioma ─────────────────────────────────────────
-function Slide4Lang({ selectedLang, setSelectedLang }) {
+function Slide4Lang({ L, selectedLang, setSelectedLang }) {
   const groups = getOrderedLanguageGroups();
   return (
     <View style={sl.slide}>
       <Text style={sl.emoji}>🌍</Text>
-      <Text style={sl.h1}>Qual idioma quer{'\n'}aprender primeiro?</Text>
+      <Text style={sl.h1}>{L.s4Title}</Text>
       <View style={sl.langHintBox}>
-        <Text style={sl.langHint}>
-          💡 Você pode adicionar outros idiomas depois — basta acessar as configurações na
-          tela inicial do app.
-        </Text>
+        <Text style={sl.langHint}>{L.s4Hint}</Text>
       </View>
 
       {groups.map(group => {
@@ -138,7 +114,7 @@ function Slide4Lang({ selectedLang, setSelectedLang }) {
                     </Text>
                     {!lang.available && (
                       <View style={sl.soonBadge}>
-                        <Text style={sl.soonText}>Em breve</Text>
+                        <Text style={sl.soonText}>{L.soon}</Text>
                       </View>
                     )}
                     {lang.available && selectedLang === lang.id && (
@@ -156,27 +132,21 @@ function Slide4Lang({ selectedLang, setSelectedLang }) {
 }
 
 // ─── Slide 5 · O que esperar ──────────────────────────────────────────────
-function Slide5() {
-  const milestones = [
-    { weeks: '1–2 sem.', icon: '🌱', title: 'Primeiras frases', desc: 'Você já forma frases simples no novo idioma e entende expressões básicas.' },
-    { weeks: '1 mês', icon: '🗣️', title: 'Conversação básica', desc: 'Consegue se apresentar, pedir informações e entender respostas curtas.' },
-    { weeks: '3 meses', icon: '📈', title: 'Dia a dia', desc: 'Frases completas sobre rotina, preferências e situações do cotidiano.' },
-    { weeks: '6 meses', icon: '🏆', title: 'Intermediário real', desc: 'Você entende e participa de conversas sobre temas variados com confiança.' },
-  ];
+function Slide5({ L }) {
+  const icons = ['🌱', '🗣️', '📈', '🏆'];
   return (
     <View style={sl.slide}>
       <Text style={sl.emoji}>🗓️</Text>
-      <Text style={sl.h1}>O que esperar{'\n'}de cada fase?</Text>
+      <Text style={sl.h1}>{L.s5Title}</Text>
       <Text style={sl.body}>
-        Com <Text style={sl.bold}>10 minutos por dia</Text>, este é o caminho realista baseado
-        em dados de aprendizado de idiomas:
+        {L.s5Body1}<Text style={sl.bold}>{L.s5Bold}</Text>{L.s5Body2}
       </Text>
       <View style={sl.milestoneList}>
-        {milestones.map((m, i) => (
+        {L.milestones.map((m, i) => (
           <View key={i} style={sl.milestoneRow}>
             <View style={sl.milestoneLeft}>
               <Text style={sl.milestoneWeeks}>{m.weeks}</Text>
-              <Text style={sl.milestoneIcon}>{m.icon}</Text>
+              <Text style={sl.milestoneIcon}>{icons[i]}</Text>
             </View>
             <View style={sl.milestoneDivider} />
             <View style={sl.milestoneRight}>
@@ -186,32 +156,26 @@ function Slide5() {
           </View>
         ))}
       </View>
-      <Text style={sl.bodySm}>
-        Estes resultados são para idiomas de família latina/germânica. Mandarim pode levar o
-        dobro — mas cada dia conta.
-      </Text>
+      <Text style={sl.bodySm}>{L.s5Small}</Text>
     </View>
   );
 }
 
 // ─── Slide 6 · Evolução + frequência ─────────────────────────────────────
-function Slide6({ freq, setFreq }) {
+function Slide6({ L, freq, setFreq }) {
   return (
     <View style={sl.slide}>
       <Text style={sl.emoji}>📊</Text>
-      <Text style={sl.h1}>Acompanhe{'\n'}sua evolução.</Text>
+      <Text style={sl.h1}>{L.s6Title}</Text>
 
       <View style={sl.placementCard}>
-        <Text style={sl.placementTitle}>🎯 Teste de nivelamento</Text>
-        <Text style={sl.placementText}>
-          Após criar seu perfil, você fará um breve teste. Ele identifica exatamente onde você
-          está e posiciona você na trilha ideal — sem perder tempo com o que você já sabe.
-        </Text>
+        <Text style={sl.placementTitle}>{L.placementTitle}</Text>
+        <Text style={sl.placementText}>{L.placementText}</Text>
       </View>
 
-      <Text style={sl.freqTitle}>Com que frequência quer reavaliar seu progresso?</Text>
+      <Text style={sl.freqTitle}>{L.freqTitle}</Text>
       <View style={sl.freqList}>
-        {TEST_OPTIONS.map(opt => (
+        {L.freqOptions.map(opt => (
           <TouchableOpacity
             key={opt.id}
             style={[sl.freqCard, freq === opt.id && sl.freqCardSelected]}
@@ -236,6 +200,8 @@ const TOTAL = 6;
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const L = t(WELCOME_TR);
+  const isRTL = getUILang() === 'ar';
   const [current, setCurrent] = useState(0);
   const [freq, setFreq] = useState('weekly');
   const [selectedLang, setSelectedLang] = useState(null);
@@ -251,8 +217,6 @@ export default function WelcomeScreen() {
     if (current === 3 && !selectedLang) return; // language slide: must pick one
     if (current < TOTAL - 1) goTo(current + 1);
   }
-
-
 
   function goPrev() {
     if (current > 0) goTo(current - 1);
@@ -278,12 +242,12 @@ export default function WelcomeScreen() {
   const nextBlocked = current === 3 && !selectedLang;
 
   const slides = [
-    <Slide1 key="1" />,
-    <Slide2 key="2" />,
-    <Slide3 key="3" />,
-    <Slide4Lang key="4" selectedLang={selectedLang} setSelectedLang={setSelectedLang} />,
-    <Slide5 key="5" />,
-    <Slide6 key="6" freq={freq} setFreq={setFreq} />,
+    <Slide1 key="1" L={L} />,
+    <Slide2 key="2" L={L} />,
+    <Slide3 key="3" L={L} />,
+    <Slide4Lang key="4" L={L} selectedLang={selectedLang} setSelectedLang={setSelectedLang} />,
+    <Slide5 key="5" L={L} />,
+    <Slide6 key="6" L={L} freq={freq} setFreq={setFreq} />,
   ];
 
   return (
@@ -316,10 +280,10 @@ export default function WelcomeScreen() {
       </View>
 
       {/* Controls */}
-      <View style={styles.controls}>
+      <View style={[styles.controls, isRTL && styles.controlsRTL]}>
         {current > 0 ? (
           <TouchableOpacity style={styles.backBtn} onPress={goPrev}>
-            <Text style={styles.backBtnText}>← Voltar</Text>
+            <Text style={styles.backBtnText}>{L.back}</Text>
           </TouchableOpacity>
         ) : (
           <View style={{ flex: 1 }} />
@@ -331,12 +295,12 @@ export default function WelcomeScreen() {
             onPress={goNext}
             activeOpacity={nextBlocked ? 1 : 0.8}>
             <Text style={[styles.nextBtnText, nextBlocked && styles.nextBtnTextBlocked]}>
-              {nextBlocked ? 'Selecione um idioma' : 'Próximo →'}
+              {nextBlocked ? L.selectLang : L.next}
             </Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={[styles.nextBtn, styles.finishBtn]} onPress={finish}>
-            <Text style={styles.nextBtnText}>Criar meu perfil →</Text>
+            <Text style={styles.nextBtnText}>{L.createProfile}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -344,7 +308,7 @@ export default function WelcomeScreen() {
       {/* Skip — apenas nos slides introdutórios */}
       {current < 3 && (
         <TouchableOpacity style={styles.skipBtn} onPress={finish}>
-          <Text style={styles.skipBtnText}>Pular apresentação</Text>
+          <Text style={styles.skipBtnText}>{L.skip}</Text>
         </TouchableOpacity>
       )}
 
@@ -495,6 +459,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 24, paddingVertical: 12,
   },
+  controlsRTL: { flexDirection: 'row-reverse' },
   backBtn: { paddingVertical: 14, paddingRight: 16 },
   backBtnText: { fontSize: 15, color: C.textMuted },
   nextBtn: {

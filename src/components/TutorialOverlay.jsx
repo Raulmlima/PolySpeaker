@@ -124,15 +124,17 @@ function MiniTapWord({ L, isRTL }) {
   const pulse = useRef(new Animated.Value(0)).current;
   const [wordRect, setWordRect] = useState(null); // { x, y, width } relative to the card
   const [bubbleSize, setBubbleSize] = useState({ width: 0, height: 0 });
+  const [tapped, setTapped] = useState(false); // this mockup is a real tap target, not an auto-shown demo
 
   useEffect(() => {
+    if (tapped) return; // stop hinting once they've actually tapped it
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, { toValue: 1, duration: 900, easing: Easing.out(Easing.quad), useNativeDriver: true }),
         Animated.timing(pulse, { toValue: 0, duration: 900, easing: Easing.in(Easing.quad), useNativeDriver: true }),
       ])
     ).start();
-  }, []);
+  }, [tapped]);
 
   // Same technique as the real tap-to-translate feature: measure the actual
   // word's position and place the bubble above THAT, instead of guessing —
@@ -149,7 +151,7 @@ function MiniTapWord({ L, isRTL }) {
     <View style={mk.card}>
       <Text style={mk.promptLabel} allowFontScaling={false}>{L.tap.label}</Text>
 
-      {wordRect && (
+      {tapped && wordRect && (
         <View
           style={[mk.bubbleWrapAbs, { left: bubbleLeft, top: bubbleTop }]}
           onLayout={e => setBubbleSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height - 7 })}>
@@ -163,20 +165,31 @@ function MiniTapWord({ L, isRTL }) {
       )}
 
       <View style={[mk.promptRow, isRTL && mk.promptRowRTL]}>
-        {L.tap.words.map((w, i) => (
-          <Text
-            key={i}
-            allowFontScaling={false}
-            style={[mk.promptText, i === L.tap.tappedIdx && mk.tappedWord]}
-            onLayout={i === L.tap.tappedIdx ? e => setWordRect(e.nativeEvent.layout) : undefined}>
-            {w}
-          </Text>
-        ))}
+        {L.tap.words.map((w, i) => {
+          const isTappable = i === L.tap.tappedIdx;
+          const wordText = (
+            <Text
+              key={i}
+              allowFontScaling={false}
+              suppressHighlighting={isTappable}
+              onPress={isTappable ? () => setTapped(v => !v) : undefined}
+              onLayout={isTappable ? e => setWordRect(e.nativeEvent.layout) : undefined}
+              style={[mk.promptText, isTappable && (tapped ? mk.tappedWordActive : mk.tappedWord)]}>
+              {w}
+            </Text>
+          );
+          if (!isTappable) return wordText;
+          return (
+            <Animated.View key={i} style={{
+              transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] }) }],
+            }}>
+              {wordText}
+            </Animated.View>
+          );
+        })}
       </View>
 
-      <Animated.View style={{ opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }}>
-        <Text style={mk.tapCaption} allowFontScaling={false}>{L.tap.caption}</Text>
-      </Animated.View>
+      <Text style={mk.tapCaption} allowFontScaling={false}>{L.tap.caption}</Text>
     </View>
   );
 }
@@ -382,6 +395,7 @@ const mk = StyleSheet.create({
   promptRowRTL: { flexDirection: 'row-reverse' },
   promptText: { fontSize: 19, color: C.text, fontWeight: '600', lineHeight: 28, marginRight: 5 },
   tappedWord: { color: C.accent, textDecorationLine: 'underline', textDecorationStyle: 'dotted' },
+  tappedWordActive: { color: C.accent, textDecorationLine: 'underline', textDecorationStyle: 'solid', fontWeight: '800' },
   tapCaption: { fontSize: 12, color: C.accent, fontWeight: '700', marginTop: 14 },
   // review
   reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },

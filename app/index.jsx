@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { getModulesForLang, STAGES, getTotalSentences } from '../src/data/modules';
-import { getAllProgress, getReviewCount } from '../src/db/database';
+import { getAllProgress, getReviewCount, getLastActiveModuleId } from '../src/db/database';
 import { scheduleDailyReminder, computeDayStreak } from '../src/notifications';
 import { getProfile, saveProfile, updateWeekStreak, LANGUAGES, getOrderedLanguageGroups, getLevels, getStageLabel, getStageDesc } from '../src/storage';
 import { C, cardShadow } from '../src/theme';
@@ -48,6 +48,7 @@ export default function HomeScreen() {
   const [placementOffer, setPlacementOffer] = useState(false);
   const [openStage, setOpenStage] = useState(null);
   const [reviewCount, setReviewCount] = useState(0);
+  const [lastActiveModuleId, setLastActiveModuleId] = useState(null);
   const scrollRef = useRef(null);
   const floatAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
@@ -82,6 +83,7 @@ export default function HomeScreen() {
       const rows = await getAllProgress(db);
       const map = {};
       rows.forEach(r => { map[r.module_id] = r.cnt; });
+      getLastActiveModuleId(db).then(setLastActiveModuleId).catch(() => {});
       setProgressMap(map);
 
       // Auto-upgrade level if progress is ahead of stored level
@@ -147,17 +149,32 @@ export default function HomeScreen() {
       ? `Pratique hoje pra manter ${dayStreak} dia${dayStreak > 1 ? 's' : ''} de sequência`
       : 'Comece uma sequência hoje!';
 
-  // "Continue" card — first unfinished non-review module across the track
+  // "Continue" card — prefer the module the user most recently practiced
+  // (even if it's not the first incomplete one in track order — e.g. they
+  // jumped ahead), falling back to the first unfinished module in track
+  // order only when nothing has been touched yet.
   let nextModule = null;
   let nextModuleStage = null;
-  for (const stage of STAGES) {
-    for (const m of modulesByStage[stage] ?? []) {
-      if (m.isReview) continue;
-      const total = getTotalSentences(m);
-      if (total === 0) continue;
-      if ((progressMap[m.id] ?? 0) < total) { nextModule = m; nextModuleStage = stage; break; }
+  if (lastActiveModuleId) {
+    for (const stage of STAGES) {
+      const m = (modulesByStage[stage] ?? []).find(x => x.id === lastActiveModuleId);
+      if (m && !m.isReview) {
+        const total = getTotalSentences(m);
+        if (total > 0 && (progressMap[m.id] ?? 0) < total) { nextModule = m; nextModuleStage = stage; }
+        break;
+      }
     }
-    if (nextModule) break;
+  }
+  if (!nextModule) {
+    for (const stage of STAGES) {
+      for (const m of modulesByStage[stage] ?? []) {
+        if (m.isReview) continue;
+        const total = getTotalSentences(m);
+        if (total === 0) continue;
+        if ((progressMap[m.id] ?? 0) < total) { nextModule = m; nextModuleStage = stage; break; }
+      }
+      if (nextModule) break;
+    }
   }
 
   return (

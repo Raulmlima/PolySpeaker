@@ -228,7 +228,7 @@ Dias e meses **não levam maiúscula** em francês (diferente do inglês).
         { prompt: 'A reunião é na quarta-feira.', answers: ['La réunion est mercredi.', 'La réunion est le mercredi.'] },
         { prompt: 'Eu trabalho de quinta a sexta.', answers: ['Je travaille du jeudi au vendredi.'] },
         { prompt: 'O sábado é meu dia favorito.', answers: ['Le samedi est mon jour préféré.'] },
-        { prompt: 'Não trabalho no domingo.', answers: ['Je ne travaille pas le dimanche.'] },
+        { prompt: 'Domingo é um bom dia.', answers: ['Dimanche est un bon jour.', 'Le dimanche est un bon jour.'] },
         { prompt: 'Eu tenho vinte anos.', answers: ["J'ai vingt ans."] },
         { prompt: 'Há trinta alunos na sala.', answers: ['Il y a trente élèves dans la salle.'] },
         { prompt: 'O número é quarenta e cinco.', answers: ['Le numéro est quarante-cinq.'] },

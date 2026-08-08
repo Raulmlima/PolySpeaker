@@ -9,9 +9,12 @@ import { getProfile, saveProfile, getLevels, LANGUAGES, getOrderedLanguageGroups
 import { scheduleDailyReminder } from '../src/notifications';
 import { C } from '../src/theme';
 import Poly from '../src/components/Poly';
+import { t } from '../src/utils/uiLang';
+import { ONBOARDING_TR } from '../src/utils/onboardingText';
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const L = t(ONBOARDING_TR);
   const [step, setStep] = useState(0); // 0 = language, 1 = level
   const [selectedLang, setSelectedLang] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState(null);
@@ -52,17 +55,15 @@ export default function OnboardingScreen() {
         <View style={styles.logoArea}>
           <Poly size={64} mood="happy" />
           <Text style={styles.logoText}>PolySpeaker</Text>
-          <Text style={styles.logoSub}>Aprenda idiomas de verdade</Text>
+          <Text style={styles.logoSub}>{L.logoSub}</Text>
         </View>
 
         {/* ── Passo 0: seleção de idioma (apenas se não veio do welcome) ── */}
         {step === 0 && (
           <View style={styles.step}>
-            <Text style={styles.stepNum}>1 de 2</Text>
-            <Text style={styles.question}>Qual idioma você quer aprender?</Text>
-            <Text style={styles.questionSub}>
-              Começaremos com tradução ativa — o método mais eficaz.
-            </Text>
+            <Text style={styles.stepNum}>{L.step1of2}</Text>
+            <Text style={styles.question}>{L.q1}</Text>
+            <Text style={styles.questionSub}>{L.q1Sub}</Text>
             <View style={styles.options}>
               {getOrderedLanguageGroups().map(group => {
                 const groupLangs = LANGUAGES.filter(l => l.group === group.id);
@@ -86,7 +87,7 @@ export default function OnboardingScreen() {
                           </Text>
                           {!lang.available && (
                             <View style={styles.soonBadge}>
-                              <Text style={styles.soonBadgeText}>Em breve</Text>
+                              <Text style={styles.soonBadgeText}>{L.soon}</Text>
                             </View>
                           )}
                           {lang.available && selectedLang === lang.id && (
@@ -103,7 +104,7 @@ export default function OnboardingScreen() {
               style={[styles.nextBtn, !selectedLang && styles.nextBtnDisabled]}
               onPress={() => selectedLang && setStep(1)}
               disabled={!selectedLang}>
-              <Text style={styles.nextBtnText}>Continuar</Text>
+              <Text style={styles.nextBtnText}>{L.continueBtn}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -112,24 +113,12 @@ export default function OnboardingScreen() {
         {step === 1 && (
           <View style={styles.step}>
             {langFromWelcome ? (
-              <Text style={styles.stepNum}>ÚLTIMO PASSO</Text>
+              <Text style={styles.stepNum}>{L.lastStep}</Text>
             ) : (
-              <Text style={styles.stepNum}>2 de 2</Text>
+              <Text style={styles.stepNum}>{L.step2of2}</Text>
             )}
-            <Text style={styles.question}>
-              {langInfo?.group === 'ar'
-                ? 'ما هو مستواك في اللغة البرتغالية؟'
-                : langInfo?.group === 'en'
-                  ? 'What is your level of Portuguese?'
-                  : `Qual é o seu nível de ${langInfo?.label?.toLowerCase() ?? 'espanhol'}?`}
-            </Text>
-            <Text style={styles.questionSub}>
-              {langInfo?.group === 'ar'
-                ? 'سنحدد من أين تبدأ. يمكنك تغيير ذلك لاحقًا.'
-                : langInfo?.group === 'en'
-                  ? "We'll suggest where to start. You can change it later."
-                  : 'Indicaremos por onde começar. Você pode mudar depois.'}
-            </Text>
+            <Text style={styles.question}>{L.q2(langInfo?.label?.toLowerCase() ?? 'espanhol')}</Text>
+            <Text style={styles.questionSub}>{L.q2Sub}</Text>
             <View style={styles.options}>
               {getLevels(langInfo?.group ?? 'pt').map(level => (
                 <TouchableOpacity
@@ -150,14 +139,14 @@ export default function OnboardingScreen() {
                 <TouchableOpacity
                   style={styles.backBtn}
                   onPress={() => { setStep(0); setSelectedLevel(null); }}>
-                  <Text style={styles.backBtnText}>← Voltar</Text>
+                  <Text style={styles.backBtnText}>{L.back}</Text>
                 </TouchableOpacity>
               )}
               <TouchableOpacity
                 style={[styles.nextBtn, styles.nextBtnFlex, !selectedLevel && styles.nextBtnDisabled]}
                 onPress={finish}
                 disabled={!selectedLevel}>
-                <Text style={styles.nextBtnText}>Começar →</Text>
+                <Text style={styles.nextBtnText}>{L.start}</Text>
               </TouchableOpacity>
             </View>
           </View>

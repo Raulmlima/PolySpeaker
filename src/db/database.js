@@ -20,6 +20,12 @@ export async function initDatabase(db) {
       PRIMARY KEY (module_id, exercise_idx, sentence_idx)
     );
   `);
+  // Migration: existing installs created `progress` before `ts` existed.
+  // SQLite has no "ADD COLUMN IF NOT EXISTS" — just try it and ignore the
+  // "duplicate column" error on installs that already have it.
+  try {
+    await db.execAsync('ALTER TABLE progress ADD COLUMN ts INTEGER;');
+  } catch (_) {}
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS wrong_sentences (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,9 +44,19 @@ export async function initDatabase(db) {
 
 export async function markSentenceComplete(db, moduleId, exerciseIdx, sentenceIdx) {
   await db.runAsync(
-    'INSERT OR REPLACE INTO progress (module_id, exercise_idx, sentence_idx, completed) VALUES (?, ?, ?, 1)',
-    [moduleId, exerciseIdx, sentenceIdx]
+    'INSERT OR REPLACE INTO progress (module_id, exercise_idx, sentence_idx, completed, ts) VALUES (?, ?, ?, 1, ?)',
+    [moduleId, exerciseIdx, sentenceIdx, Date.now()]
   );
+}
+
+// Most recently touched module_id that has ANY progress at all — used to
+// resume "Continue de onde parou" at the module the user is actually
+// mid-way through, instead of the first incomplete module in track order.
+export async function getLastActiveModuleId(db) {
+  const row = await db.getFirstAsync(
+    'SELECT module_id FROM progress WHERE ts IS NOT NULL ORDER BY ts DESC LIMIT 1'
+  );
+  return row?.module_id ?? null;
 }
 
 export async function getModuleCompletedCount(db, moduleId) {
