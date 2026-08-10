@@ -144,6 +144,7 @@ export const LANGUAGES = [
   { id: 'fr', label: 'Francês',              tts: 'fr-FR', dictPair: 'pt|fr', dictFromLabel: 'português', available: true,  group: 'pt' },
   { id: 'it', label: 'Italiano',             tts: 'it-IT', dictPair: 'pt|it', dictFromLabel: 'português', available: true,  group: 'pt' },
   { id: 'zh', label: 'Mandarim',             tts: 'zh-CN', dictPair: 'pt|zh', dictFromLabel: 'português', available: true,  group: 'pt' },
+  { id: 'ja', label: 'Japonês',              tts: 'ja-JP', dictPair: 'pt|ja', dictFromLabel: 'português', available: true,  group: 'pt' },
   // Grupo: falante de inglês aprendendo português
   { id: 'pt', label: 'Português Brasileiro', tts: 'pt-BR', dictPair: 'en|pt', dictFromLabel: 'inglês',    available: true,  group: 'en', reverseMode: true },
   // Grupo: falante de árabe aprendendo português

@@ -2,7 +2,7 @@
   "expo": {
     "name": "PolySpeaker",
     "slug": "polyspeaker",
-    "version": "1.1",
+    "version": "1.2",
     "orientation": "portrait",
     "scheme": "polyspeaker",
     "icon": "./assets/icon.png",

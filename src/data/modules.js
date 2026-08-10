@@ -5,6 +5,7 @@ import { MODULES_IT } from './modules_it';
 import { MODULES_PT } from './modules_pt';
 import { MODULES_AR } from './modules_ar';
 import { MODULES_ZH } from './modules_zh';
+import { MODULES_JA } from './modules_ja';
 
 export const STAGES = ['Alfabeto', 'Fundamentos', 'Básico', 'Intermediário', 'Avançado', 'Variados'];
 
@@ -2473,7 +2474,7 @@ function _chunkExercises(mod) {
 }
 
 const _MODULES_ES = (MODULES_ES ?? []).map(_chunkExercises);
-const _allExtra = [...(MODULES_EN ?? []), ...(MODULES_DE ?? []), ...(MODULES_FR ?? []), ...(MODULES_IT ?? []), ...(MODULES_PT ?? []), ...(MODULES_AR ?? []), ...(MODULES_ZH ?? [])].map(_chunkExercises);
+const _allExtra = [...(MODULES_EN ?? []), ...(MODULES_DE ?? []), ...(MODULES_FR ?? []), ...(MODULES_IT ?? []), ...(MODULES_PT ?? []), ...(MODULES_AR ?? []), ...(MODULES_ZH ?? []), ...(MODULES_JA ?? [])].map(_chunkExercises);
 
 export function getModulesForLang(lang) {
   if (!lang || lang === 'es') return _MODULES_ES;
