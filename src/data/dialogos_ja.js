@@ -1,0 +1,511 @@
+// Each line's `ja` field is an array of accepted answers. Mirrors the same
+// convention already used in modules_ja_*.js exercises: answers[0] is the
+// combined "romaji — kanji" display/TTS/tap form, followed by romaji-only
+// and kanji-only variants so the learner can type either.
+function a(kanji, romaji) {
+  return [`${romaji} — ${kanji}`, romaji, kanji];
+}
+
+export const DIALOGOS_JA = {
+  basico: {
+    label: 'Básico',
+    desc: 'Situações simples do dia a dia',
+    dialogos: [
+      {
+        id: 'bas-ja-1',
+        title: 'Na cafeteria',
+        context: 'Você entra numa cafeteria em Tóquio e faz um pedido.',
+        lines: [
+          { speaker: 'Atendente', pt: 'Bom dia! O que vai querer?', ja: a('おはようございます！ご注文は？', 'ohayou gozaimasu! gochuumon wa?') },
+          { speaker: 'Você', pt: 'Um café e um pão doce, por favor.', ja: a('コーヒーとパンをお願いします。', 'koohii to pan wo onegaishimasu.') },
+          { speaker: 'Atendente', pt: 'Açúcar e leite?', ja: a('砂糖とミルクはいかがですか？', 'satou to miruku wa ikaga desu ka?') },
+          { speaker: 'Você', pt: 'Não, obrigado. Quanto é?', ja: a('いいえ、大丈夫です。いくらですか？', 'iie, daijoubu desu. ikura desu ka?') },
+          { speaker: 'Atendente', pt: 'São quinhentos ienes.', ja: a('五百円です。', 'gohyaku en desu.') },
+        ],
+      },
+      {
+        id: 'bas-ja-2',
+        title: 'Apresentações',
+        context: 'Você conhece alguém numa festa e se apresenta.',
+        lines: [
+          { speaker: 'Você', pt: 'Olá! Muito prazer, eu me chamo Lucas.', ja: a('こんにちは！はじめまして、ルカスです。', 'konnichiwa! hajimemashite, rukasu desu.') },
+          { speaker: 'Yuki', pt: 'Muito prazer! Eu sou a Yuki. De onde você é?', ja: a('はじめまして！ユキです。どこから来ましたか？', 'hajimemashite! yuki desu. doko kara kimashita ka?') },
+          { speaker: 'Você', pt: 'Sou do Brasil, mas moro em Tóquio há um ano.', ja: a('ブラジルから来ましたが、東京に一年住んでいます。', 'burajiru kara kimashita ga, toukyou ni ichinen sunde imasu.') },
+          { speaker: 'Yuki', pt: 'Que legal! Por que veio para cá?', ja: a('すごいですね！どうしてここに来ましたか？', 'sugoi desu ne! doushite koko ni kimashita ka?') },
+          { speaker: 'Você', pt: 'Vim para estudar japonês e conhecer a cultura.', ja: a('日本語を勉強して、文化を知るために来ました。', 'nihongo wo benkyou shite, bunka wo shiru tame ni kimashita.') },
+        ],
+      },
+      {
+        id: 'bas-ja-3',
+        title: 'Pedindo informações',
+        context: 'Você está perdido na cidade e pede ajuda.',
+        lines: [
+          { speaker: 'Você', pt: 'Com licença, sabe onde fica a estação?', ja: a('すみません、駅はどこですか？', 'sumimasen, eki wa doko desu ka?') },
+          { speaker: 'Pessoa', pt: 'Claro! Siga em frente e vire à direita.', ja: a('もちろん！まっすぐ行って、右に曲がってください。', 'mochiron! massugu itte, migi ni magatte kudasai.') },
+          { speaker: 'Você', pt: 'É longe daqui?', ja: a('ここから遠いですか？', 'koko kara tooi desu ka?') },
+          { speaker: 'Pessoa', pt: 'Não, uns cinco minutos a pé.', ja: a('いいえ、歩いて五分ぐらいです。', 'iie, aruite gofun gurai desu.') },
+          { speaker: 'Você', pt: 'Muito obrigado, você foi muito gentil.', ja: a('どうもありがとうございます、親切ですね。', 'doumo arigatou gozaimasu, shinsetsu desu ne.') },
+        ],
+      },
+      {
+        id: 'bas-ja-4',
+        title: 'Na farmácia',
+        context: 'Você não está bem e entra numa farmácia.',
+        lines: [
+          { speaker: 'Farmacêutico', pt: 'Bom dia! Em que posso ajudá-lo?', ja: a('おはようございます！どうしましたか？', 'ohayou gozaimasu! dou shimashita ka?') },
+          { speaker: 'Você', pt: 'Tenho dor de garganta e um pouco de febre.', ja: a('喉が痛くて、少し熱があります。', 'nodo ga itakute, sukoshi netsu ga arimasu.') },
+          { speaker: 'Farmacêutico', pt: 'Há quantos dias tem esses sintomas?', ja: a('何日前からですか？', 'nannichi mae kara desu ka?') },
+          { speaker: 'Você', pt: 'Desde anteontem. Pode me recomendar alguma coisa?', ja: a('おとといからです。何かおすすめはありますか？', 'ototoi kara desu. nanika osusume wa arimasu ka?') },
+          { speaker: 'Farmacêutico', pt: 'Sim, este xarope. Tome três vezes por dia.', ja: a('はい、このシロップです。一日三回飲んでください。', 'hai, kono shiroppu desu. ichinichi sankai nonde kudasai.') },
+        ],
+      },
+      {
+        id: 'bas-ja-5',
+        title: 'De compras',
+        context: 'Você está numa loja de roupas em Osaka.',
+        lines: [
+          { speaker: 'Vendedora', pt: 'Olá! Está procurando alguma coisa em especial?', ja: a('いらっしゃいませ！何かお探しですか？', 'irasshaimase! nanika osagashi desu ka?') },
+          { speaker: 'Você', pt: 'Sim, procuro uma camisa para o trabalho.', ja: a('はい、仕事用のシャツを探しています。', 'hai, shigoto you no shatsu wo sagashite imasu.') },
+          { speaker: 'Vendedora', pt: 'Que tamanho você usa?', ja: a('サイズはいくつですか？', 'saizu wa ikutsu desu ka?') },
+          { speaker: 'Você', pt: 'Acho que sou M.', ja: a('Mサイズだと思います。', 'emu saizu da to omoimasu.') },
+          { speaker: 'Vendedora', pt: 'Posso mostrar estas duas. São novidades.', ja: a('この二つをお見せします。新商品です。', 'kono futatsu wo omise shimasu. shinshouhin desu.') },
+          { speaker: 'Você', pt: 'Posso experimentar a azul?', ja: a('青いのを試着してもいいですか？', 'aoi no wo shichaku shite mo ii desu ka?') },
+        ],
+      },
+      {
+        id: 'bas-ja-6',
+        title: 'No hotel',
+        context: 'Você faz o check-in num hotel em Kyoto.',
+        lines: [
+          { speaker: 'Recepcionista', pt: 'Boa tarde! Tem reserva?', ja: a('こんにちは！ご予約はありますか？', 'konnichiwa! goyoyaku wa arimasu ka?') },
+          { speaker: 'Você', pt: 'Sim, uma reserva para três noites em nome de Silva.', ja: a('はい、シルバの名前で三泊予約しています。', 'hai, shiruba no namae de sanpaku yoyaku shite imasu.') },
+          { speaker: 'Recepcionista', pt: 'Perfeito. Posso ver seu passaporte?', ja: a('かしこまりました。パスポートを見せていただけますか？', 'kashikomarimashita. pasupooto wo misete itadakemasu ka?') },
+          { speaker: 'Você', pt: 'Claro, aqui está. O quarto tem ar condicionado?', ja: a('はい、どうぞ。部屋にエアコンはありますか？', 'hai, douzo. heya ni eakon wa arimasu ka?') },
+          { speaker: 'Recepcionista', pt: 'Sim, todos os quartos têm. É o quarto 214.', ja: a('はい、全部の部屋にあります。214号室です。', 'hai, zenbu no heya ni arimasu. nihyaku juuyon goushitsu desu.') },
+        ],
+      },
+      {
+        id: 'bas-ja-7',
+        title: 'No restaurante',
+        context: 'Você janta num restaurante e precisa de ajuda.',
+        lines: [
+          { speaker: 'Garçom', pt: 'Boa noite! Tem reserva?', ja: a('こんばんは！ご予約はありますか？', 'konbanwa! goyoyaku wa arimasu ka?') },
+          { speaker: 'Você', pt: 'Não. Há mesa para duas pessoas?', ja: a('いいえ。二人分の席はありますか？', 'iie. futaribun no seki wa arimasu ka?') },
+          { speaker: 'Garçom', pt: 'Claro, por aqui. Aqui está o cardápio.', ja: a('もちろん、こちらへどうぞ。メニューです。', 'mochiron, kochira e douzo. menyuu desu.') },
+          { speaker: 'Você', pt: 'Qual é a especialidade da casa?', ja: a('お店のおすすめは何ですか？', 'omise no osusume wa nan desu ka?') },
+          { speaker: 'Garçom', pt: 'O tempurá é nosso prato mais popular.', ja: a('天ぷらが一番人気です。', 'tenpura ga ichiban ninki desu.') },
+        ],
+      },
+      {
+        id: 'bas-ja-8',
+        title: 'No aeroporto',
+        context: 'Você precisa de informações no aeroporto.',
+        lines: [
+          { speaker: 'Você', pt: 'Com licença, sabe onde fica o balcão da ANA?', ja: a('すみません、ANAのカウンターはどこですか？', 'sumimasen, ee enu ee no kauntaa wa doko desu ka?') },
+          { speaker: 'Funcionária', pt: 'Sim, fica no terminal 2, à direita.', ja: a('はい、第二ターミナルの右側です。', 'hai, dai ni taaminaru no migigawa desu.') },
+          { speaker: 'Você', pt: 'Obrigado. Onde posso encontrar as bagagens?', ja: a('ありがとうございます。荷物はどこで受け取れますか？', 'arigatou gozaimasu. nimotsu wa doko de uketoremasu ka?') },
+          { speaker: 'Funcionária', pt: 'Nas esteiras, depois da imigração.', ja: a('入国審査の後、ベルトコンベアにあります。', 'nyuukoku shinsa no ato, beruto konbea ni arimasu.') },
+        ],
+      },
+      {
+        id: 'bas-ja-9',
+        title: 'Combinando um encontro',
+        context: 'Você combina um plano com um amigo japonês.',
+        lines: [
+          { speaker: 'Você', pt: 'O que você vai fazer neste fim de semana?', ja: a('今週末、何をしますか？', 'konshuumatsu, nani wo shimasu ka?') },
+          { speaker: 'Kenji', pt: 'Ainda não sei. Talvez vá ao cinema. E você?', ja: a('まだ分かりません。映画を見に行くかもしれません。あなたは？', 'mada wakarimasen. eiga wo mi ni iku kamoshiremasen. anata wa?') },
+          { speaker: 'Você', pt: 'Queria visitar um templo. Vem comigo?', ja: a('お寺に行きたいです。一緒に来ますか？', 'otera ni ikitai desu. issho ni kimasu ka?') },
+          { speaker: 'Kenji', pt: 'Boa ideia! A que horas você quer ir?', ja: a('いいですね！何時に行きたいですか？', 'ii desu ne! nanji ni ikitai desu ka?') },
+          { speaker: 'Você', pt: 'Às dez da manhã?', ja: a('午前十時はどうですか？', 'gozen juuji wa dou desu ka?') },
+        ],
+      },
+      {
+        id: 'bas-ja-10',
+        title: 'No banco',
+        context: 'Você precisa de ajuda num banco japonês.',
+        lines: [
+          { speaker: 'Funcionário', pt: 'Bom dia! Em que posso ajudá-lo?', ja: a('おはようございます！どうしましたか？', 'ohayou gozaimasu! dou shimashita ka?') },
+          { speaker: 'Você', pt: 'Queria abrir uma conta bancária. O que preciso?', ja: a('銀行口座を開きたいです。何が必要ですか？', 'ginkou kouza wo hirakitai desu. nani ga hitsuyou desu ka?') },
+          { speaker: 'Funcionário', pt: 'Precisa do passaporte e do cartão de residência.', ja: a('パスポートと在留カードが必要です。', 'pasupooto to zairyuu kaado ga hitsuyou desu.') },
+          { speaker: 'Você', pt: 'Tenho os dois aqui.', ja: a('両方持っています。', 'ryouhou motte imasu.') },
+          { speaker: 'Funcionário', pt: 'Perfeito. Vamos preencher o formulário.', ja: a('かしこまりました。書類を書きましょう。', 'kashikomarimashita. shorui wo kakimashou.') },
+        ],
+      },
+    ],
+  },
+
+  intermediario: {
+    label: 'Intermediário',
+    desc: 'Situações mais elaboradas com mais vocabulário',
+    dialogos: [
+      {
+        id: 'int-ja-1',
+        title: 'No médico',
+        context: 'Você tem dor de cabeça forte e vai ao médico.',
+        lines: [
+          { speaker: 'Médico', pt: 'Bom dia. O que está sentindo?', ja: a('おはようございます。どうしましたか？', 'ohayou gozaimasu. dou shimashita ka?') },
+          { speaker: 'Você', pt: 'Tenho uma dor de cabeça muito forte desde ontem à noite.', ja: a('昨日の夜からとても頭が痛いです。', 'kinou no yoru kara totemo atama ga itai desu.') },
+          { speaker: 'Médico', pt: 'Tem febre ou está tonto?', ja: a('熱がありますか、めまいがしますか？', 'netsu ga arimasu ka, memai ga shimasu ka?') },
+          { speaker: 'Você', pt: 'Não tenho febre, mas estou um pouco tonto.', ja: a('熱はありませんが、少しめまいがします。', 'netsu wa arimasen ga, sukoshi memai ga shimasu.') },
+          { speaker: 'Médico', pt: 'Tem dormido bem? O estresse pode causar esse tipo de dor.', ja: a('よく眠れていますか？ストレスがこの痛みの原因かもしれません。', 'yoku nemurete imasu ka? sutoresu ga kono itami no gen\'in kamoshiremasen.') },
+          { speaker: 'Você', pt: 'Não muito. Trabalho muito ultimamente.', ja: a('あまり。最近たくさん働いています。', 'amari. saikin takusan hataraite imasu.') },
+        ],
+      },
+      {
+        id: 'int-ja-2',
+        title: 'Alugando um apartamento',
+        context: 'Você fala com um corretor sobre alugar um apartamento.',
+        lines: [
+          { speaker: 'Corretor', pt: 'O apartamento tem dois quartos e cozinha equipada.', ja: a('この部屋は二部屋あって、キッチンも設備されています。', 'kono heya wa futaheya atte, kicchin mo setsubi sarete imasu.') },
+          { speaker: 'Você', pt: 'Quanto custa o aluguel por mês?', ja: a('家賃は一か月いくらですか？', 'yachin wa ikkagetsu ikura desu ka?') },
+          { speaker: 'Corretor', pt: 'Oitenta mil ienes, incluindo a taxa de administração.', ja: a('八万円で、管理費込みです。', 'hachiman en de, kanrihi komi desu.') },
+          { speaker: 'Você', pt: 'É possível ver o apartamento hoje à tarde?', ja: a('今日の午後、見学できますか？', 'kyou no gogo, kengaku dekimasu ka?') },
+          { speaker: 'Corretor', pt: 'Claro, posso às cinco. Serve para você?', ja: a('もちろん、五時なら大丈夫です。都合はいかがですか？', 'mochiron, goji nara daijoubu desu. tsugou wa ikaga desu ka?') },
+        ],
+      },
+      {
+        id: 'int-ja-3',
+        title: 'Devolvendo um produto',
+        context: 'Você comprou um produto com defeito e vai à loja.',
+        lines: [
+          { speaker: 'Você', pt: 'Comprei esta cafeteira há uma semana e já está com defeito.', ja: a('このコーヒーメーカーを一週間前に買いましたが、もう壊れています。', 'kono koohii meekaa wo isshuukan mae ni kaimashita ga, mou kowarete imasu.') },
+          { speaker: 'Atendente', pt: 'Entendo. Tem o recibo?', ja: a('分かりました。レシートはありますか？', 'wakarimashita. reshiito wa arimasu ka?') },
+          { speaker: 'Você', pt: 'Sim, aqui está. Gostaria de trocar ou receber o dinheiro de volta.', ja: a('はい、どうぞ。交換か返金をお願いしたいです。', 'hai, douzo. koukan ka henkin wo onegai shitai desu.') },
+          { speaker: 'Atendente', pt: 'Vou verificar. Tem garantia de dois anos.', ja: a('確認します。二年間の保証があります。', 'kakunin shimasu. ninenkan no hoshou ga arimasu.') },
+          { speaker: 'Você', pt: 'Ótimo. Prefiro o reembolso, se possível.', ja: a('よかったです。できれば返金でお願いします。', 'yokatta desu. dekireba henkin de onegaishimasu.') },
+        ],
+      },
+      {
+        id: 'int-ja-4',
+        title: 'Encontro com um amigo',
+        context: 'Você encontra um amigo japonês que não via há meses.',
+        lines: [
+          { speaker: 'Amigo', pt: 'Ei! Quanto tempo! Como você tem estado?', ja: a('久しぶり！元気だった？', 'hisashiburi! genki datta?') },
+          { speaker: 'Você', pt: 'Muito bem! Trabalhei muito ultimamente, mas estou bem.', ja: a('元気だよ！最近忙しかったけど、大丈夫。', 'genki da yo! saikin isogashikatta kedo, daijoubu.') },
+          { speaker: 'Amigo', pt: 'Eu mudei de emprego. Agora trabalho numa startup.', ja: a('仕事を変えたんだ。今はスタートアップで働いている。', 'shigoto wo kaeta n da. ima wa sutaatoappu de hataraite iru.') },
+          { speaker: 'Você', pt: 'Sério? E está gostando?', ja: a('本当に？楽しい？', 'hontou ni? tanoshii?') },
+          { speaker: 'Amigo', pt: 'Muito! Aprendo coisas novas todos os dias.', ja: a('とても！毎日新しいことを学んでいる。', 'totemo! mainichi atarashii koto wo manande iru.') },
+        ],
+      },
+      {
+        id: 'int-ja-5',
+        title: 'Numa academia',
+        context: 'Você quer se inscrever numa academia em Tóquio.',
+        lines: [
+          { speaker: 'Recepcionista', pt: 'Bom dia! É a primeira vez que nos visita?', ja: a('おはようございます！初めてですか？', 'ohayou gozaimasu! hajimete desu ka?') },
+          { speaker: 'Você', pt: 'Sim. Gostaria de saber os planos mensais.', ja: a('はい。月会費のプランを知りたいです。', 'hai. tsukikaihi no puran wo shiritai desu.') },
+          { speaker: 'Recepcionista', pt: 'Temos três planos: básico, premium e com personal trainer.', ja: a('三つのプランがあります：基本、プレミアム、そしてパーソナルトレーナー付きです。', 'mittsu no puran ga arimasu: kihon, puremiamu, soshite paasonaru toreenaa tsuki desu.') },
+          { speaker: 'Você', pt: 'Qual é a diferença entre o básico e o premium?', ja: a('基本とプレミアムの違いは何ですか？', 'kihon to puremiamu no chigai wa nan desu ka?') },
+          { speaker: 'Recepcionista', pt: 'O premium inclui aulas em grupo e piscina.', ja: a('プレミアムはグループレッスンとプールが含まれます。', 'puremiamu wa guruupu ressun to puuru ga fukumaremasu.') },
+        ],
+      },
+      {
+        id: 'int-ja-6',
+        title: 'Discutindo um projeto',
+        context: 'Você e um colega discutem um projeto de trabalho.',
+        lines: [
+          { speaker: 'Colega', pt: 'Vi sua proposta. Gostei da ideia, mas tenho dúvidas.', ja: a('提案書を見ました。アイデアは良かったですが、質問があります。', 'teianshou wo mimashita. aidea wa yokatta desu ga, shitsumon ga arimasu.') },
+          { speaker: 'Você', pt: 'Claro, diga. Para isso é a reunião.', ja: a('もちろん、どうぞ。そのための会議です。', 'mochiron, douzo. sono tame no kaigi desu.') },
+          { speaker: 'Colega', pt: 'O orçamento parece um pouco alto.', ja: a('予算が少し高いと思います。', 'yosan ga sukoshi takai to omoimasu.') },
+          { speaker: 'Você', pt: 'Entendo a preocupação, mas inclui o treinamento da equipe.', ja: a('その心配は分かりますが、チームのトレーニング費用が含まれています。', 'sono shinpai wa wakarimasu ga, chiimu no toreeningu hiyou ga fukumarete imasu.') },
+          { speaker: 'Colega', pt: 'Nesse caso, faz sentido.', ja: a('それなら、納得です。', 'sore nara, nattoku desu.') },
+        ],
+      },
+      {
+        id: 'int-ja-7',
+        title: 'Alugando um carro',
+        context: 'Você aluga um carro numa locadora.',
+        lines: [
+          { speaker: 'Você', pt: 'Boa tarde. Tenho uma reserva para um carro médio.', ja: a('こんにちは。中型車の予約をしています。', 'konnichiwa. chuugatasha no yoyaku wo shite imasu.') },
+          { speaker: 'Atendente', pt: 'Perfeito. Em nome de quem está a reserva?', ja: a('かしこまりました。ご予約のお名前は？', 'kashikomarimashita. goyoyaku no onamae wa?') },
+          { speaker: 'Você', pt: 'Em nome de Mariana Ferreira.', ja: a('マリアナ・フェレイラの名前です。', 'mariana fereira no namae desu.') },
+          { speaker: 'Atendente', pt: 'Muito bem. Quer incluir o seguro completo?', ja: a('かしこまりました。フル保険を含めますか？', 'kashikomarimashita. furu hoken wo fukumemasu ka?') },
+          { speaker: 'Você', pt: 'Quanto custa a mais por dia?', ja: a('一日いくら追加になりますか？', 'ichinichi ikura tsuika ni narimasu ka?') },
+        ],
+      },
+      {
+        id: 'int-ja-8',
+        title: 'Pedindo uma opinião',
+        context: 'Você pede conselho a um amigo sobre uma decisão difícil.',
+        lines: [
+          { speaker: 'Você', pt: 'Preciso da sua opinião. Recebi uma oferta de emprego em outro país.', ja: a('意見が欲しいです。他の国で仕事のオファーをもらいました。', 'iken ga hoshii desu. hoka no kuni de shigoto no ofaa wo moraimashita.') },
+          { speaker: 'Amiga', pt: 'Sério? Onde?', ja: a('本当に？どこですか？', 'hontou ni? doko desu ka?') },
+          { speaker: 'Você', pt: 'Na Alemanha. O salário é melhor mas tenho que deixar tudo aqui.', ja: a('ドイツです。給料はいいですが、ここの全てを離れなければなりません。', 'doitsu desu. kyuuryou wa ii desu ga, koko no subete wo hanarenakereba narimasen.') },
+          { speaker: 'Amiga', pt: 'É uma decisão muito difícil. Quando você tem que responder?', ja: a('とても難しい決断ですね。いつまでに返事しなければなりませんか？', 'totemo muzukashii ketsudan desu ne. itsu made ni henji shinakereba narimasen ka?') },
+          { speaker: 'Você', pt: 'Até o final do mês. O que você faria?', ja: a('今月末までです。あなたならどうしますか？', 'kongetsumatsu made desu. anata nara dou shimasu ka?') },
+        ],
+      },
+      {
+        id: 'int-ja-9',
+        title: 'No médico de família',
+        context: 'Você vai ao médico de família para uma consulta de rotina.',
+        lines: [
+          { speaker: 'Médico', pt: 'Olá! O que o traz aqui hoje?', ja: a('こんにちは！今日はどうされましたか？', 'konnichiwa! kyou wa dou saremashita ka?') },
+          { speaker: 'Você', pt: 'Venho para uma revisão de rotina.', ja: a('定期検診のために来ました。', 'teiki kenshin no tame ni kimashita.') },
+          { speaker: 'Médico', pt: 'Perfeito. Como você tem dormido? Come bem?', ja: a('分かりました。よく眠れていますか？食事はちゃんと取っていますか？', 'wakarimashita. yoku nemurete imasu ka? shokuji wa chanto totte imasu ka?') },
+          { speaker: 'Você', pt: 'Durmo razoavelmente. Às vezes me sinto cansado.', ja: a('まあまあです。時々疲れを感じます。', 'maamaa desu. tokidoki tsukare wo kanjimasu.') },
+          { speaker: 'Médico', pt: 'Pode ser falta de vitamina D. Vou pedir exames.', ja: a('ビタミンD不足かもしれません。検査をお願いします。', 'bitamin dii busoku kamoshiremasen. kensa wo onegaishimasu.') },
+        ],
+      },
+      {
+        id: 'int-ja-10',
+        title: 'No supermercado',
+        context: 'Você precisa de ajuda num supermercado japonês.',
+        lines: [
+          { speaker: 'Você', pt: 'Com licença, sabe onde estão as conservas?', ja: a('すみません、缶詰はどこですか？', 'sumimasen, kanzume wa doko desu ka?') },
+          { speaker: 'Funcionária', pt: 'Estão no corredor seis, perto dos cereais.', ja: a('六番通路にあります。シリアルの近くです。', 'roku ban tsuuro ni arimasu. shiriaru no chikaku desu.') },
+          { speaker: 'Você', pt: 'Obrigado. E o azeite, também lá?', ja: a('ありがとうございます。オリーブオイルもそこですか？', 'arigatou gozaimasu. oriibu oiru mo soko desu ka?') },
+          { speaker: 'Funcionária', pt: 'Não, o azeite está no corredor dois.', ja: a('いいえ、オリーブオイルは二番通路です。', 'iie, oriibu oiru wa ni ban tsuuro desu.') },
+          { speaker: 'Você', pt: 'Há alguma promoção esta semana?', ja: a('今週は何かセールがありますか？', 'konshuu wa nanika seeru ga arimasu ka?') },
+        ],
+      },
+    ],
+  },
+
+  avancado: {
+    label: 'Avançado',
+    desc: 'Conversas complexas com nuances e expressões naturais',
+    dialogos: [
+      {
+        id: 'adv-ja-1',
+        title: 'Entrevista de emprego',
+        context: 'Você está numa entrevista para uma vaga de marketing.',
+        lines: [
+          { speaker: 'Entrevistador', pt: 'Fale um pouco sobre sua experiência anterior.', ja: a('これまでの経験について少し話してください。', 'kore made no keiken ni tsuite sukoshi hanashite kudasai.') },
+          { speaker: 'Você', pt: 'Trabalhei três anos numa agência gerindo campanhas digitais.', ja: a('広告代理店で三年間、デジタルキャンペーンを担当していました。', 'koukoku dairiten de sannenkan, dejitaru kyanpeen wo tantou shite imashita.') },
+          { speaker: 'Entrevistador', pt: 'O que o motivou a mudar de emprego?', ja: a('転職を考えた理由は何ですか？', 'tenshoku wo kangaeta riyuu wa nan desu ka?') },
+          { speaker: 'Você', pt: 'Busco novos desafios e oportunidades de crescimento.', ja: a('新しい挑戦と成長の機会を求めています。', 'atarashii chousen to seichou no kikai wo motomete imasu.') },
+          { speaker: 'Entrevistador', pt: 'Quais são seus pontos fracos?', ja: a('あなたの弱点は何ですか？', 'anata no jakuten wa nan desu ka?') },
+          { speaker: 'Você', pt: 'Às vezes sou perfeccionista demais, mas aprendi a equilibrar.', ja: a('時々完璧主義すぎますが、バランスを取ることを学びました。', 'tokidoki kanpeki shugi sugimasu ga, baransu wo toru koto wo manabimashita.') },
+        ],
+      },
+      {
+        id: 'adv-ja-2',
+        title: 'Debate sobre tecnologia',
+        context: 'Dois amigos discutem o impacto das redes sociais.',
+        lines: [
+          { speaker: 'Amigo', pt: 'Acho que as redes sociais fazem mais mal do que bem.', ja: a('SNSは良いことより悪いことのほうが多いと思う。', 'esu enu esu wa yoi koto yori warui koto no hou ga ooi to omou.') },
+          { speaker: 'Você', pt: 'Entendo, mas depende de como as usamos.', ja: a('分かるけど、使い方次第だと思うよ。', 'wakaru kedo, tsukaikata shidai da to omou yo.') },
+          { speaker: 'Amigo', pt: 'Mas não acha que criaram uma cultura de comparação tóxica?', ja: a('でも、有害な比較文化を作ったと思わない？', 'demo, yuugai na hikaku bunka wo tsukutta to omowanai?') },
+          { speaker: 'Você', pt: 'Em parte sim, mas também conectaram pessoas de diferentes países.', ja: a('ある意味そうだけど、色々な国の人々をつなげたのも事実だよ。', 'aru imi sou dakedo, iroiro na kuni no hitobito wo tsunageta no mo jijitsu da yo.') },
+        ],
+      },
+      {
+        id: 'adv-ja-3',
+        title: 'Reunião de trabalho',
+        context: 'Você apresenta uma proposta ao seu chefe japonês.',
+        lines: [
+          { speaker: 'Você', pt: 'Gostaria de apresentar a proposta para o novo projeto.', ja: a('新しいプロジェクトの提案をさせていただきたいです。', 'atarashii purojekuto no teian wo sasete itadakitai desu.') },
+          { speaker: 'Chefe', pt: 'Perfeito. Vamos ver. Qual é o orçamento estimado?', ja: a('分かりました。見てみましょう。予算はいくらぐらいですか？', 'wakarimashita. mite mimashou. yosan wa ikura gurai desu ka?') },
+          { speaker: 'Você', pt: 'Calculamos um investimento inicial com retorno em dezoito meses.', ja: a('初期投資を計算し、十八ヶ月で回収する予定です。', 'shoki toushi wo keisan shi, juuhachi kagetsu de kaishuu suru yotei desu.') },
+          { speaker: 'Chefe', pt: 'Parece razoável. Quantas pessoas seriam necessárias?', ja: a('妥当ですね。何人必要ですか？', 'datou desu ne. nannin hitsuyou desu ka?') },
+          { speaker: 'Você', pt: 'Uma equipe de quatro pessoas no mínimo.', ja: a('最低でも四人のチームが必要です。', 'saitei demo yonin no chiimu ga hitsuyou desu.') },
+        ],
+      },
+      {
+        id: 'adv-ja-4',
+        title: 'Discutindo um livro',
+        context: 'Você está num clube do livro em Tóquio.',
+        lines: [
+          { speaker: 'Moderadora', pt: 'O que acharam do final do romance? Foi surpreendente?', ja: a('小説の結末はどうでしたか？意外でしたか？', 'shousetsu no ketsumatsu wa dou deshita ka? igai deshita ka?') },
+          { speaker: 'Você', pt: 'Para mim foi o ponto alto do livro.', ja: a('私にとっては本の一番の見どころでした。', 'watashi ni totte wa hon no ichiban no midokoro deshita.') },
+          { speaker: 'Participante', pt: 'Eu achei previsível, na verdade.', ja: a('私は実は予想通りだと思いました。', 'watashi wa jitsu wa yosou doori da to omoimashita.') },
+          { speaker: 'Você', pt: 'Não concordo. Acho que era intencional.', ja: a('私はそう思いません。意図的だったと思います。', 'watashi wa sou omoimasen. itoteki datta to omoimasu.') },
+        ],
+      },
+      {
+        id: 'adv-ja-5',
+        title: 'Negociando um salário',
+        context: 'Você está negociando o salário numa nova empresa.',
+        lines: [
+          { speaker: 'RH', pt: 'Gostamos muito do seu perfil. Qual sua expectativa salarial?', ja: a('あなたの経歴をとても気に入りました。希望給与はいくらですか？', 'anata no keireki wo totemo kiniirimashita. kibou kyuuyo wa ikura desu ka?') },
+          { speaker: 'Você', pt: 'Com base na minha experiência, esperaria algo entre quatro e cinco milhões de ienes.', ja: a('経験を踏まえて、四百万から五百万円ぐらいを希望します。', 'keiken wo fumaete, yonhyakuman kara gohyakuman en gurai wo kibou shimasu.') },
+          { speaker: 'RH', pt: 'É razoável. Podemos oferecer quatro milhões e duzentos mil com revisão em seis meses.', ja: a('妥当ですね。四百二十万円と六か月後の見直しを提案します。', 'datou desu ne. yonhyaku nijuuman en to rokkagetsugo no minaoshi wo teian shimasu.') },
+          { speaker: 'Você', pt: 'Agradeço a proposta. Seria possível ajustar se eu atingir as metas?', ja: a('提案に感謝します。目標を達成したら調整可能ですか？', 'teian ni kansha shimasu. mokuhyou wo tassei shitara chousei kanou desu ka?') },
+        ],
+      },
+      {
+        id: 'adv-ja-6',
+        title: 'Explicando um mal-entendido',
+        context: 'Você tenta resolver um mal-entendido com um amigo.',
+        lines: [
+          { speaker: 'Amigo', pt: 'Fiquei chateado com o que você disse na reunião.', ja: a('会議で言ったことに傷ついた。', 'kaigi de itta koto ni kizutsuita.') },
+          { speaker: 'Você', pt: 'Entendo que você tenha se sentido assim, mas não era minha intenção.', ja: a('そう感じたのは分かるけど、そういうつもりじゃなかった。', 'sou kanjita no wa wakaru kedo, sou iu tsumori janakatta.') },
+          { speaker: 'Amigo', pt: 'E qual era então? Porque soou muito mal.', ja: a('じゃあ何のつもりだったの？とても嫌な感じだったよ。', 'jaa nan no tsumori datta no? totemo iyana kanji datta yo.') },
+          { speaker: 'Você', pt: 'Estava tentando mostrar que o projeto tinha dificuldades.', ja: a('プロジェクトに問題があることを示そうとしていたんだ。', 'purojekuto ni mondai ga aru koto wo shimesou to shite ita n da.') },
+          { speaker: 'Amigo', pt: 'Deveria ter sido mais claro.', ja: a('もっとはっきり言うべきだったね。', 'motto hakkiri iu beki datta ne.') },
+        ],
+      },
+      {
+        id: 'adv-ja-7',
+        title: 'Numa conferência',
+        context: 'Você está numa conferência profissional e aborda um palestrante.',
+        lines: [
+          { speaker: 'Você', pt: 'Muito obrigado pela sua apresentação. Foi esclarecedora.', ja: a('プレゼンテーションをありがとうございました。とても分かりやすかったです。', 'purezenteeshon wo arigatou gozaimashita. totemo wakariyasukatta desu.') },
+          { speaker: 'Palestrante', pt: 'Obrigado! Fico feliz que tenha sido útil.', ja: a('ありがとうございます！役に立ってよかったです。', 'arigatou gozaimasu! yaku ni tatte yokatta desu.') },
+          { speaker: 'Você', pt: 'Você mencionou que a IA vai transformar o setor em dois anos. Não é otimista demais?', ja: a('二年でAIが業界を変えるとおっしゃいましたが、少し楽観的すぎませんか？', 'ninen de eeai ga gyoukai wo kaeru to osshaimashita ga, sukoshi rakkanteki sugimasen ka?') },
+          { speaker: 'Palestrante', pt: 'Boa pergunta. Concordo que é ambicioso, mas os dados apontam nessa direção.', ja: a('いい質問ですね。野心的だとは思いますが、データはその方向を示しています。', 'ii shitsumon desu ne. yashinteki da to wa omoimasu ga, deeta wa sono houkou wo shimeshite imasu.') },
+        ],
+      },
+      {
+        id: 'adv-ja-8',
+        title: 'Reclamação formal',
+        context: 'Você faz uma reclamação ao responsável de um serviço.',
+        lines: [
+          { speaker: 'Você', pt: 'Preciso falar com o responsável. O serviço não correspondeu ao contratado.', ja: a('責任者と話したいです。契約した内容とサービスが違います。', 'sekininsha to hanashitai desu. keiyaku shita naiyou to saabisu ga chigaimasu.') },
+          { speaker: 'Responsável', pt: 'Sou eu. O que aconteceu exatamente?', ja: a('私です。具体的に何がありましたか？', 'watashi desu. gutaiteki ni nani ga arimashita ka?') },
+          { speaker: 'Você', pt: 'Contratei uma instalação em dois dias e já faz uma semana.', ja: a('二日以内の設置を契約しましたが、もう一週間経っています。', 'futsuka inai no setchi wo keiyaku shimashita ga, mou isshuukan tatte imasu.') },
+          { speaker: 'Responsável', pt: 'Peço desculpas pelo transtorno. Houve um problema logístico.', ja: a('ご迷惑をおかけして申し訳ありません。物流の問題がありました。', 'gomeiwaku wo okake shite moushiwake arimasen. butsuryuu no mondai ga arimashita.') },
+        ],
+      },
+      {
+        id: 'adv-ja-9',
+        title: 'Conversando sobre cultura',
+        context: 'Você e um amigo japonês discutem diferenças culturais.',
+        lines: [
+          { speaker: 'Você', pt: 'Uma coisa que me surpreendeu no Japão é como as pessoas se cumprimentam se curvando.', ja: a('日本で驚いたことの一つは、お辞儀で挨拶することです。', 'nihon de odoroita koto no hitotsu wa, ojigi de aisatsu suru koto desu.') },
+          { speaker: 'Kenji', pt: 'Para nós é completamente normal! No Brasil como é?', ja: a('僕たちには全く普通です！ブラジルではどうですか？', 'bokutachi ni wa mattaku futsuu desu! burajiru de wa dou desu ka?') },
+          { speaker: 'Você', pt: 'A gente costuma abraçar e beijar no rosto, mesmo com desconhecidos às vezes.', ja: a('私たちはよくハグをして頬にキスをします。知らない人にもすることがあります。', 'watashitachi wa yoku hagu wo shite hoo ni kisu wo shimasu. shiranai hito ni mo suru koto ga arimasu.') },
+          { speaker: 'Kenji', pt: 'Que interessante! Isso seria muito estranho aqui.', ja: a('それは面白いですね！ここではとても変に見えると思います。', 'sore wa omoshiroi desu ne! koko de wa totemo hen ni mieru to omoimasu.') },
+        ],
+      },
+      {
+        id: 'adv-ja-10',
+        title: 'Planejando uma viagem',
+        context: 'Você planeja uma viagem com um amigo japonês.',
+        lines: [
+          { speaker: 'Você', pt: 'Tenho duas semanas de férias em agosto. Quer vir comigo?', ja: a('八月に二週間休みがあります。一緒に来ませんか？', 'hachigatsu ni nishuukan yasumi ga arimasu. issho ni kimasen ka?') },
+          { speaker: 'Amiga', pt: 'Que boa ideia! Onde você está pensando?', ja: a('いいアイデアですね！どこを考えていますか？', 'ii aidea desu ne! doko wo kangaete imasu ka?') },
+          { speaker: 'Você', pt: 'Talvez o norte do Japão — Hokkaido. Nunca fui.', ja: a('北海道はどうかなと思っています。行ったことがないんです。', 'hokkaidou wa dou kana to omotte imasu. itta koto ga nain desu.') },
+          { speaker: 'Amiga', pt: 'Excelente escolha! A comida de lá é ótima.', ja: a('いい選択ですね！あそこの食べ物は最高ですよ。', 'ii sentaku desu ne! asoko no tabemono wa saikou desu yo.') },
+          { speaker: 'Você', pt: 'Vamos de trem ou avião?', ja: a('電車で行きますか、飛行機で行きますか？', 'densha de ikimasu ka, hikouki de ikimasu ka?') },
+        ],
+      },
+    ],
+  },
+
+  fluente: {
+    label: 'Fluente',
+    desc: 'Linguagem natural, expressões idiomáticas e nuances culturais',
+    dialogos: [
+      {
+        id: 'flu-ja-1',
+        title: 'Com o dono da pousada',
+        context: 'Negociando uma estadia mais longa numa pousada em Kyoto.',
+        lines: [
+          { speaker: 'Você', pt: 'Estou pensando em ficar mais uns dias. Consegue me fazer um preço especial?', ja: a('もう少し滞在しようと思っているんですが、特別価格にしてもらえますか？', 'mou sukoshi taizai shiyou to omotte iru n desu ga, tokubetsu kakaku ni shite moraemasu ka?') },
+          { speaker: 'Dono', pt: 'Depende de quantos dias. Mais de uma semana, dou dez por cento de desconto.', ja: a('何日かによります。一週間以上なら十パーセント引きにできます。', 'nannichi ka ni yorimasu. isshuukan ijou nara juppaasento biki ni dekimasu.') },
+          { speaker: 'Você', pt: 'E se eu ficar duas semanas? Gostei muito do bairro.', ja: a('二週間だったらどうですか？この辺りがとても気に入りました。', 'nishuukan dattara dou desu ka? kono atari ga totemo kiniirimashita.') },
+          { speaker: 'Dono', pt: 'Duas semanas... vou fazer quinze por cento.', ja: a('二週間なら…十五パーセントにしましょう。', 'nishuukan nara… juugo paasento ni shimashou.') },
+          { speaker: 'Você', pt: 'Combinado! Você me convenceu.', ja: a('決まりですね！説得されました。', 'kimari desu ne! settoku saremashita.') },
+        ],
+      },
+      {
+        id: 'flu-ja-2',
+        title: 'Entre amigos japoneses',
+        context: 'Conversando com amigos num izakaya depois do trabalho.',
+        lines: [
+          { speaker: 'Takeshi', pt: 'Cara, que semana pesada. Estou exausto.', ja: a('いやー、きついたな今週。もうくたくただよ。', 'iyaa, kitsuitta na konshuu. mou kutakuta da yo.') },
+          { speaker: 'Você', pt: 'Eu também. Meu chefe me sufocou com relatórios.', ja: a('僕も。上司にレポートで押しつぶされたよ。', 'boku mo. joushi ni repooto de oshitsubusareta yo.') },
+          { speaker: 'Yuki', pt: 'Parem de reclamar e peçam outra rodada.', ja: a('文句言うのやめて、もう一杯頼もうよ。', 'monku iu no yamete, mou ippai tanomou yo.') },
+          { speaker: 'Você', pt: 'Yuki tem razão. Vamos beber e esquecer.', ja: a('ユキの言う通りだ。飲んで忘れよう。', 'yuki no iu toori da. nonde wasureyou.') },
+          { speaker: 'Takeshi', pt: 'Saúde! Pela nossa sobrevivência esta semana.', ja: a('乾杯！今週生き残ったことに。', 'kanpai! konshuu ikinokotta koto ni.') },
+        ],
+      },
+      {
+        id: 'flu-ja-3',
+        title: 'Reclamando do trânsito',
+        context: 'Você e um colega chegam atrasados a um almoço em Tóquio.',
+        lines: [
+          { speaker: 'Colega', pt: 'Desculpe o atraso, o trem estava lotado e atrasou.', ja: a('遅れてごめん、電車が満員で遅延したんだ。', 'okurete gomen, densha ga man\'in de chien shita n da.') },
+          { speaker: 'Você', pt: 'Verdade. E ainda teve um problema no metrô também.', ja: a('本当に。しかも地下鉄でもトラブルがあった。', 'hontou ni. shikamo chikatetsu demo toraburu ga atta.') },
+          { speaker: 'Amiga', pt: 'Ah, isso explica. Eu vim de bicicleta e mesmo assim me atrasei um pouco.', ja: a('ああ、それで分かった。私は自転車で来たけど、それでも少し遅れた。', 'aa, sore de wakatta. watashi wa jitensha de kita kedo, sore demo sukoshi okureta.') },
+          { speaker: 'Você', pt: 'Já estamos aqui. O importante é que chegamos.', ja: a('もうここにいるし。大事なのは着いたことだよ。', 'mou koko ni iru shi. daiji na no wa tsuita koto da yo.') },
+        ],
+      },
+      {
+        id: 'flu-ja-4',
+        title: 'Negociando num mercado de antiguidades',
+        context: 'Você está num mercado de antiguidades em Kyoto.',
+        lines: [
+          { speaker: 'Você', pt: 'Quanto custa esta gravura antiga?', ja: a('この古い版画はいくらですか？', 'kono furui hanga wa ikura desu ka?') },
+          { speaker: 'Vendedor', pt: 'Para você, oito mil ienes. É uma peça única.', ja: a('お客様には八千円で。一点物ですよ。', 'okyakusama ni wa hassen en de. itten mono desu yo.') },
+          { speaker: 'Você', pt: 'Oito mil? Está caro. Não faz um preço melhor?', ja: a('八千円？ちょっと高いですね。もう少し安くなりませんか？', 'hassen en? chotto takai desu ne. mou sukoshi yasuku narimasen ka?') },
+          { speaker: 'Vendedor', pt: 'Você entende de arte. Seis mil, e não abaixo mais.', ja: a('お目が高いですね。六千円で、これ以上は下げられません。', 'ome ga takai desu ne. rokusen en de, kore ijou wa sagerarare masen.') },
+          { speaker: 'Você', pt: 'Fechado! Pode embrulhar com cuidado?', ja: a('決まりです！丁寧に包んでもらえますか？', 'kimari desu! teinei ni tsutsunde moraemasu ka?') },
+        ],
+      },
+      {
+        id: 'flu-ja-5',
+        title: 'Despedindo-se de um colega',
+        context: 'Seu colega vai deixar a empresa e há uma festa de despedida.',
+        lines: [
+          { speaker: 'Você', pt: 'Então é verdade que você vai embora? Ainda não acredito.', ja: a('本当に辞めるの？まだ信じられない。', 'hontou ni yameru no? mada shinjirarenai.') },
+          { speaker: 'Colega', pt: 'É sim. Começo na nova empresa em setembro.', ja: a('うん、そうなんだ。九月に新しい会社で始める。', 'un, sou nan da. kugatsu ni atarashii kaisha de hajimeru.') },
+          { speaker: 'Você', pt: 'Vamos sentir sua falta. Quem vai me aguentar nas reuniões de segunda?', ja: a('寂しくなるよ。月曜のミーティングで誰が僕に付き合ってくれるんだろう。', 'sabishiku naru yo. getsuyou no miitingu de dare ga boku ni tsukiatte kureru n darou.') },
+          { speaker: 'Colega', pt: 'Vai ter que aguentar sozinho. Mas vamos ficar em contato.', ja: a('一人で頑張ってね。でも連絡は取り合おう。', 'hitori de ganbatte ne. demo renraku wa toriaou.') },
+          { speaker: 'Você', pt: 'Com certeza. Boa sorte pra você também.', ja: a('もちろん。あなたにも幸運を。', 'mochiron. anata ni mo kouun wo.') },
+        ],
+      },
+      {
+        id: 'flu-ja-6',
+        title: 'Reclamando dos impostos',
+        context: 'Dois amigos falam sobre economia num café.',
+        lines: [
+          { speaker: 'Amigo', pt: 'Viu as notícias? Aumentaram os impostos de novo.', ja: a('ニュース見た？また税金が上がったよ。', 'nyuusu mita? mata zeikin ga agatta yo.') },
+          { speaker: 'Você', pt: 'Vi sim. É uma vergonha, e o salário não sobe na mesma proporção.', ja: a('見たよ。ひどいよね、給料はそんなに上がらないのに。', 'mita yo. hidoi yo ne, kyuuryou wa sonna ni agaranai noni.') },
+          { speaker: 'Amigo', pt: 'Exatamente. Você trabalha muito e metade vai para o governo.', ja: a('その通り。すごく働いても、半分は政府に取られる。', 'sono toori. sugoku hataraite mo, hanbun wa seifu ni torareru.') },
+          { speaker: 'Você', pt: 'O pior é que os serviços públicos pioram cada vez mais.', ja: a('最悪なのは、公共サービスがどんどん悪くなっていること。', 'saiaku na no wa, koukyou saabisu ga dondon waruku natte iru koto.') },
+        ],
+      },
+      {
+        id: 'flu-ja-7',
+        title: 'Ajudando um turista',
+        context: 'Um turista está perdido e você ajuda em japonês.',
+        lines: [
+          { speaker: 'Turista', pt: 'Desculpe, fala inglês? Estou completamente perdido.', ja: a('すみません、英語話せますか？完全に迷子なんです。', 'sumimasen, eigo hanasemasu ka? kanzen ni maigo nan desu.') },
+          { speaker: 'Você', pt: 'Um pouco, mas posso tentar ajudar em japonês também. O que procura?', ja: a('少しなら。日本語でも手伝えますよ。何を探していますか？', 'sukoshi nara. nihongo demo tetsudaemasu yo. nani wo sagashite imasu ka?') },
+          { speaker: 'Turista', pt: 'Procuro o templo Kiyomizu-dera.', ja: a('清水寺を探しています。', 'kiyomizudera wo sagashite imasu.') },
+          { speaker: 'Você', pt: 'Está perto! Siga esta rua e vire à direita na esquina.', ja: a('近いですよ！この道をまっすぐ行って、角を右に曲がってください。', 'chikai desu yo! kono michi wo massugu itte, kado wo migi ni magatte kudasai.') },
+          { speaker: 'Turista', pt: 'Muito obrigado! Seu inglês é excelente.', ja: a('どうもありがとうございます！英語がとても上手ですね。', 'doumo arigatou gozaimasu! eigo ga totemo jouzu desu ne.') },
+        ],
+      },
+      {
+        id: 'flu-ja-8',
+        title: 'Discutindo um apartamento',
+        context: 'Você e um amigo procuram um apartamento para dividir.',
+        lines: [
+          { speaker: 'Você', pt: 'Vi um apartamento interessante perto do metrô. Quer ver as fotos?', ja: a('駅の近くにいい部屋を見つけたよ。写真見る？', 'eki no chikaku ni ii heya wo mitsuketa yo. shashin miru?') },
+          { speaker: 'Amigo', pt: 'Claro. Quanto custa o aluguel?', ja: a('もちろん。家賃はいくら？', 'mochiron. yachin wa ikura?') },
+          { speaker: 'Você', pt: 'Cento e vinte mil ienes. Dividindo, dá sessenta mil cada.', ja: a('十二万円。二人で分けると一人六万円になる。', 'juuniman en. futari de wakeru to hitori rokuman en ni naru.') },
+          { speaker: 'Amigo', pt: 'Não está mal. Quantos quartos tem?', ja: a('悪くないね。部屋はいくつ？', 'warukunai ne. heya wa ikutsu?') },
+          { speaker: 'Você', pt: 'Dois quartos e uma varanda grande.', ja: a('二部屋と大きなベランダがあるよ。', 'futaheya to ookina beranda ga aru yo.') },
+        ],
+      },
+      {
+        id: 'flu-ja-9',
+        title: 'No hospital com urgência',
+        context: 'Você acompanha um amigo à emergência do hospital.',
+        lines: [
+          { speaker: 'Enfermeira', pt: 'Boa tarde. O que aconteceu?', ja: a('こんにちは。どうされましたか？', 'konnichiwa. dou saremashita ka?') },
+          { speaker: 'Você', pt: 'Meu amigo está com dores no peito há meia hora.', ja: a('友達が三十分前から胸が痛いと言っています。', 'tomodachi ga sanjuppun mae kara mune ga itai to itte imasu.') },
+          { speaker: 'Enfermeira', pt: 'Entendo. Ele vai ser atendido imediatamente.', ja: a('分かりました。すぐに診てもらいます。', 'wakarimashita. sugu ni mite moraimasu.') },
+          { speaker: 'Você', pt: 'Ele também está com dificuldade para respirar.', ja: a('呼吸も苦しそうです。', 'kokyuu mo kurushisou desu.') },
+          { speaker: 'Enfermeira', pt: 'Fique tranquilo. Ele está em boas mãos.', ja: a('ご安心ください。しっかり対応します。', 'goanshin kudasai. shikkari taiou shimasu.') },
+        ],
+      },
+      {
+        id: 'flu-ja-10',
+        title: 'Filosofando sobre a vida',
+        context: 'Conversa profunda entre dois amigos à noite.',
+        lines: [
+          { speaker: 'Amiga', pt: 'Às vezes me pergunto para que trabalho tanto.', ja: a('時々、何のためにこんなに働いているんだろうと思う。', 'tokidoki, nan no tame ni konna ni hataraite iru n darou to omou.') },
+          { speaker: 'Você', pt: 'Entendo. Mas acho que depende do que você chama de aproveitar.', ja: a('分かるよ。でも「楽しむ」の意味次第だと思う。', 'wakaru yo. demo "tanoshimu" no imi shidai da to omou.') },
+          { speaker: 'Amiga', pt: 'Para mim é estar presente, criar memórias.', ja: a('私にとっては、今を大切にして思い出を作ることだと思う。', 'watashi ni totte wa, ima wo taisetsu ni shite omoide wo tsukuru koto da to omou.') },
+          { speaker: 'Você', pt: 'Concordo. O problema é que o sistema não deixa você parar.', ja: a('同感。問題は、社会が立ち止まることを許さないことだね。', 'doukan. mondai wa, shakai ga tachidomaru koto wo yurusanai koto da ne.') },
+          { speaker: 'Amiga', pt: 'Talvez a solução seja redefinir o que é ficar para trás.', ja: a('もしかしたら、「取り残される」の意味を考え直すべきかもね。', 'moshikashitara, "torinokosareru" no imi wo kangaenaosu beki kamo ne.') },
+        ],
+      },
+    ],
+  },
+};

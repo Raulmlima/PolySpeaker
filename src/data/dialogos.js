@@ -554,7 +554,8 @@ function loadDialogosExtra() {
   try {
     const en = require('./dialogos_en').DIALOGOS_EN;
     const de = require('./dialogos_de').DIALOGOS_DE;
-    _dialogosExtra = { en, de };
+    const ja = require('./dialogos_ja').DIALOGOS_JA;
+    _dialogosExtra = { en, de, ja };
   } catch {
     _dialogosExtra = {};
   }
@@ -566,7 +567,7 @@ function loadDialogosExtra() {
 // impossible to notice until a learner spotted Spanish sentences mislabeled
 // as French/Italian/etc. Returning null now forces the screen to show an
 // honest "coming soon" state instead of leaking the wrong language.
-const HAS_DIALOGOS = new Set(['es', 'en', 'de']);
+const HAS_DIALOGOS = new Set(['es', 'en', 'de', 'ja']);
 
 export function getDialogosForLang(lang) {
   if (!lang || !HAS_DIALOGOS.has(lang)) return null;

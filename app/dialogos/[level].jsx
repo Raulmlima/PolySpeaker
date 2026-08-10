@@ -8,7 +8,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
 import { getDialogosForLang } from '../../src/data/dialogos';
 import { LANGUAGES } from '../../src/storage';
-import { normalize } from '../../src/utils/compare';
+import { checkAnswer } from '../../src/utils/compare';
 import { C } from '../../src/theme';
 import TappableSentence from '../../src/components/TappableSentence';
 import { hasAiConsent, setAiConsent } from '../../src/utils/aiConsent';
@@ -77,7 +77,9 @@ export default function DialogoExercise() {
     Speech.speak(text, { language: langInfo.tts, rate: 0.85 });
   }
 
-  const targetText = line[targetKey] ?? line.es ?? '';
+  const targetRaw = line[targetKey] ?? line.es ?? '';
+  const targetAnswers = Array.isArray(targetRaw) ? targetRaw : [targetRaw];
+  const targetText = targetAnswers[0];
 
   function askIA() {
     const ctx = `Estou praticando ${langInfo.label} com um diálogo. Contexto: "${dialogo.context}".
@@ -88,9 +90,7 @@ Explique detalhadamente a gramática, vocabulário e expressões naturais desta 
     Linking.openURL(`https://claude.ai/new?q=${encodeURIComponent(ctx)}`);
   }
 
-  const userAnswer = normalize(input);
-  const correctAnswer = normalize(targetText);
-  const isCorrect = userAnswer === correctAnswer;
+  const isCorrect = checkAnswer(input, targetAnswers);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -115,7 +115,8 @@ Explique detalhadamente a gramática, vocabulário e expressões naturais desta 
 
         {/* Previous lines */}
         {dialogo.lines.slice(0, lineIdx).map((l, i) => {
-          const lt = l[targetKey] ?? l.es ?? '';
+          const lRaw = l[targetKey] ?? l.es ?? '';
+          const lt = Array.isArray(lRaw) ? lRaw[0] : lRaw;
           return (
             <View key={i} style={[styles.bubble, l.speaker === 'Você' ? styles.bubbleUser : styles.bubbleOther]}>
               <Text style={styles.bubbleSpeaker}>{l.speaker}</Text>
