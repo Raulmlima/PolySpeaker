@@ -46,6 +46,21 @@ export default function TappableSentence({ text, language, contextLang, textStyl
   useEffect(() => { setSel(null); wordRefs.current = {}; }, [text]);
   useEffect(() => subscribeDismiss(() => setSel(null)), []);
 
+  // On a freshly mounted screen (nothing tapped/typed yet, no re-render has
+  // happened since the layout transition), measureInWindow can fire before
+  // the native layout pass has actually committed and report a 0-size rect
+  // — which silently no-ops everything downstream. Retry a couple of times
+  // a beat later instead of giving up on the very first tap.
+  function measureWord(nodeRef, cb, retries = 3) {
+    nodeRef.measureInWindow((x, y, width, height) => {
+      if (width === 0 && height === 0 && retries > 0) {
+        setTimeout(() => measureWord(nodeRef, cb, retries - 1), 60);
+      } else {
+        cb(x, y, width, height);
+      }
+    });
+  }
+
   async function tapWord(rawWord, idx) {
     const word = rawWord.replace(/[.,!?¿¡;:'"()«»。，？！、]/g, '').trim();
     if (!word) return;
@@ -53,7 +68,7 @@ export default function TappableSentence({ text, language, contextLang, textStyl
 
     const nodeRef = wordRefs.current[idx];
     if (!nodeRef?.measureInWindow) return;
-    nodeRef.measureInWindow(async (x, y, width, height) => {
+    measureWord(nodeRef, async (x, y, width, height) => {
       if (ensureConsent) {
         const ok = await ensureConsent();
         if (!ok) return;
@@ -72,8 +87,9 @@ export default function TappableSentence({ text, language, contextLang, textStyl
         // Safety net: a single tapped word should never come back as a full
         // sentence — cap it so a model slip-up can't blow up the layout.
         const translation = String(data.translation ?? '').slice(0, 80);
+        const pronunciation = String(data.pronunciation ?? '').slice(0, 40);
         if (!res.ok || !translation) throw new Error('no translation');
-        setSel(s => (s && s.idx === idx ? { ...s, state: 'done', translation } : s));
+        setSel(s => (s && s.idx === idx ? { ...s, state: 'done', translation, pronunciation } : s));
       } catch {
         setSel(s => (s && s.idx === idx ? { ...s, state: 'error' } : s));
       }
@@ -97,6 +113,7 @@ export default function TappableSentence({ text, language, contextLang, textStyl
     return (
       <Text style={styles.bubbleText}>
         <Text style={styles.bubbleWord}>{sel.word}</Text> = {sel.translation}
+        {sel.pronunciation ? ` (${sel.pronunciation})` : ''}
       </Text>
     );
   }

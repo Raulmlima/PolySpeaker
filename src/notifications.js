@@ -72,7 +72,7 @@ export async function scheduleDailyReminder({ reviewCount = 0, dayStreak = 0, pr
     title = 'Revisão te esperando 📚';
     body = `Você tem ${reviewCount} frase${reviewCount > 1 ? 's' : ''} pra fixar na memória — 2 minutinhos resolvem.`;
   } else if (dayStreak >= 2) {
-    title = `Sequência de ${dayStreak} dias em jogo 🔥`;
+    title = `Sequência de ${dayStreak} dias em jogo`;
     body = 'Uma lição rápida hoje e o Poly continua sorrindo.';
   } else {
     title = 'O Poly sente sua falta 🤖';

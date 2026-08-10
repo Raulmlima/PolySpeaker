@@ -39,6 +39,7 @@ import { C } from '../../src/theme';
 import TheoryRenderer from '../../src/components/TheoryRenderer';
 import Poly from '../../src/components/Poly';
 import { playCorrect, playWrong } from '../../src/utils/sounds';
+import { setAudioModeAsync } from 'expo-audio';
 
 export default function ExerciseScreen() {
   const { id } = useLocalSearchParams();
@@ -382,13 +383,22 @@ export default function ExerciseScreen() {
       setMicState('result');
     }
   });
+  // Speech recognition switches the iOS audio session into a recording
+  // category/mode that stays active after it stops — any TTS played
+  // afterwards (Speech.speak) comes out muffled/quiet until the session is
+  // explicitly put back into normal playback mode.
+  function restorePlaybackAudioMode() {
+    setAudioModeAsync({ playsInSilentMode: true, allowsRecording: false }).catch(() => {});
+  }
   useSpeechRecognitionEvent('end', () => {
     setMicState(prev => prev === 'listening' ? 'idle' : prev);
+    restorePlaybackAudioMode();
   });
   useSpeechRecognitionEvent('error', (e) => {
     setMicState('idle');
     setMicTranscript('');
     setMicMatch(null);
+    restorePlaybackAudioMode();
   });
 
   async function startListening() {

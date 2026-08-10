@@ -216,7 +216,6 @@ export default function HomeScreen() {
           <View style={styles.heroRight}>
             <View style={styles.heroStreakRow}>
               <Text style={styles.heroStreakNum}>{dayStreak}</Text>
-              <Text style={styles.heroStreakFlame}>🔥</Text>
               <Text style={styles.heroStreakLabel}>dia{dayStreak === 1 ? '' : 's'}</Text>
             </View>
             <Text style={styles.heroMsg}>{heroMsg}</Text>
