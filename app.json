@@ -27,7 +27,15 @@
       ],
       "./plugins/withReleaseSigning",
       "expo-sharing",
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.3.0"
+          }
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true,
