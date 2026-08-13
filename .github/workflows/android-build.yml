@@ -52,12 +52,29 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > android/app/polyspeaker-release.keystore
 
-      - name: Build signed App Bundle
+      - name: Override signing config for CI
+        # withReleaseSigning.js (plugins/) writes an absolute Windows dev-machine
+        # path (C:\p\polyspeaker2-keys\...) into android/gradle.properties during
+        # prebuild — that's for local builds only and breaks on Linux, plus
+        # plain `env:` vars on the gradle step below are NOT Gradle project
+        # properties (only ORG_GRADLE_PROJECT_*-prefixed ones are), so they can't
+        # override it either. gradle.properties takes precedence over env-derived
+        # properties, so the only reliable fix is to overwrite the same keys
+        # in the file itself — a later duplicate key wins when Java loads a
+        # .properties file.
         env:
-          POLYSPEAKER_RELEASE_STORE_FILE: polyspeaker-release.keystore
-          POLYSPEAKER_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          POLYSPEAKER_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          POLYSPEAKER_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          {
+            echo "POLYSPEAKER_RELEASE_STORE_FILE=polyspeaker-release.keystore"
+            echo "POLYSPEAKER_RELEASE_STORE_PASSWORD=$STORE_PASSWORD"
+            echo "POLYSPEAKER_RELEASE_KEY_ALIAS=$KEY_ALIAS"
+            echo "POLYSPEAKER_RELEASE_KEY_PASSWORD=$KEY_PASSWORD"
+          } >> android/gradle.properties
+
+      - name: Build signed App Bundle
         run: |
           cd android
           chmod +x gradlew
