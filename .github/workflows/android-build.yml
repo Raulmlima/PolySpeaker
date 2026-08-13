@@ -68,11 +68,18 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           {
+            # The prebuild-generated file has no trailing newline, so appending
+            # directly would glue this first line onto its last existing line
+            # and corrupt both properties — start with a blank line to guard
+            # against that.
+            echo ""
             echo "POLYSPEAKER_RELEASE_STORE_FILE=polyspeaker-release.keystore"
             echo "POLYSPEAKER_RELEASE_STORE_PASSWORD=$STORE_PASSWORD"
             echo "POLYSPEAKER_RELEASE_KEY_ALIAS=$KEY_ALIAS"
             echo "POLYSPEAKER_RELEASE_KEY_PASSWORD=$KEY_PASSWORD"
           } >> android/gradle.properties
+          echo "--- gradle.properties tail ---"
+          tail -6 android/gradle.properties
 
       - name: Build signed App Bundle
         run: |
