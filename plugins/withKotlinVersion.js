@@ -24,6 +24,19 @@ function withKotlinVersion(config) {
       );
     }
 
+    // The ext.kotlinVersion var above is read by some third-party libraries'
+    // own build.gradle (e.g. react-native-google-mobile-ads when built
+    // standalone), but NOT by this root project's own classpath dependency
+    // below — that one resolves through Gradle's plugin/module resolution
+    // with no version pin, and defaults to whatever com.facebook.react's
+    // react-native-gradle-plugin constrains it to (2.1.0 here). Pin it
+    // explicitly so the compiler used for the whole build tree is new enough
+    // to read metadata from newer transitive deps like play-services-ads.
+    contents = contents.replace(
+      /classpath\(['"]org\.jetbrains\.kotlin:kotlin-gradle-plugin['"]\)/,
+      `classpath('org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}')`
+    );
+
     config.modResults.contents = contents;
     return config;
   });
